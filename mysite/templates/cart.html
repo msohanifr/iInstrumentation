@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="wrapper wrapper-content animated fadeInRight">
+
+
+
+        <div class="row">
+            <div class="col-md-6 col-sm-10">
+
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <span class="float-right"><h6>(<strong>5</strong>) items</h6></span>
+                        <h6>Items in your cart</h6>
+                    </div>
+                    <div class="ibox-content">
+
+                        <div class="table-responsive">
+                            <table class="table shoping-cart-table">
+                                <tbody>
+                                <tr>
+                                    <td class="desc">
+                                        <h3>
+                                            <a href="#" class="text-navy small">
+                                                <h6>Desktop publishing</h6>
+                                            </a>
+                                        </h3>
+
+                                    </td>
+                                    <td>
+                                        <small>$180,00</small>
+
+                                        <s class="small text-muted" style="visibility: hidden">$230,00</s>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control input-s-sm" placeholder="0">
+                                    </td>
+                                    <td>
+
+                                        <small>$180,00</small>
+
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <dl class="small m-b-none">
+                                            <dt>Description lists</dt>
+                                            <dd>A description list is perfect for defining terms.</dd>
+                                        </dl>
+
+                                        <div class="m-t-sm">
+
+                                            <a href="#" class="text-muted"><i class="fa fa-trash"></i> Remove item</a>
+                                        </div>
+                                    </td>
+                                    <td>
+
+                                    </td>
+                                    <td>
+
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div class="ibox-content">
+
+                        <button class="btn btn-primary float-right"><i class="fa fa fa-shopping-cart"></i> Checkout</button>
+                        <button class="btn btn-white"><i class="fa fa-arrow-left"></i> Continue shopping</button>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-3"></div>
+            <div class="col-md-3">
+
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5>Cart Summary</h5>
+                    </div>
+                    <div class="ibox-content">
+                            <span>
+                                Total
+                            </span>
+                        <h2 class="font-bold">
+                            $390,00
+                        </h2>
+
+                        <hr/>
+                        <span class="text-muted small">
+                                *For United States, France and Germany applicable sales tax will be applied
+                            </span>
+                        <div class="m-t-sm">
+                            <div class="btn-group">
+                                <a href="#" class="btn btn-primary btn-sm"><i class="fa fa-shopping-cart"></i> Checkout</a>
+                                <a href="#" class="btn btn-white btn-sm"> Cancel</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5>Support</h5>
+                    </div>
+                    <div class="ibox-content text-center">
+
+
+
+                        <h3><i class="fa fa-phone"></i> +43 100 783 001</h3>
+                        <span class="small">
+                                Please contact with us if you have any questions. We are avalible 24h.
+                            </span>
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+{% endblock %}
