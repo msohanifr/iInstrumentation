@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="middle-box text-center animated fadeInDown">
+        <h1>404</h1>
+        <h3 class="font-bold">Internal Server Error</h3>
+
+        <div class="error-desc">
+            The server could not find the page you requested. We apologize.<br/>
+            You can go back to main page: <br/><a href="/home/" class="btn btn-primary m-t">Dashboard</a>
+        </div>
+
+ </div>
+
+{% endblock %}
