@@ -5,7 +5,7 @@ from django.dispatch import receiver
 from django.utils import timezone
 
 
-# base model
+# base model_ver1
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     street1 = models.CharField(max_length=128, blank=False, default='')
