@@ -7,7 +7,7 @@ from mysite.core import views
 urlpatterns = [
     url('', include('social_django.urls', namespace='social')),
     # path('accounts/register', views.register, name='register'),
-    path('ajax/', views.ajax_test, name='ajax_test'),
+    path('ajax/', views.ajax_order, name='ajax_test'),
     path('accounts/update_profile_after_initial', views.update_profile_after_initial,
          name='update_profile_after_initial'),
     path('account/update_profile', views.update_profile, name='update_profile'),

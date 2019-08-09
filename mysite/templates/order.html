@@ -8,7 +8,7 @@
         <form method="post">
 
             {% csrf_token %}
-            {% for item in Items %}
+            {% for item in Items.values %}
 
                 {% cycle '<div class="wrapper wrapper-content animated fadeInRight"><div class="row">' '' '' '' %}
                 <div class="col-12 col-sm-6 col-xs-6 col-md-3">
@@ -16,20 +16,22 @@
                         <div class="ibox-content product-box active">
                             {% comment "The following invisibile inputs created to send information about the product to cart" %}
                         {% endcomment %}
-                            <input class="small" style="visibility: hidden" name="category_{{ item }}" type="text"
+                            <input class="small" style="visibility: hidden" name="category_{{ item.title }}" type="text"
                                    value="{{ item.category }}">
-                            <input class="small" style="visibility: hidden" name="description_{{ item }}" type="text"
+                            <input class="small" style="visibility: hidden" name="description_{{ item.title }}"
+                                   type="text"
                                    value="{{ item.description }}">
                             {% comment %} end of invisible section  {% endcomment %}
                             <div id="item" name="item" class="product-imitation">
-                                {{ item }}
+                                {{ item.title }}
                             </div>
                             <div class="product-desc">
                                         <span class="product-price">
                                             ${{ item.price }}
                                         </span>
                                 <small class="text-muted">Category: {{ item.category }}</small>
-                                <a href="" class="product-name"><input type="hidden" value="{{ item }}"> {{ item }}</a>
+                                <a href="" class="product-name"><input type="hidden"
+                                                                       value="{{ item.title }}"> {{ item.title }}</a>
                                 <div class="small m-t-xs">
                                     {{ item.description }}
                                 </div>
@@ -37,27 +39,21 @@
                                 <div class="form-group ">
                                     <div class="row">
                                         <div class="col-8">
-                                            <label for="number_of_{{ item }}">Please select number of items: </label>
+                                            <label for="number_of_{{ item.title }}">Please select number of
+                                                items: </label>
                                         </div>
                                         <div class="col-4">
-                                            <select class="form-control" id="number_of_{{ item }}" name="{{ item }}">
-                                                {% if Number_of_items %}
-                                                    {% for f, value in Number_of_items.items %}
-                                                        {% if f == item.title %}
-                                                            {% for itemnumber in range %}
-                                                                {% if itemnumber ==  value %}
+                                            <select class="form-control" id="number_of_{{ item.title }}"
+                                                    name="{{ item.title }}">
+
+                                                {% for itemnumber in range %}
+                                                    {% if itemnumber ==  item.number_of_items|stringformat:"i" %}
                                                                     <option selected>{{ itemnumber }}</option>
                                                                 {% else %}
                                                                     <option>{{ itemnumber }}</option>
                                                                 {% endif %}
                                                             {% endfor %}
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                {% else %}
-                                                    {% for itemnumber in range %}
-                                                        <option>{{ itemnumber }}</option>
-                                                    {% endfor %}
-                                                {% endif %}
+
                                             </select>
                                         </div>
                                     </div>
@@ -93,10 +89,13 @@
 
         $(document).ready(function () {
             console.log('{{ Items }}')
+            {% for k in Items.values %}
+                console.log('{{ k.title }}')
+                console.log('{{ k.number_of_items }}')
+            {% endfor %}
             $("#btn_footer_submit").click(function () {
                 $("#btn_submit").trigger("click");
             })
-
         })
     </script>
 
@@ -104,7 +103,7 @@
     {% for item in Items %}
         <script>
             $("#number_of_{{ item }}").change(function () {
-                const value = "{{ item }}:" + $(this).val();
+                const value = '"{{ item }}":' + $(this).val();
                 $.ajax({
                     url: '/ajax/',
                     data: {
