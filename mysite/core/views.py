@@ -1,4 +1,6 @@
 import time
+
+from django.http import JsonResponse
 from path import Path
 
 import stripe
@@ -195,3 +197,11 @@ def charged(request):  # new
             source=request.POST['stripeToken']
         )
         return render(request, 'charged.html')
+
+
+def ajax_test(request):
+    print(request.GET)
+    data = {
+        'data': request.GET["data"]
+    }
+    return JsonResponse(data)

@@ -216,9 +216,11 @@
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
-<script>window.jQuery || document.write('<script src="{% static 'mysite/assets/js/vendor/jquery-slim.min.js' %}"><\/script>')</script>
-<script src="{% static 'mysite/assets/js/vendor/jquery-slim.min.js' %}"></script>
 <script src="{% static 'mysite/dist/js/bootstrap.min.js' %}"></script>
+
+{% block javascript %}
+
+{% endblock %}
 
 </body>
 </html>

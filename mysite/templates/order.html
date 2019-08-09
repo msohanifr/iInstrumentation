@@ -14,22 +14,24 @@
                 <div class="col-12 col-sm-6 col-xs-6 col-md-3">
                     <div class="ibox">
                         <div class="ibox-content product-box active">
-                        {% comment "The following invisibile inputs created to send information about the product to cart" %}
+                            {% comment "The following invisibile inputs created to send information about the product to cart" %}
                         {% endcomment %}
-                                        <input class="small" style="visibility: hidden" name="category_{{ item }}" type="text" value="{{ item.category }}">
-                                        <input class="small" style="visibility: hidden" name="description_{{ item }}" type="text" value="{{ item.description }}">
-                        {% comment %} end of invisible section  {% endcomment %}
+                            <input class="small" style="visibility: hidden" name="category_{{ item }}" type="text"
+                                   value="{{ item.category }}">
+                            <input class="small" style="visibility: hidden" name="description_{{ item }}" type="text"
+                                   value="{{ item.description }}">
+                            {% comment %} end of invisible section  {% endcomment %}
                             <div id="item" name="item" class="product-imitation">
                                 {{ item }}
                             </div>
                             <div class="product-desc">
                                         <span class="product-price">
-                                            ${{item.price}}
+                                            ${{ item.price }}
                                         </span>
-                                <small class="text-muted" >Category: {{ item.category }}</small>
+                                <small class="text-muted">Category: {{ item.category }}</small>
                                 <a href="" class="product-name"><input type="hidden" value="{{ item }}"> {{ item }}</a>
                                 <div class="small m-t-xs">
-                                    {{item.description}}
+                                    {{ item.description }}
                                 </div>
                                 <hr class="mt-0 mb-2">
                                 <div class="form-group ">
@@ -39,11 +41,11 @@
                                         </div>
                                         <div class="col-4">
                                             <select class="form-control" id="number_of_{{ item }}" name="{{ item }}">
-                                                {%  if Number_of_items %}
+                                                {% if Number_of_items %}
                                                     {% for f, value in Number_of_items.items %}
                                                         {% if f == item.title %}
                                                             {% for itemnumber in range %}
-                                                                {% if itemnumber ==  value  %}
+                                                                {% if itemnumber ==  value %}
                                                                     <option selected>{{ itemnumber }}</option>
                                                                 {% else %}
                                                                     <option>{{ itemnumber }}</option>
@@ -63,29 +65,63 @@
                             </div>
                         </div>
                     </div>
-                    <hr class="mt-0 mb-2"></hr>
+                    <hr class="mt-0 mb-2">
                 </div>
-                {%  cycle '' '' '' '</div> </div>' %}
+                {% cycle '' '' '' '</div> </div>' %}
+
+
             {% endfor %}
 
             <div class="col-12 col-sm-6 col-xs-6 col-md-3">
                 <div class="ibox">
-                    <button type="submit" class="btn btn-primary col-12" id="btn_submit" style="visibility: hidden">Update Order</button>
+                    <button type="submit" class="btn btn-primary col-12" id="btn_submit" style="visibility: hidden">
+                        Update Order
+                    </button>
                 </div>
             </div>
 
         </form>
     </ul>
- <script>
 
 
-    $(document).ready(function () {
-        console.log('{{ Items }}')
-        $("#btn_footer_submit").click(function () {
-            $("#btn_submit").trigger("click");
+
+{% endblock %}
+
+{% block javascript %}
+    <script>
+
+
+        $(document).ready(function () {
+            console.log('{{ Items }}')
+            $("#btn_footer_submit").click(function () {
+                $("#btn_submit").trigger("click");
+            })
+
         })
-    })
     </script>
 
+
+    {% for item in Items %}
+        <script>
+            $("#number_of_{{ item }}").change(function () {
+                const value = "{{ item }}:" + $(this).val();
+                $.ajax({
+                    url: '/ajax/',
+                    data: {
+                        'data': value,
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(data);
+                    },
+                    error: function () {
+                        console.log("fail")
+                    },
+                });
+
+            });
+
+        </script>
+    {% endfor %}
 {% endblock %}
 
