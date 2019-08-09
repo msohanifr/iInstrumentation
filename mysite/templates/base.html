@@ -206,7 +206,8 @@
         </span>
             {% if request.path == '/order/' %}
                 <span class="align-right">
-                        <button type="submit" class="btn btn-primary float-right my-2" id="btn_footer_submit">Update Order</button>
+                        <button type="submit" class="btn btn-primary float-right my-2" id="btn_footer_submit"
+                                onclick="window.location.href = '/cart/';">Go to Cart</button>
                 </span>
             {% endif %}
         </div>
@@ -216,9 +217,11 @@
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
-<script>window.jQuery || document.write('<script src="{% static 'mysite/assets/js/vendor/jquery-slim.min.js' %}"><\/script>')</script>
-<script src="{% static 'mysite/assets/js/vendor/jquery-slim.min.js' %}"></script>
 <script src="{% static 'mysite/dist/js/bootstrap.min.js' %}"></script>
+
+{% block javascript %}
+
+{% endblock %}
 
 </body>
 </html>

@@ -1,4 +1,8 @@
 import time
+import json
+
+from django.db.models import Q
+from django.http import JsonResponse
 from path import Path
 
 import stripe
@@ -40,10 +44,10 @@ def home(request):
 
 # ------------------------------------------------------------------------------------------
 def signup(request):
-    # after login, user is redirected to signup to check if all information for user is registered,
-    # first time user registers and logs in, specially after logging in with OAuth, he has to fill
-    # in registration form in "signup" page.
-    # There is will be a bit (user_is_registered) in registration Model which will be set when user registers all information
+    # after login, user is redirected to signup to check if all information for user is registered, first time user
+    # registers and logs in, specially after logging in with OAuth, he has to fill in registration form in "signup"
+    # page. There is will be a bit (user_is_registered) in registration Model which will be set when user registers
+    # all information
     #
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -104,23 +108,9 @@ def signup_additional(request):
     return render(request, 'registration/signup_additional.html')
 
 
-# ------------------------------------------------------------------------------------------
-@login_required
-def cart_page(request):
-    with open(request.session.session_key + '.pickle', 'rb') as handle:
-        unserialized_data = pickle.load(handle)
-    temp_order = unserialized_data
-    print(temp_order)
-    # items = Item.objects.all()
-    return render(request, 'cart.html', {
-        # 'Items': items,
-        'Number_of_items': temp_order,
-    })
-
-
 # Second way to create secret page
 # class SecretPage(LoginRequiredMixin, TemplateView):
-#    template_name = 'secret_page.html'
+#    template_name = '*.html'
 
 
 # deletes .pickle files older than one day
@@ -128,45 +118,101 @@ def delete_files():
     d = Path("mysite/..")
     for i in d.walk():
         if i.endswith(".pickle"):
-            DAYS = 1
-            time_in_secs = time.time() - (DAYS * 24 * 60 * 60)
+            days = 1
+            time_in_secs = time.time() - (days * 24 * 60 * 60)
             if i.isfile():
                 if i.mtime <= time_in_secs:
                     i.remove()
 
 
 # ------------------------------------------------------------------------------------------
+# Only GET method. The submit button only refers to "CART" page.
+# the rest of this function takes care of finding vendor and associated profile
 @login_required
 def order_page(request):
     delete_files()
-    if request.method == 'POST':
+    '''
+     if request.method == 'POST':
         # Store data (serialize)
         with open(request.session.session_key + '.pickle', 'wb') as handle:
             pickle.dump(request.POST, handle, protocol=pickle.HIGHEST_PROTOCOL)
         return redirect('cart')
     else:
         temp_order = ""
+    '''
+    # This has to be searched based on distance
+    # have to use vendor = Vendor.objects.filter(profile__user__username="msohani")
+    # Then we can use this vendor to filter all the items this Vendor can sell
+    vendor = Vendor.objects.get(profile__user__username="msohani")
+    items_from_vendor = vendor.item.all()
     try:
         with open(request.session.session_key + '.pickle', 'rb') as handle:
             unserialized_data = pickle.load(handle)
         temp_order = unserialized_data
     except:
-        temp_order = ""
-    # This has to be searched based on distance
-    # have to use vendor = Vendor.objects.filter(profile__user__username="msohani")
-    # Then we can use this vendor to filter all the items this Vendor can sell
-    vendor = Vendor.objects.get(profile__user__username="msohani")
-    items = vendor.item.all()
+        temp_order = {}
+    items = {}
     # ----------------------------------------
     # create a range of digits 0:20 in string format
     range_ = []
     for _ in range(0, 20):
         range_.append(str(_))
+    for _ in items_from_vendor:
+        items.update({
+            _.title: {
+                'title': _.title,
+                'description': _.description,
+                'category': _.category,
+                'price': _.price,
+                'number_of_items': temp_order[_.title] if temp_order.keys().__contains__(_.title) else 0,
+            }
+        })
+
     # ----------------------------------------
     return render(request, 'order.html', {
         'Items': items,
-        'Number_of_items': temp_order,
         'range': range_,
+    })
+
+
+# ajax has to take care of the order changes and update the Pickle file
+def ajax_order(request):
+    data_json = json.loads("{" + request.GET['data'] + "}")
+    try:
+        with open(request.session.session_key + '.pickle', 'rb') as handle:
+            unserialized_data = pickle.load(handle)
+        data = unserialized_data
+    except:
+        data = {}
+    data.update(data_json)
+    try:
+        # Store data (serialize)
+        with open(request.session.session_key + '.pickle', 'wb') as handle:
+            pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    except:
+        "write error"
+    return JsonResponse(data)
+
+
+# ------------------------------------------------------------------------------------------
+@login_required
+def cart_page(request):
+    try:
+        with open(request.session.session_key + '.pickle', 'rb') as handle:
+            temp_order = pickle.load(handle)
+    except:
+        temp_order = {}
+    print(temp_order)
+    vendor = Vendor.objects.get(profile__user__username="msohani")
+    query = ""
+    for _ in temp_order:
+        query = "AND "+_.title
+    print(query)
+    items_from_vendor = vendor.item.filter(Q(vendor.item.title(query)))
+    print(items_from_vendor)
+    return render(request, 'cart.html', {
+        # 'Items': items,
+        'Number_of_items': temp_order,
     })
 
 
