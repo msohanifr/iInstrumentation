@@ -1,5 +1,7 @@
 import time
 import json
+
+from django.db.models import Q
 from django.http import JsonResponse
 from path import Path
 
@@ -27,6 +29,7 @@ def handler404(request):
 def handler500(request):
     return render(request, '500.html', status=500)
 
+
 # ------------------------------------------------------------------------------------------
 def home(request):
     # home page: show only when user is logged in, otherwise go to sigin page
@@ -41,10 +44,10 @@ def home(request):
 
 # ------------------------------------------------------------------------------------------
 def signup(request):
-    # after login, user is redirected to signup to check if all information for user is registered,
-    # first time user registers and logs in, specially after logging in with OAuth, he has to fill
-    # in registration form in "signup" page.
-    # There is will be a bit (user_is_registered) in registration Model which will be set when user registers all information
+    # after login, user is redirected to signup to check if all information for user is registered, first time user
+    # registers and logs in, specially after logging in with OAuth, he has to fill in registration form in "signup"
+    # page. There is will be a bit (user_is_registered) in registration Model which will be set when user registers
+    # all information
     #
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -105,23 +108,9 @@ def signup_additional(request):
     return render(request, 'registration/signup_additional.html')
 
 
-# ------------------------------------------------------------------------------------------
-@login_required
-def cart_page(request):
-    with open(request.session.session_key + '.pickle', 'rb') as handle:
-        unserialized_data = pickle.load(handle)
-    temp_order = unserialized_data
-    print(temp_order)
-    # items = Item.objects.all()
-    return render(request, 'cart.html', {
-        # 'Items': items,
-        'Number_of_items': temp_order,
-    })
-
-
 # Second way to create secret page
 # class SecretPage(LoginRequiredMixin, TemplateView):
-#    template_name = 'secret_page.html'
+#    template_name = '*.html'
 
 
 # deletes .pickle files older than one day
@@ -129,8 +118,8 @@ def delete_files():
     d = Path("mysite/..")
     for i in d.walk():
         if i.endswith(".pickle"):
-            DAYS = 1
-            time_in_secs = time.time() - (DAYS * 24 * 60 * 60)
+            days = 1
+            time_in_secs = time.time() - (days * 24 * 60 * 60)
             if i.isfile():
                 if i.mtime <= time_in_secs:
                     i.remove()
@@ -203,6 +192,28 @@ def ajax_order(request):
     except:
         "write error"
     return JsonResponse(data)
+
+
+# ------------------------------------------------------------------------------------------
+@login_required
+def cart_page(request):
+    try:
+        with open(request.session.session_key + '.pickle', 'rb') as handle:
+            temp_order = pickle.load(handle)
+    except:
+        temp_order = {}
+    print(temp_order)
+    vendor = Vendor.objects.get(profile__user__username="msohani")
+    query = ""
+    for _ in temp_order:
+        query = "AND "+_.title
+    print(query)
+    items_from_vendor = vendor.item.filter(Q(vendor.item.title(query)))
+    print(items_from_vendor)
+    return render(request, 'cart.html', {
+        # 'Items': items,
+        'Number_of_items': temp_order,
+    })
 
 
 # ------------------------------------------------------------------------------------------

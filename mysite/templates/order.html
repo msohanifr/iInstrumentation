@@ -6,72 +6,64 @@
 
     <ul class="list-group">
 
-            {% for item in Items.values %}
+        {% for item in Items.values %}
 
-                {% cycle '<div class="wrapper wrapper-content animated fadeInRight"><div class="row">' '' '' '' %}
-                <div class="col-12 col-sm-6 col-xs-6 col-md-3">
-                    <div class="ibox">
-                        <div class="ibox-content product-box active">
-                            {% comment "The following invisibile inputs created to send information about the product to cart" %}
+            {% cycle '<div class="wrapper wrapper-content animated fadeInRight"><div class="row">' '' '' '' %}
+            <div class="col-12 col-sm-6 col-xs-6 col-md-3">
+                <div class="ibox">
+                    <div class="ibox-content product-box active">
+                        {% comment "The following invisibile inputs created to send information about the product to cart" %}
                         {% endcomment %}
-                            <input class="small" style="visibility: hidden" name="category_{{ item.title }}" type="text"
-                                   value="{{ item.category }}">
-                            <input class="small" style="visibility: hidden" name="description_{{ item.title }}"
-                                   type="text"
-                                   value="{{ item.description }}">
-                            {% comment %} end of invisible section  {% endcomment %}
-                            <div id="item" name="item" class="product-imitation">
-                                {{ item.title }}
-                            </div>
-                            <div class="product-desc">
+                        <input class="small" style="visibility: hidden" name="category_{{ item.title }}" type="text"
+                               value="{{ item.category }}">
+                        <input class="small" style="visibility: hidden" name="description_{{ item.title }}"
+                               type="text"
+                               value="{{ item.description }}">
+                        {% comment %} end of invisible section  {% endcomment %}
+                        <div id="item" name="item" class="product-imitation">
+                            {{ item.title }}
+                        </div>
+                        <div class="product-desc">
                                         <span class="product-price">
                                             ${{ item.price }}
                                         </span>
-                                <small class="text-muted">Category: {{ item.category }}</small>
-                                <a href="" class="product-name"><input type="hidden"
-                                                                       value="{{ item.title }}"> {{ item.title }}</a>
-                                <div class="small m-t-xs">
-                                    {{ item.description }}
-                                </div>
-                                <hr class="mt-0 mb-2">
-                                <div class="form-group ">
-                                    <div class="row">
-                                        <div class="col-8">
-                                            <label for="number_of_{{ item.title }}">Please select number of
-                                                items: </label>
-                                        </div>
-                                        <div class="col-4">
-                                            <select class="form-control" id="number_of_{{ item.title }}"
-                                                    name="{{ item.title }}">
+                            <small class="text-muted">Category: {{ item.category }}</small>
+                            <a href="" class="product-name"><input type="hidden"
+                                                                   value="{{ item.title }}"> {{ item.title }}</a>
+                            <div class="small m-t-xs">
+                                {{ item.description }}
+                            </div>
+                            <hr class="mt-0 mb-2">
+                            <div class="form-group ">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <label for="number_of_{{ item.title }}">Please select number of
+                                            items: </label>
+                                    </div>
+                                    <div class="col-4">
+                                        <select class="form-control" id="number_of_{{ item.title }}"
+                                                name="{{ item.title }}">
 
-                                                {% for itemnumber in range %}
-                                                    {% if itemnumber ==  item.number_of_items|stringformat:"i" %}
-                                                                    <option selected>{{ itemnumber }}</option>
-                                                                {% else %}
-                                                                    <option>{{ itemnumber }}</option>
-                                                                {% endif %}
-                                                            {% endfor %}
+                                            {% for itemnumber in range %}
+                                                {% if itemnumber ==  item.number_of_items|stringformat:"i" %}
+                                                    <option selected>{{ itemnumber }}</option>
+                                                {% else %}
+                                                    <option>{{ itemnumber }}</option>
+                                                {% endif %}
+                                            {% endfor %}
 
-                                            </select>
-                                        </div>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <hr class="mt-0 mb-2">
                 </div>
-                {% cycle '' '' '' '</div> </div>' %}
-
-
-            {% endfor %}
-
-
-
+                <hr class="mt-0 mb-2">
+            </div>
+            {% cycle '' '' '' '</div> </div>' %}
+        {% endfor %}
     </ul>
-
-
-
 {% endblock %}
 
 {% block javascript %}
