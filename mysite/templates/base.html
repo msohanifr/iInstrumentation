@@ -206,7 +206,8 @@
         </span>
             {% if request.path == '/order/' %}
                 <span class="align-right">
-                        <button type="submit" class="btn btn-primary float-right my-2" id="btn_footer_submit">Update Order</button>
+                        <button type="submit" class="btn btn-primary float-right my-2" id="btn_footer_submit"
+                                onclick="window.location.href = '/cart/';">Go to Cart</button>
                 </span>
             {% endif %}
         </div>

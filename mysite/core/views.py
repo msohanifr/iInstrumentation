@@ -27,7 +27,6 @@ def handler404(request):
 def handler500(request):
     return render(request, '500.html', status=500)
 
-
 # ------------------------------------------------------------------------------------------
 def home(request):
     # home page: show only when user is logged in, otherwise go to sigin page

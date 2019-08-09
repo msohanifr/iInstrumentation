@@ -21,6 +21,6 @@ urlpatterns = [
     # path('secret2/', views.SecretPage.as_view(), name='secret2'),
     path('signup_additional/', views.signup_additional, name='signup_additional'),
     path('accounts/', include('django.contrib.auth.urls')),
-
+    path('herror/', views.handler500, name='herror'),
     path('admin/', admin.site.urls),
 ]

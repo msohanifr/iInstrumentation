@@ -5,9 +5,7 @@
 {% block content %}
 
     <ul class="list-group">
-        <form method="post">
 
-            {% csrf_token %}
             {% for item in Items.values %}
 
                 {% cycle '<div class="wrapper wrapper-content animated fadeInRight"><div class="row">' '' '' '' %}
@@ -68,15 +66,8 @@
 
             {% endfor %}
 
-            <div class="col-12 col-sm-6 col-xs-6 col-md-3">
-                <div class="ibox">
-                    <button type="submit" class="btn btn-primary col-12" id="btn_submit" style="visibility: hidden">
-                        Update Order
-                    </button>
-                </div>
-            </div>
 
-        </form>
+
     </ul>
 
 
@@ -84,20 +75,6 @@
 {% endblock %}
 
 {% block javascript %}
-    <script>
-
-
-        $(document).ready(function () {
-            console.log('{{ Items }}')
-            {% for k in Items.values %}
-                console.log('{{ k.title }}')
-                console.log('{{ k.number_of_items }}')
-            {% endfor %}
-            $("#btn_footer_submit").click(function () {
-                $("#btn_submit").trigger("click");
-            })
-        })
-    </script>
 
 
     {% for item in Items %}
@@ -111,13 +88,12 @@
                     },
                     dataType: 'json',
                     success: function (data) {
-                        console.log(data);
+
                     },
                     error: function () {
-                        console.log("fail")
+                        window.location.replace("/herror");
                     },
                 });
-
             });
 
         </script>
