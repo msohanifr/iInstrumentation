@@ -12,7 +12,7 @@
 
                 <div class="ibox">
                     <div class="ibox-title">
-                        <span class="float-right"><h6>(<strong>5</strong>) items</h6></span>
+                        <span class="float-right"><h5>(<strong>{{ Items.total_items }}</strong>) items</h5></span>
                         <h6>Items in your cart</h6>
                     </div>
                     <div class="ibox-content">
@@ -20,35 +20,39 @@
                         <div class="table-responsive">
                             <table class="table shoping-cart-table">
                                 <tbody>
-                                <tr>
-                                    <td class="desc">
-                                        <h3>
-                                            <a href="#" class="text-navy small">
-                                                <h6>Desktop publishing</h6>
-                                            </a>
-                                        </h3>
+                                {% for item in Items.values %}
+                                    {% if item.title %}
+                                        <tr>
+                                            <td class="desc">
+                                                <h3>
+                                                    <a href="#" class="text-navy small">
+                                                        <h6>{{ item.title }}</h6>
+                                                    </a>
+                                                </h3>
 
-                                    </td>
-                                    <td>
-                                        <small>$180,00</small>
+                                            </td>
+                                            <td>
+                                                <small>${{ item.price }}</small>
 
-                                        <s class="small text-muted" style="visibility: hidden">$230,00</s>
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control input-s-sm" placeholder="0">
-                                    </td>
-                                    <td>
+                                                <s class="small text-muted" style="visibility: hidden">$230,00</s>
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control input-s-sm"
+                                                       placeholder="{{ item.count }}">
+                                            </td>
+                                            <td>
 
-                                        <small>$180,00</small>
+                                                <small>${{ item.total_price }}</small>
 
-                                    </td>
+                                            </td>
 
-                                </tr>
-                                <tr>
+                                        </tr>
+
+                                        <tr>
                                     <td colspan="2">
                                         <dl class="small m-b-none">
-                                            <dt>Description lists</dt>
-                                            <dd>A description list is perfect for defining terms.</dd>
+                                            <dt>Description:</dt>
+                                            <dd>{{ item.description }}</dd>
                                         </dl>
 
                                         <div class="m-t-sm">
@@ -63,6 +67,8 @@
 
                                     </td>
                                 </tr>
+                                    {% endif %}
+                                {% endfor %}
                                 </tbody>
                             </table>
                         </div>
@@ -90,7 +96,7 @@
                                 Total
                             </span>
                         <h2 class="font-bold">
-                            $390,00
+                            ${{ Items.total_price }}
                         </h2>
 
                         <hr/>

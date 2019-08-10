@@ -45,7 +45,7 @@
                                                 name="{{ item.title }}">
 
                                             {% for itemnumber in range %}
-                                                {% if itemnumber ==  item.number_of_items|stringformat:"i" %}
+                                                {% if itemnumber ==  item.count|stringformat:"i" %}
                                                     <option selected>{{ itemnumber }}</option>
                                                 {% else %}
                                                     <option>{{ itemnumber }}</option>
@@ -72,7 +72,9 @@
     {% for item in Items %}
         <script>
             $("#number_of_{{ item }}").change(function () {
-                const value = '"{{ item }}":' + $(this).val();
+                const val = $(this).val();
+                const val_json = '{"count":' + val + "}";
+                const value = '"{{ item }}":' + val_json;
                 $.ajax({
                     url: '/ajax/',
                     data: {
@@ -80,10 +82,8 @@
                     },
                     dataType: 'json',
                     success: function (data) {
-
                     },
                     error: function () {
-                        window.location.replace("/herror");
                     },
                 });
             });

@@ -1,7 +1,6 @@
 import time
 import json
 
-from django.db.models import Q
 from django.http import JsonResponse
 from path import Path
 
@@ -12,12 +11,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 from mysite import settings
-from mysite.core.models import Profile, Item, Vendor
+from mysite.core.models import Profile, Vendor
 import pickle
-from mysite.forms import UserForm, ProfileForm, SaleForm
+from mysite.forms import UserForm, ProfileForm
 
 stripe.api_key = settings.STRIPE_SECRET_KEY  # new
 
@@ -99,7 +97,7 @@ def update_profile_after_initial(request):
 
 # ------------------------------------------------------------------------------------------
 def register(request):
-    return redirect(update_profile_after_initial())
+    return redirect(update_profile_after_initial)
 
 
 # ------------------------------------------------------------------------------------------
@@ -152,6 +150,7 @@ def order_page(request):
     except:
         temp_order = {}
     items = {}
+    print(temp_order)
     # ----------------------------------------
     # create a range of digits 0:20 in string format
     range_ = []
@@ -164,7 +163,7 @@ def order_page(request):
                 'description': _.description,
                 'category': _.category,
                 'price': _.price,
-                'number_of_items': temp_order[_.title] if temp_order.keys().__contains__(_.title) else 0,
+                'count': temp_order[_.title]['count'] if temp_order.keys().__contains__(_.title) else 0,
             }
         })
 
@@ -178,6 +177,7 @@ def order_page(request):
 # ajax has to take care of the order changes and update the Pickle file
 def ajax_order(request):
     data_json = json.loads("{" + request.GET['data'] + "}")
+    print(data_json)
     try:
         with open(request.session.session_key + '.pickle', 'rb') as handle:
             unserialized_data = pickle.load(handle)
@@ -204,15 +204,34 @@ def cart_page(request):
         temp_order = {}
     print(temp_order)
     vendor = Vendor.objects.get(profile__user__username="msohani")
-    query = ""
+    items_from_vendor = vendor.item.all()
+    cart = {}
+    total_items = 0
+    total_price = 0
     for _ in temp_order:
-        query = "AND "+_.title
-    print(query)
-    items_from_vendor = vendor.item.filter(Q(vendor.item.title(query)))
-    print(items_from_vendor)
+        try:
+            item = items_from_vendor.get(title=_)
+            total_items = total_items + temp_order.get(_)['count']
+            total_price = total_price + temp_order.get(_)['count'] * item.price
+            cart.update({
+                item.title: {
+                    'title': item.title,
+                    'price': item.price,
+                    'count': temp_order.get(_)['count'],
+                    'description': item.description,
+                    'category': item.category,
+                    'total_price': item.price * temp_order.get(_)['count'],
+                }
+            })
+        except:
+            pass
+    cart.update({
+        'total_items': total_items,
+        'total_price': total_price,
+    })
+    print(cart)
     return render(request, 'cart.html', {
-        # 'Items': items,
-        'Number_of_items': temp_order,
+        'Items': cart,
     })
 
 

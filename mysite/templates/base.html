@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=yes">
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="{% static 'mysite/assets/img/favicons/favicon-16x16.png' %} ">
@@ -126,7 +126,7 @@
 
 <header>
     <!-- Fixed navbar -->
-    {% if not request.path == '/accounts/login/' %}
+    {% if not request.path == '/accounts/login/' and not request.path == '/signup/' and not request.path == '/account/update_profile/' %}
 
         <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
             <div class="container">
@@ -190,7 +190,7 @@
 </header>
 
 <!-- Begin page content -->
-{% if not request.path == '/accounts/login/' %}
+{% if not request.path == '/accounts/login/' and not request.path == '/signup/' and not request.path == '/account/update_profile/' %}
 <main role="main" class="container my-4">
 {% else %}
 <main role="main" class="container my=0">
@@ -199,7 +199,7 @@
 
     {% endblock %}
 </main>
-{% if not request.path == '/accounts/login/' %}
+{% if not request.path == '/accounts/login/' and not request.path == '/signup/' and not request.path == '/account/update_profile/' %}
     <footer class="footer">
         <div class="container">
         <span class="text-muted">Place
