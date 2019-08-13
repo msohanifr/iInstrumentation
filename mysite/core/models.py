@@ -1,8 +1,10 @@
+from django.core.validators import RegexValidator
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+from phone_field import PhoneField
 
 
 # base model_ver1
@@ -15,6 +17,13 @@ class Profile(models.Model):
     zip_code = models.CharField(blank=False, default=0, max_length=12)
     birth_date = models.DateField(null=True, blank=False, default=timezone.now)
     profile_filled = models.BooleanField(default=False)
+    phone_regex = RegexValidator(regex=r'^[2-9]\d{2}-\d{3}-\d{4}$', message="Phone number must be entered in the "
+                                                                            "format: '+999999999'. Up to 15 digits "
+                                                                            "allowed.")
+    phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True, help_text="Phone format is: "
+                                                                                                   "123-456-7890")  #
+
+    # validators should be a list
 
     def __str__(self):
         return str(self.user.username + ':' + self.user.first_name + ' ' + self.user.last_name)
@@ -70,7 +79,7 @@ class Vendor(models.Model):
 
 
 # a vendor can have many sales
-class Sale(models.Model):
+class Order(models.Model):
     vendor = models.ForeignKey(
         Vendor,
         on_delete=models.CASCADE,

@@ -143,20 +143,24 @@ def order_page(request):
     # Then we can use this vendor to filter all the items this Vendor can sell
     vendor = Vendor.objects.get(profile__user__username="msohani")
     items_from_vendor = vendor.item.all()
+    print('items_from_vendor: ', items_from_vendor)
     try:
         with open(request.session.session_key + '.pickle', 'rb') as handle:
             unserialized_data = pickle.load(handle)
         temp_order = unserialized_data
     except:
         temp_order = {}
+    print('temp_oredr: ', temp_order)
     items = {}
-    print(temp_order)
     # ----------------------------------------
     # create a range of digits 0:20 in string format
     range_ = []
     for _ in range(0, 20):
         range_.append(str(_))
     for _ in items_from_vendor:
+        print(_)
+        print(temp_order)
+        print(temp_order.keys())
         items.update({
             _.title: {
                 'title': _.title,
@@ -166,7 +170,6 @@ def order_page(request):
                 'count': temp_order[_.title]['count'] if temp_order.keys().__contains__(_.title) else 0,
             }
         })
-
     # ----------------------------------------
     return render(request, 'order.html', {
         'Items': items,
@@ -177,7 +180,6 @@ def order_page(request):
 # ajax has to take care of the order changes and update the Pickle file
 def ajax_order(request):
     data_json = json.loads("{" + request.GET['data'] + "}")
-    print(data_json)
     try:
         with open(request.session.session_key + '.pickle', 'rb') as handle:
             unserialized_data = pickle.load(handle)
@@ -195,6 +197,7 @@ def ajax_order(request):
 
 
 # ------------------------------------------------------------------------------------------
+# If number of items is zero, then remove the items
 @login_required
 def cart_page(request):
     try:
@@ -202,7 +205,6 @@ def cart_page(request):
             temp_order = pickle.load(handle)
     except:
         temp_order = {}
-    print(temp_order)
     vendor = Vendor.objects.get(profile__user__username="msohani")
     items_from_vendor = vendor.item.all()
     cart = {}
@@ -210,19 +212,20 @@ def cart_page(request):
     total_price = 0
     for _ in temp_order:
         try:
-            item = items_from_vendor.get(title=_)
-            total_items = total_items + temp_order.get(_)['count']
-            total_price = total_price + temp_order.get(_)['count'] * item.price
-            cart.update({
-                item.title: {
-                    'title': item.title,
-                    'price': item.price,
-                    'count': temp_order.get(_)['count'],
-                    'description': item.description,
-                    'category': item.category,
-                    'total_price': item.price * temp_order.get(_)['count'],
-                }
-            })
+            if temp_order.get(_)['count']:
+                item = items_from_vendor.get(title=_)
+                total_items = total_items + temp_order.get(_)['count']
+                total_price = total_price + temp_order.get(_)['count'] * item.price
+                cart.update({
+                    item.title: {
+                        'title': item.title,
+                        'price': item.price,
+                        'count': temp_order.get(_)['count'],
+                        'description': item.description,
+                        'category': item.category,
+                        'total_price': item.price * temp_order.get(_)['count'],
+                    }
+                })
         except:
             pass
     cart.update({

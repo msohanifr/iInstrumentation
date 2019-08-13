@@ -17,13 +17,13 @@
                     </div>
                     <div class="ibox-content">
 
-                        <div class="table-responsive">
+                        <div class="table-responsive table-striped">
                             <table class="table shoping-cart-table">
                                 <tbody>
                                 {% for item in Items.values %}
                                     {% if item.title %}
                                         <tr>
-                                            <td class="desc">
+                                            <td class="description">
                                                 <h3>
                                                     <a href="#" class="text-navy small">
                                                         <h6>{{ item.title }}</h6>
@@ -36,11 +36,11 @@
 
                                                 <s class="small text-muted" style="visibility: hidden">$230,00</s>
                                             </td>
-                                            <td>
-                                                <input type="number" class="form-control input-s-sm"
+                                            <td class="">
+                                                <input type="number" class="form-control input-s-sm col-sm-5"
                                                        placeholder="{{ item.count }}">
                                             </td>
-                                            <td>
+                                            <td class="border-left">
 
                                                 <small>${{ item.total_price }}</small>
 
@@ -57,7 +57,8 @@
 
                                         <div class="m-t-sm">
 
-                                            <a href="#" class="text-muted"><i class="fa fa-trash"></i> Remove item</a>
+                                            <a href="" class="text-muted" id="remove_{{ item.title }}"><i
+                                                    class="fa fa-trash"></i> Remove item</a>
                                         </div>
                                     </td>
                                     <td>
@@ -78,7 +79,9 @@
                     <div class="ibox-content">
 
                         <button class="btn btn-primary float-right"><i class="fa fa fa-shopping-cart"></i> Checkout</button>
-                        <button class="btn btn-white"><i class="fa fa-arrow-left"></i> Continue shopping</button>
+                        <button type="submit" class="btn btn-white" onclick="window.location.href = '/order/';">
+                            <i class="fa fa-arrow-left"></i> Continue shopping
+                        </button>
 
                     </div>
                 </div>
@@ -133,7 +136,33 @@
         </div>
     </div>
 
+{% endblock %}
 
 
+{% block javascript %}
 
+
+    {% for item in Items %}
+        <script>
+            $("#remove_{{ item }}").click(function () {
+                const val = 0;
+                const val_json = '{"count":' + val + "}";
+                const value = '"{{ item }}":' + val_json;
+
+                $.ajax({
+                    url: '/ajax/',
+                    data: {
+                        'data': value,
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+
+                    },
+                    error: function () {
+                    },
+                });
+            });
+
+        </script>
+    {% endfor %}
 {% endblock %}

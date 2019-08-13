@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django import forms
 
-from mysite.core.models import Profile, Sale
+from mysite.core.models import Profile, Order
 
 
 class UserForm(forms.ModelForm):
@@ -13,10 +13,10 @@ class UserForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('street1','street2', 'city', 'state','zip_code')
+        fields = ('phone_number', 'street1', 'street2', 'city', 'state', 'zip_code')
 
 
 class SaleForm(forms.ModelForm):
     class Meta:
-        model = Sale
+        model = Order
         fields = ('vendor', 'item', 'number', 'purchase_date',  'client')

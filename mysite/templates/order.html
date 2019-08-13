@@ -75,6 +75,7 @@
                 const val = $(this).val();
                 const val_json = '{"count":' + val + "}";
                 const value = '"{{ item }}":' + val_json;
+
                 $.ajax({
                     url: '/ajax/',
                     data: {
