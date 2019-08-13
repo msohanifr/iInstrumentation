@@ -235,6 +235,7 @@ def cart_page(request):
     print(cart)
     return render(request, 'cart.html', {
         'Items': cart,
+        'phone_number': vendor.profile.phone_number,
     })
 
 

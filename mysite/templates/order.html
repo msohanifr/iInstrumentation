@@ -21,7 +21,7 @@
                                value="{{ item.description }}">
                         {% comment %} end of invisible section  {% endcomment %}
                         <div id="item" name="item" class="product-imitation">
-                            {{ item.title }}
+                            {{ item.description }}
                         </div>
                         <div class="product-desc">
                                         <span class="product-price">
@@ -30,9 +30,7 @@
                             <small class="text-muted">Category: {{ item.category }}</small>
                             <a href="" class="product-name"><input type="hidden"
                                                                    value="{{ item.title }}"> {{ item.title }}</a>
-                            <div class="small m-t-xs">
-                                {{ item.description }}
-                            </div>
+
                             <hr class="mt-0 mb-2">
                             <div class="form-group ">
                                 <div class="row">
