@@ -7,20 +7,14 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="{% static 'mysite/assets/img/favicons/favicon-16x16.png' %} ">
-
-    <title>Sticky Footer Navbar Template for Bootstrap</title>
-
+    <title>iDryClean</title>
     <link rel="canonical" href="https://getbootstrap.com/docs/4.1/examples/sticky-footer-navbar/">
-
     <!-- Bootstrap core CSS -->
     <link href="{% static 'mysite/dist/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'mysite/assets/bootstrap-social.css' %}" rel="stylesheet">
-
-
     <!-- Custom styles for this template -->
     <link href="{% static 'mysite/docs/4.0/examples/sticky-footer-navbar/sticky-footer-navbar.css' %}" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
     <style type="text/css">
         /* E-commerce */
         .product-box {
@@ -116,44 +110,32 @@
         .product-images {
             margin: 0 20px;
         }
-
     </style>
-
-
 </head>
-
 <body>
-
 <header>
     <!-- Fixed navbar -->
     {% if not request.path == '/accounts/login/' and not request.path == '/signup/' and not request.path == '/account/update_profile/' %}
-
         <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
             <div class="container">
                 <a class="navbar-brand" href="#">
                     <img src="{% static 'mysite/img/logo_small_2.gif'%}" class="rounded-circle" alt="">
                 </a>
-
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
-
                         {% if user.is_authenticated %}
-
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'order' %}">Order</a>
                             </li>
-
                             <li class="nav-item">
                                 <a href="{% url 'home' %}" class="btn btn-outline-secondary">Home</a>
                                 <a href="{% url 'login' %}" class="btn btn-primary">Log in</a>
                                 <a href="{% url 'signup' %}" class="btn btn-primary">Sign up</a>
                             <a href="{% url 'pay' %}" class="btn btn-primary">Payment</a>
-
                             </li>
-
                         {% endif %}
                     </ul>
                     {% if user.is_authenticated %}
@@ -182,13 +164,8 @@
             </div>
         </nav>
     {% else %}
-
     {% endif %}
-
-
-
 </header>
-
 <!-- Begin page content -->
 {% if not request.path == '/accounts/login/' and not request.path == '/signup/' and not request.path == '/account/update_profile/' %}
 <main role="main" class="container my-4">
@@ -196,7 +173,6 @@
 <main role="main" class="container my=0">
 {% endif %}
     {% block content %}
-
     {% endblock %}
 </main>
 {% if not request.path == '/accounts/login/' and not request.path == '/signup/' and not request.path == '/account/update_profile/' %}
@@ -213,15 +189,11 @@
         </div>
     </footer>
 {% endif %}
-
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="{% static 'mysite/dist/js/bootstrap.min.js' %}"></script>
-
 {% block javascript %}
-
 {% endblock %}
-
 </body>
 </html>

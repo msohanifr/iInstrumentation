@@ -2,6 +2,7 @@
 
 {% block content %}
   <h2>Homepage</h2>
+    <a href="{% url 'resend_email_confirmation' %}" class="btn btn-primary">send email confirmation</a>
   <p>Welcome {% if user.is_authenticated %}{{ user.username }}{% else %}visitor{% endif %}!</p>
   <p>
     <strong>Total users registered: </strong> {{ count }}

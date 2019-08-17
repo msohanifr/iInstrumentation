@@ -15,7 +15,7 @@ COPY . /opt/services/djangoapp/src
 EXPOSE 8000
 
 # define the default command to run when starting the container
-#CMD ["gunicorn", "--chdir", "mysite", "--bind", ":8000", "mysite.wsgi:application"]
-CMD ["python","manage.py","runserver","0:8000"]
+CMD ["gunicorn", "--chdir", "mysite", "--bind", ":8000", "mysite.wsgi:application"]
+#CMD ["python","manage.py","runserver","0:8000"]
 RUN python /opt/services/djangoapp/src/manage.py makemigrations
 RUN python /opt/services/djangoapp/src/manage.py migrate

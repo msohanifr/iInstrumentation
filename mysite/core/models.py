@@ -4,12 +4,17 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
-#from phone_field import PhoneField
 
 
 # base model_ver1
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # --------------------------------------
+    # This is a flag for phone verification.
+    # 0: verification has not started,
+    # 1: verification started,
+    # 2: verification successful
+    user_email_verification = models.IntegerField(null=True, default=0)
     street1 = models.CharField(max_length=128, blank=False, default='')
     street2 = models.CharField(max_length=128, blank=True, default='')
     city = models.CharField(max_length=32, blank=False, default='')
@@ -22,8 +27,13 @@ class Profile(models.Model):
                                                                             "allowed.")
     phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True, help_text="Phone format is: "
                                                                                                    "123-456-7890")  #
-
-    # validators should be a list
+    # --------------------------------------
+    # This is a flag for phone verification.
+    # 0: verification has not started,
+    # 1: verification started,
+    # 2: verification successful
+    phone_verification_status = models.IntegerField(default=0)
+    phone_verification_code = models.CharField(null=True, blank=True, default='', max_length=6)
 
     def __str__(self):
         return str(self.user.username + ':' + self.user.first_name + ' ' + self.user.last_name)
@@ -36,16 +46,17 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 
 @receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
+def save_user_profile(sender, instance, **kmysqlwargs):
     instance.profile.save()
 
 
 # ------------- Sales ---------------
 # Purchases : -----------------------
 class Item(models.Model):
-    title = models.CharField(max_length=32, null=True) # The item name/title. This shows in one word what is the object
-    price = models.DecimalField(default=0, decimal_places=2, max_digits=10) # The price of this item.
-    category = models.CharField(max_length=32, default='Men') # Category: Men, Women, Bottom, Top (Create a mixed list of these values)
+    title = models.CharField(max_length=32, null=True)  # The item name/title. This shows in one word what is the object
+    price = models.DecimalField(default=0, decimal_places=2, max_digits=10)  # The price of this item.
+    category = models.CharField(max_length=32,
+                                default='Men')  # Category: Men, Women, Bottom, Top (Create a mixed list of these values)
     description = models.CharField(max_length=128, default='')
     image = models.ImageField(null=True)
 
