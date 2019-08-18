@@ -78,16 +78,16 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
-     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-     }
-    #'default': {
-    #    'ENGINE': 'django.db.backends.mysql',
-    #    'NAME': 'django_auth',
-    #    'USER': 'root',
-    #    'PASSWORD': '77132708',
-    #}
+    # 'default': {
+    #   'ENGINE': 'django.db.backends.sqlite3',
+    #   'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'django',
+        'USER': 'root',
+        'PASSWORD': '77132708',
+    }
 }
 
 # Password validation
@@ -112,9 +112,6 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.open_id.OpenIdAuth',  # for Google authentication
     'social_core.backends.google.GoogleOpenId',  # for Google authentication
     'social_core.backends.google.GoogleOAuth2',  # for Google authentication
-    'social_core.backends.facebook.FacebookOAuth2',
-    'social_core.backends.facebook.FacebookAppOAuth2',
-    'social_core.backends.instagram.InstagramOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -138,8 +135,7 @@ STATICFILES_DIRS = (
 
 LOGIN_REDIRECT_URL = 'update_profile'
 LOGOUT_REDIRECT_URL = 'home'
-
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+HOME_REDIRECT_URL = 'home'
 
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 SOCIAL_AUTH_REVOKE_TOKENS_ON_DISCONNECT = True
@@ -163,3 +159,8 @@ SOCIAL_AUTH_FACEBOOK_EXTRA_DATA = [  # add this
 # STRIPE settings.py
 STRIPE_SECRET_KEY = 'sk_test_38pWvScfn2ajZK6irXe95U8F00V1vvirR0'
 STRIPE_PUBLISHABLE_KEY = 'pk_test_FOkbM012GxQqlDGkNz0Nb2ju00dMHMrWz2'
+
+# my_project/settings.py    Should use a service like Mailgun
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+#EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")

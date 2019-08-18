@@ -17,7 +17,7 @@
                         {% csrf_token %}
                         {{ form|crispy }}
                         <button type="submit" class="btn btn-primary">Log in</button>
-                        <a href="{% url 'password_reset' %}" class="btn btn-link">Forgot your password?</a>
+                        <a href="{% url 'password_reset' %}" class="btn btn-link">Forgot your username/password?</a>
                     </form>
                     <p class="text text-center"><strong>-- OR --</strong></p>
                     <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-block btn-social btn-google" >

@@ -6,7 +6,11 @@ from mysite.core import views
 
 urlpatterns = [
     url('', include('social_django.urls', namespace='social')),
-    # path('accounts/register', views.register, name='register'),
+    path('sms/', views.send_sms, name='sendsms'),
+    path('sms_sent/', views.sms_sent, name='smssent'),
+    url(r'^phone_activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+        views.phone_activate, name='phone_activate'),
+    path('resendemailconfirmation/', views.resend_email_confirmation, name='resend_email_confirmation'),
     path('ajax/', views.ajax_order, name='ajax_test'),
     path('accounts/update_profile_after_initial/', views.update_profile_after_initial,
          name='update_profile_after_initial'),
@@ -18,9 +22,10 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('pay/', views.pay.as_view(), name='pay'),
     path('charged/', views.charged, name='charged'),
-    # path('secret2/', views.SecretPage.as_view(), name='secret2'),
     path('signup_additional/', views.signup_additional, name='signup_additional'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('herror/', views.handler500, name='herror'),
     path('admin/', admin.site.urls),
+    url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+        views.activate, name='activate'),
 ]

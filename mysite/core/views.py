@@ -1,7 +1,14 @@
 import time
 import json
-
-from django.http import JsonResponse
+import pickle
+from django.conf.urls import url
+from django.contrib.auth import login, logout
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage
+from django.http import JsonResponse, HttpResponse
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from path import Path
 
 import stripe
@@ -14,8 +21,11 @@ from django.views.generic import TemplateView
 
 from mysite import settings
 from mysite.core.models import Profile, Vendor
-import pickle
-from mysite.forms import UserForm, ProfileForm
+
+from twilio.rest import Client
+from mysite.core.tokens import account_activation_token, sms_activation_token
+from mysite.forms import UserForm, ProfileForm, SignUpForm
+from django.contrib.auth.decorators import user_passes_test
 
 stripe.api_key = settings.STRIPE_SECRET_KEY  # new
 
@@ -28,35 +38,212 @@ def handler500(request):
     return render(request, '500.html', status=500)
 
 
-# ------------------------------------------------------------------------------------------
-def home(request):
-    # home page: show only when user is logged in, otherwise go to sigin page
-    if request.user.is_authenticated:
-        count = User.objects.count()
-        return render(request, 'home.html', {
-            'count': count
-        })
-    else:
-        return redirect('login')
+def handler403(request):
+    return render(request, '403.html', status=403)
 
 
+# --------------------------------  USER_PASSES_TEST FUNCTION DEFINITIONS -------------------------------
+# Create your views here.
+# This is just an example for userpass test
+# #@user_passes_test(is_mohi, login_url='/home/', redirect_field_name='HOME_REDIRECT_URL')
+def is_user_email_verified(user):
+    profile = Profile.objects.get(user__username=user)
+    print('is_user_email_verified:', user, profile.user_email_verification == 2)
+    return profile.user_email_verification == 2
+
+
+def is_user_phone_verified(user):
+    profile = Profile.objects.get(user__username=user)
+    return profile.phone_verification_status == 2
+
+
+# --------------------------------- END_USER_PASSES_TEST ------------------------------------------------
+
+# ----------------   Chronological login process   -----------------------------------------
 # ------------------------------------------------------------------------------------------
 def signup(request):
     # after login, user is redirected to signup to check if all information for user is registered, first time user
     # registers and logs in, specially after logging in with OAuth, he has to fill in registration form in "signup"
     # page. There is will be a bit (user_is_registered) in registration Model which will be set when user registers
     # all information
-    #
+    # partially taken from : https://frfahim.github.io/post/django-registration-with-confirmation-email/
+    # and from https://simpleisbetterthancomplex.com/tutorial/2016/06/27/how-to-use-djangos-built-in-login-system.html
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        print('sigup', request.user)
+        form = SignUpForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('home')
+            user = form.save(commit=False)
+            # user.is_active = False
+            user.save()
+            profile = Profile.objects.get(user__username=user.username)
+            profile.user_email_verification = 0  # means email verification has started
+            profile.save()
+            current_site = get_current_site(request)
+            mail_subject = 'Activate your account.'
+            message = render_to_string('acc_active_email.html', {
+                'user': user,
+                'domain': current_site.domain,  ## have to change this
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+                'token': account_activation_token.make_token(user),
+            })
+            to_email = form.cleaned_data.get('email')
+            email = EmailMessage(
+                mail_subject, message, to=[to_email]
+
+            )
+            email.send()
+            # return HttpResponse('Please confirm your email address to complete the registration')
+            return render(request, 'confirm_email.html')
+            # return redirect('home')
     else:
-        form = UserCreationForm()
+        print('we are in here')
+        form = SignUpForm
     return render(request, 'registration/signup.html', {
         'form': form
     })
+
+
+# -------------------------------------- Send SMS ------------------------------------------------
+"""
+def sms_response(request):
+    print('sms_response:', request.user)
+    # Your Account Sid and Auth Token from twilio.com/console
+    # DANGER! This is insecure. See http://twil.io/secure
+    account_sid = 'AC8a77fcba5f491b28d836d503873525a4'
+    auth_token = 'ed2108cb7b1f056cc6c2a3ff29fed267'
+    client = Client(account_sid, auth_token)
+
+    message = client.messages \
+        .create(
+        body="Your code is: " + account_sid,
+        from_='+18622608689',
+        to='870-814-6955'
+    )
+    return HttpResponse(message.status)
+"""
+
+
+def send_sms(request):
+    # Your Account Sid and Auth Token from twilio.com/console
+    # DANGER! This is insecure. See http://twil.io/secure
+    print('send_sms:', request.user)
+    profile = Profile.objects.get(user__username=request.user)
+    user = User.objects.get(username=request.user)
+    # user.is_active = False
+    # user.save()
+    to_phone = profile.phone_number
+    account_sid = 'AC8a77fcba5f491b28d836d503873525a4'
+    auth_token = 'ed2108cb7b1f056cc6c2a3ff29fed267'
+    client = Client(account_sid, auth_token)
+    current_site = get_current_site(request)
+    message = {
+        'user': user,
+        'domain': current_site.domain,  ## have to change this
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+        'token': sms_activation_token.make_token(user),
+    }
+    print(message)
+    SMS_MSG = "http://" + message['domain'] + '/phone_activate/' + message['uid'] + "/" + message['token']
+    client.messages \
+        .create(
+        body=SMS_MSG,
+        from_='+18622608689',
+        to=to_phone
+    )
+    return render(request, 'smssent.html')
+
+
+def sms_sent(request):
+    return render(request, 'smssent.html')
+
+
+def phone_activate(request, uidb64, token):
+    print('in phone activate', request.user)
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+        print(user)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and sms_activation_token.check_token(user, token):
+        print('phone_activate__if')
+        profile_ = Profile.objects.get(user__username=user)
+        print(profile_.phone_number)
+        profile_.phone_verification_status = 2
+        profile_.save()
+        # login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        logout(request)
+        # return redirect('home')
+        return HttpResponse('Thank you for your phone confirmation. Now you can login your account.')
+    else:
+        return HttpResponse('Activation link is invalid! You can request another message by logging in')
+
+# --------------------------------------- End Send SMS -----------------------------------------
+
+
+# --------------------------------------- Send Email Activation --------------------------------
+def resend_email_confirmation(request):
+    """
+    Sends email confirmation per user request in case user has not received confirmation email yet
+    :param request:
+    :return: renders the confirmation for email page
+    """
+    print('resend_email_confirmation:', request.user)
+    user = User.objects.get(username=request.user)
+    # user.is_active = False
+    # user.save()
+    to_email = user.email
+    current_site = get_current_site(request)
+    mail_subject = 'Activate your account.'
+    message = render_to_string('acc_active_email.html', {
+        'user': user,
+        'domain': current_site.domain,  ## have to change this
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+        'token': account_activation_token.make_token(user),
+    })
+    email = EmailMessage(
+        mail_subject, message, to=[to_email]
+    )
+    email.send()
+    return render(request, 'confirm_email.html')
+
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        profile_ = Profile.objects.get(user__username=user.username)
+        profile_.user_email_verification = 2
+        profile_.save()
+        # login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        logout(request)
+        # return redirect('home')
+        return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
+    else:
+        return HttpResponse('Activation link is invalid! You can send another request by clicking "Forgot Password" '
+                            'at login page.')
+
+
+# ------------------------------------------------------------------------------------------
+@login_required
+@user_passes_test(is_user_email_verified, login_url='/resendemailconfirmation/')  # This should be a page that asks
+@user_passes_test(is_user_phone_verified, login_url='/sms/')
+def home(request):
+    # home page: show only when user is logged in, otherwise go to sigin page
+    if request.user.is_authenticated:
+        profile = Profile.objects.get(user__username=request.user.username)
+        print(profile.phone_number)
+        count = User.objects.count()
+        return render(request, 'home.html', {
+            'count': count,
+        })
+    else:
+        return redirect('login')
 
 
 # ------------------------------------------------------------------------------------------
@@ -67,10 +254,18 @@ def update_profile(request):
         user_form = UserForm(request.POST, instance=request.user)
         profile_form = ProfileForm(request.POST, instance=request.user.profile)
         if user_form.is_valid() and profile_form.is_valid():
-            user_form.save()
-            profile_form.save()
+            user_form_data = user_form.cleaned_data
+            profile_form_data = profile_form.cleaned_data
             profile_ = Profile.objects.get(user=request.user)
             profile_.profile_filled = True
+            user_ = User.objects.get(username=request.user)
+            if user_.email != user_form_data['email']:
+                profile_.user_email_verification = 0
+                # Here we have to set a bit in User model that shows we have to confirm user's email
+            if profile_.phone_number != profile_form_data['phone_number']:
+                profile_.phone_verification_status = 0
+            user_form.save()
+            profile_form.save()
             profile_.save()
             return redirect('home')
         else:
@@ -88,6 +283,8 @@ def update_profile(request):
 
 
 # ------------------------------------------------------------------------------------------
+@user_passes_test(is_user_email_verified, redirect_field_name='/resendemailconfirmation/')
+@user_passes_test(is_user_phone_verified, redirect_field_name='/sms/')
 def update_profile_after_initial(request):
     profile_ = Profile.objects.get(user=request.user)
     profile_.profile_filled = False
@@ -158,9 +355,6 @@ def order_page(request):
     for _ in range(0, 20):
         range_.append(str(_))
     for _ in items_from_vendor:
-        print(_)
-        print(temp_order)
-        print(temp_order.keys())
         items.update({
             _.title: {
                 'title': _.title,
