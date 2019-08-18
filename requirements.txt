@@ -1,4 +1,5 @@
 twilio
+social-auth-app-django
 path.py
 stripe
 Django==2.1.2
