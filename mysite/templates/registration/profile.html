@@ -3,19 +3,24 @@
 
 {% block content %}
     <div class="row justify-content-center">
-    <div class="col-lg-8 col-sm-12">
-      <div class="card">
-        <div class="card-body">
-          <h2>Sign Up</h2>
-            <form method="post">
-              {% csrf_token %}
-              {{ user_form|crispy }}
-              {{ profile_form|crispy }}
-              <button type="submit" class="btn btn-primary">Save changes</button>
-            </form>
+        <div class="col-lg-8 col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <h2>Sign Up</h2>
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ user_form|crispy }}
+
+                        {{ profile_form|crispy }}
+                        <button type="button" class="btn btn-danger" onclick="window.location.href = '/profile/';">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </form>
+
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
     </div>
 
 {% endblock %}

@@ -10,7 +10,8 @@ urlpatterns = [
     path('sms_sent/', views.sms_sent, name='smssent'),
     url(r'^phone_activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         views.phone_activate, name='phone_activate'),
-    path('resendemailconfirmation/', views.resend_email_confirmation, name='resend_email_confirmation'),
+    path('sendemailconfirmation/', views.send_email_confirmation, name='send_email_confirmation'),
+    path('confirmemailsent', views.confirm_email_sent, name='confirmemailsent'),
     path('ajax/', views.ajax_order, name='ajax_test'),
     path('accounts/update_profile_after_initial/', views.update_profile_after_initial,
          name='update_profile_after_initial'),
@@ -28,4 +29,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         views.activate, name='activate'),
+    path('logout/', views.logout, name='logout'),
+    path('profile/', views.profile, name='profile')
 ]
