@@ -137,7 +137,8 @@
 
         .badge {
             position: relative;
-            left: -10%;
+            top: -1rem;
+            left: -1.1rem;
         }
     </style>
 </head>
@@ -158,15 +159,7 @@
 
                 {% endif %}
                 <div>
-                      <span class="align-self-left">
-                        <a href="{% url 'cart' %}" class="btn btn-primary "
-                           style="background-color: cornflowerblue"><i
-                                class="fas fa-shopping-cart fa-lg"></i></a>
 
-                            <span class="badge badge-danger" id="top_cart" style="visibility: ">
-                                khjh
-                            </span>
-                </span>
 
                 </div>
 
@@ -302,10 +295,16 @@
                 <a href="{% url 'order' %}" class="mr-2" style="color:
                         {% if request.path == '/order/' %}cornflowerblue
                         {% else %}grey{% endif %}"><i class="fas fa-tshirt fa-lg"></i></a>
-                <a href="{% url 'cart' %}" class="mr-2" style="color:
-                        {% if request.path == '/cart/' %}cornflowerblue
-                        {% else %}grey {% endif %}"><i class="fas fa-shopping-cart fa-lg"></i></a>
 
+                <span class="align-self-left">
+                        <a href="{% url 'cart' %}" class="mr-2" style="color:
+                                {% if request.path == '/cart/' %}cornflowerblue
+                                {% else %}grey {% endif %}"><i class="fas fa-shopping-cart fa-lg"></i></a>
+
+                            <span class="badge badge-danger" id="top_cart" style="visibility: hidden">
+                                {{ number_of_items }}
+                            </span>
+                </span>
             </nav>
         </div>
     </footer>

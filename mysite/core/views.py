@@ -484,6 +484,7 @@ def order_page(request):
     return render(request, 'order.html', {
         'Items': items,
         'range': range_,
+        'number_of_items': get_number_of_items_in_cart(request),
     })
 
 
@@ -508,6 +509,9 @@ def ajax_order(request):
             pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
     except:
         "write error"
+    data.update({
+        'number_of_items': get_number_of_items_in_cart(request),
+    })
     return JsonResponse(data)
 
 
@@ -552,7 +556,6 @@ def cart_page(request):
         'total_items': total_items,
         'total_price': total_price,
     })
-    print(cart)
     return render(request, 'cart.html', {
         'Items': cart,
         'phone_number': vendor.profile.phone_number,
@@ -601,3 +604,19 @@ def charged(request):  # new
 
 def logout(request):
     return redirect('/accounts/logout/')
+
+
+def get_number_of_items_in_cart(request):
+    try:
+        with open(request.session.session_key + '.pickle', 'rb') as handle:
+            temp_order = pickle.load(handle)
+    except:
+        temp_order = {}
+    total_items = 0
+    for _ in temp_order:
+        try:
+            if temp_order.get(_)['count']:
+                total_items = total_items + temp_order.get(_)['count']
+        except:
+            pass
+    return total_items

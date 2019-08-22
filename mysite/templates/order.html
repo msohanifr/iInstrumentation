@@ -81,8 +81,9 @@
                     },
                     dataType: 'json',
                     success: function (data) {
-                        document.getElementById("top_cart").style.visibility = "unset";
-                        document.getElementById("top_cart").innerText = 9;
+                        console.log(data['number_of_items'])
+                        document.getElementById("top_cart").style.visibility = "inherit";
+                        document.getElementById("top_cart").innerText = data['number_of_items'];
 
                     },
                     error: function () {
