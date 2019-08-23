@@ -17,14 +17,14 @@
                         <p>Your email is not verified</p>
                         <a href="{% url 'send_email_confirmation' %}" class="btn btn-primary">Send email
                             verification</a>
-                        <a href="{% url 'profile' %}" class="btn btn-primary mt-2">I have verified my email</a>
+                        <a href="{% url 'profile' %}" class="btn btn-primary mt-1 mb-1">I have verified my email</a>
 
                     {% endif %}
                     {% if isEmailVerified == 1 %}
                         <p> Please confirm your email address to complete the registration. </p>
-                        <a href="{% url 'send_email_confirmation' %}" class="btn btn-primary">Send email
+                        <a href="{% url 'send_email_confirmation' %}" class="btn btn-primary mt-1 mb-1">Send email
                             verification</a>
-                        <a href="{% url 'profile' %}" class="btn btn-primary mt-4">I have verified my email</a>
+                        <a href="{% url 'profile' %}" class="btn btn-primary mt-1 mb-1">I have verified my email</a>
                     {% endif %}
                 </li>
                 <li class="list-group-item">
