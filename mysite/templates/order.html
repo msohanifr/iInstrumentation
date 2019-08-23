@@ -20,11 +20,11 @@
                                type="text"
                                value="{{ item.description }}">
                         {% comment %} end of invisible section  {% endcomment %}
-                        <div id="item" name="item" class="product-imitation">
+                        <div id="item" name="item" class="product-imitation" style="color: #0f253c">
                             {{ item.description }}
                         </div>
                         <div class="product-desc">
-                                        <span class="product-price">
+                                        <span class="product-price" style="background-color: cornflowerblue">
                                             ${{ item.price }}
                                         </span>
                             <small class="text-muted">Category: {{ item.category }}</small>
@@ -81,6 +81,10 @@
                     },
                     dataType: 'json',
                     success: function (data) {
+                        console.log(data['number_of_items'])
+                        document.getElementById("top_cart").style.visibility = "inherit";
+                        document.getElementById("top_cart").innerText = data['number_of_items'];
+
                     },
                     error: function () {
                     },

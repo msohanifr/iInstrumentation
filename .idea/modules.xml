@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/django-auth-tutorial-example-master.iml" filepath="$PROJECT_DIR$/.idea/django-auth-tutorial-example-master.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../DjangoiDryClean/.idea/DjangoiDryClean.iml" filepath="$PROJECT_DIR$/../DjangoiDryClean/.idea/DjangoiDryClean.iml" />
     </modules>
   </component>
 </project>
