@@ -162,11 +162,9 @@ def send_sms(request):
     :return: HTML page to "smssent.html"
     """
 
-    print("in send_sms", request.user)
     profile = Profile.objects.get(user__username=request.user)
     user = User.objects.get(username=request.user)
     to_phone = profile.phone_number
-    print(to_phone)
     account_sid = 'AC8a77fcba5f491b28d836d503873525a4'
     auth_token = 'ed2108cb7b1f056cc6c2a3ff29fed267'
     client = Client(account_sid, auth_token)
@@ -232,7 +230,6 @@ def send_email_confirmation(request):
     :param request:
     :return: renders the confirmation for email page
     """
-    print('resend_email_confirmation:', request.user)
     user = User.objects.get(username=request.user)
     # user.is_active = False
     # user.save()
@@ -281,6 +278,7 @@ def activate(request, uidb64, token):
         return HttpResponse("Thank you for your email confirmation. If you haven't confirmed your phone number yet, "
                             "do so by "
                             "requesting a phone confirmation and clicking on the link in your text message")
+    else:
         return HttpResponse('Activation link is invalid! You can send another request in your home page')
 
 
@@ -306,6 +304,8 @@ def home(request):
             'firstname': request.user.first_name,
             'lastname': request.user.last_name,
             'orders': order,
+            'number_of_items': get_number_of_items_in_cart(request),
+
         })
     else:
         return redirect('login')
@@ -328,6 +328,8 @@ def profile(request):
         'city': profile.city,
         'state': profile.state,
         'zip': profile.zip_code,
+        'number_of_items': get_number_of_items_in_cart(request),
+
     })
 
 
@@ -424,7 +426,7 @@ def delete_files():
     d = Path("mysite/..")
     for i in d.walk():
         if i.endswith(".pickle"):
-            days = 1
+            days = 30
             time_in_secs = time.time() - (days * 24 * 60 * 60)
             if i.isfile():
                 if i.mtime <= time_in_secs:
@@ -515,6 +517,10 @@ def ajax_order(request):
     return JsonResponse(data)
 
 
+def order_history(request):
+    return render(request, 'order_history.html')
+
+
 # ------------------------------------------------------------------------------------------
 # If number of items is zero, then remove the items
 @login_required
@@ -524,11 +530,24 @@ def cart_page(request):
     :param request:
     :return:
     """
+    items_from_form = {}
+    if request.method == "POST":
+        items_from_form = request.POST
     try:
         with open(request.session.session_key + '.pickle', 'rb') as handle:
             temp_order = pickle.load(handle)
     except:
         temp_order = {}
+    for _ in temp_order:
+        try:
+            if items_from_form.get(_):
+                temp_order.update({
+                    _: {
+                        'count': int(items_from_form.get(_))},
+                })
+        except:
+            pass
+    # this has to be the vendor assigned to the client
     vendor = Vendor.objects.get(profile__user__username="msohani")
     items_from_vendor = vendor.item.all()
     cart = {}
@@ -552,13 +571,20 @@ def cart_page(request):
                 })
         except:
             pass
+        try:
+            # Store data (serialize)
+            with open(request.session.session_key + '.pickle', 'wb') as handle:
+                pickle.dump(temp_order, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        except:
+            "write error"
     cart.update({
         'total_items': total_items,
         'total_price': total_price,
     })
     return render(request, 'cart.html', {
         'Items': cart,
-        'phone_number': vendor.profile.phone_number,
+        'number_of_items': get_number_of_items_in_cart(request),
+
     })
 
 
@@ -620,3 +646,11 @@ def get_number_of_items_in_cart(request):
         except:
             pass
     return total_items
+
+
+def support(request):
+    vendor = Vendor.objects.get(profile__user__username="msohani")
+    return render(request, 'support.html', {
+        'phone_number': vendor.profile.phone_number,
+
+    })

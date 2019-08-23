@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'social_django',
     'mysite.core',
+    # "sslserver",
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -71,6 +72,8 @@ TEMPLATES = [
         },
     },
 ]
+
+# SECURE_SSL_REDIRECT = True
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
 

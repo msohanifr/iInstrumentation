@@ -154,9 +154,6 @@
                 {% if request.path == '/order/' %}
 
 
-
-
-
                 {% endif %}
                 <div>
 
@@ -195,8 +192,8 @@
                             </li>
                             <li class="nav-tabs"></li>
                             <li class="nav-item dropdown ml-2">
-                                <a class="nav-link" href="{% url 'profile' %}" role="button" style="color:
-                                        {% if request.path == '/profile/' %}cornflowerblue
+                                <a class="nav-link" href="{% url 'support' %}" role="button" style="color:
+                                        {% if request.path == '/support/' %}cornflowerblue
                                         {% else %} grey {% endif %}"><i class="fas fa-phone mr-3"></i>Support</a>
                             </li>
                             <li class="nav-tabs"></li>
@@ -300,8 +297,10 @@
                         <a href="{% url 'cart' %}" class="mr-2" style="color:
                                 {% if request.path == '/cart/' %}cornflowerblue
                                 {% else %}grey {% endif %}"><i class="fas fa-shopping-cart fa-lg"></i></a>
-
-                            <span class="badge badge-danger" id="top_cart" style="visibility: hidden">
+                            {% comment %} If there is no product in the cart, the cart badge should be hidden {% endcomment %}
+                            <span class="badge badge-danger" id="top_cart"
+                                  style={% if number_of_items == 0 or not number_of_items %}"visibility: hidden">
+                                  {% else %}"visibility: inherit" >{% endif %}
                                 {{ number_of_items }}
                             </span>
                 </span>

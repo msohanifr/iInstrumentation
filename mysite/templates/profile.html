@@ -45,11 +45,16 @@
                 </li>
                 <li class="list-group-item">
                     <p><a class="fas fa-map"></a>
-                        Address: {{ street1 }}, {{ street2 }}, {{ city }}, {{ state }}, {{ zip }}</p>
+                        Address:
+                        {% if not street1 == "" %}{{ street1 }} {% endif %}
+                        {% if not street2 == "" %}, {{ street2 }} {% endif %}
+                        {% if not city == "" %}, {{ city }} {% endif %}
+                        {% if not state == "" %}, {{ state }}{% endif %}
+                        {% if not zip == "" %}, {{ zip }}{% endif %}</p>
                 </li>
 
             </ul>
-            <a href="{% url 'update_profile' %}" class="btn btn-primary mt-3">Update profile</a>
+            <a href="{% url 'update_profile' %}" class="btn btn-primary mt-3"><i class="fa fa-sync"></i> Update</a>
         </div>
     </div>
 
