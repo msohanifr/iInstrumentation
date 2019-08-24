@@ -1,3 +1,4 @@
+import random
 import time
 import json
 import pickle
@@ -21,6 +22,12 @@ from twilio.rest import Client
 from mysite.core.tokens import account_activation_token, sms_activation_token
 from mysite.forms import UserForm, ProfileForm, SignUpForm
 from django.contrib.auth.decorators import user_passes_test
+
+
+# Secret code used in urls
+class urlsecret:
+    SECRET_CODE = 'BNcNKV0mXuSTKNMKc10TFuMcXmQK5kGSuTXKdslzNEo63JjTfcmwR9Tv6zbdZz36'
+
 
 stripe.api_key = settings.STRIPE_SECRET_KEY  # new
 
@@ -150,6 +157,38 @@ def signup(request):
     })
 
 
+"""        Backup for send_sms function
+# -------------------------------------- Send SMS ------------------------------------------------
+# @user_passes_test(user_phone_verification_never_sent, login_url='/sms_sent/')  # This should be a page that asks
+
+def send_sms(request):
+profile = Profile.objects.get(user__username=request.user)
+user = User.objects.get(username=request.user)
+to_phone = profile.phone_number
+account_sid = 'AC8a77fcba5f491b28d836d503873525a4'
+auth_token = 'ed2108cb7b1f056cc6c2a3ff29fed267'
+client = Client(account_sid, auth_token)
+current_site = get_current_site(request)
+message = {
+    'user': user,
+    'domain': current_site.domain,  ## have to change this
+    'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+    'token': sms_activation_token.make_token(user),
+}
+SMS_MSG = "http://" + message['domain'] + '/phone_activate/' + message['uid'] + "/" + message['token']
+client.messages \
+    .create(
+    body=SMS_MSG,
+    from_='+18622608689',
+    to=to_phone
+)
+profile.number_of_sms_sent += 1
+profile.save()
+return render(request, 'smssent.html')
+
+"""
+
+
 # -------------------------------------- Send SMS ------------------------------------------------
 # @user_passes_test(user_phone_verification_never_sent, login_url='/sms_sent/')  # This should be a page that asks
 def send_sms(request):
@@ -163,25 +202,23 @@ def send_sms(request):
     """
 
     profile = Profile.objects.get(user__username=request.user)
-    user = User.objects.get(username=request.user)
     to_phone = profile.phone_number
     account_sid = 'AC8a77fcba5f491b28d836d503873525a4'
     auth_token = 'ed2108cb7b1f056cc6c2a3ff29fed267'
     client = Client(account_sid, auth_token)
-    current_site = get_current_site(request)
+    profile.phone_verification_code = random.randint(111111, 999999)
     message = {
-        'user': user,
-        'domain': current_site.domain,  ## have to change this
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
-        'token': sms_activation_token.make_token(user),
+        'token': "Your verification code is: " + str(profile.phone_verification_code),
     }
-    SMS_MSG = "http://" + message['domain'] + '/phone_activate/' + message['uid'] + "/" + message['token']
+    SMS_MSG = message['token']
+    """
     client.messages \
         .create(
         body=SMS_MSG,
         from_='+18622608689',
         to=to_phone
     )
+    """
     profile.number_of_sms_sent += 1
     profile.save()
     return render(request, 'smssent.html')
@@ -284,7 +321,7 @@ def activate(request, uidb64, token):
 
 # ------------------------------------------------------------------------------------------
 @login_required
-@user_passes_test(is_user_fully_registered, login_url='/account/update_profile/')
+@user_passes_test(is_user_fully_registered, login_url='/' + urlsecret.SECRET_CODE + '/account/update_profile/')
 # @user_passes_test(is_user_email_verified, login_url='/resendemailconfirmation/')  # This should be a page that asks
 # @user_passes_test(is_user_phone_verified, login_url='/sms/')
 def home(request):
@@ -437,14 +474,15 @@ def delete_files():
 # Only GET method. The submit button only refers to "CART" page.
 # the rest of this function takes care of finding vendor and associated profile
 @login_required
-@user_passes_test(is_user_email_verified, login_url='/sendemailconfirmation/')
-@user_passes_test(is_user_phone_verified, login_url='/sms/')
+@user_passes_test(is_user_email_verified, login_url='/' + urlsecret.SECRET_CODE + '/sendemailconfirmation/')
+@user_passes_test(is_user_phone_verified, login_url='/' + urlsecret.SECRET_CODE + '/sms/')
 def order_page(request):
     """
 
     :param request:
     :return:
     """
+    print("in order_page")
     delete_files()
     '''
      if request.method == 'POST':
@@ -513,6 +551,47 @@ def ajax_order(request):
         "write error"
     data.update({
         'number_of_items': get_number_of_items_in_cart(request),
+    })
+    return JsonResponse(data)
+
+
+def ajax_sms(request):
+    """
+
+    :param request:
+    :return:
+    """
+    data_json = json.loads(request.GET['data'])
+    print(data_json)
+    data = {}
+    profile = Profile.objects.get(user__username=request.user)
+    data.update({
+        'data': profile.phone_verification_code,
+    })
+    return JsonResponse(data)
+
+
+def profile_ajax(request):
+    """
+    Checks all inputs from profile_update page
+    :param request:
+    :return:
+    """
+    print(request.GET)
+    email = request.GET['email']
+    print(email)
+    # check if this email already exists
+    user_ = User.objects.filter(email=email)
+    if user_:
+        return JsonResponse({'data': 'Another user with the same email is registered'})
+    else:
+        return JsonResponse({'data': ''})
+    print(user_)
+    print(not user_)
+    data = {}
+    profile = Profile.objects.get(user__username=request.user)
+    data.update({
+        'data': profile.phone_verification_code,
     })
     return JsonResponse(data)
 

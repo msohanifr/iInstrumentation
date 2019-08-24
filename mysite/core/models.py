@@ -39,7 +39,7 @@ class Profile(models.Model):
                                     help_text="Phone number must be entered in the "
                                               "format: 'XXX-XXX-XXXX'. Up to 15 digits "
                                               "allowed.")  #
-
+    phone_verification_code = models.IntegerField(default=0)
     phone_verification_status = models.IntegerField(default=0)
     number_of_sms_sent = models.IntegerField(default=0)
 

@@ -1,10 +1,58 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block header %}
+
+
+{% endblock %}
 {% block content %}
+    <div class="card">
+        <div class="card-header">
+            <h2>Phone number verification</h2>
+        </div>
+        <div class="card-body">
+            <h6 class="card-title"><p>A text message with verification code has been sent to your phone, please enter
+                the code</p>
+            </h6>
+            <ul class="list-group list-group-flush">
+                <br/>
+                <Label>Verification code: </Label><input type="number" class="" id="code" min="0" max="999999">
+                <a href="{% url 'home' %}" class="btn btn-primary  mt-1 mb-1">Verify</a>
+                <p id="notice" class="text-danger"></p>
 
-    <p>A text message has been sent to your phone number, please click on
-    the link to confirm your phone number</p>
-    <p class="text-danger">If you haven't received text, you can request another text by clicking on the link below.</p>
-    <a href="{% url 'sendsms' %}" class="btn btn-primary">Send phone verification</a>
-    <a href="{% url 'home' %}" class="btn btn-primary">I have verified my phone</a>
 
+                {% comment %}
+                <div class="col-sm-12"><p id="pincode-callback"></p>
+                    <a href="{% url 'sendsms' %}" class="btn btn-primary  mt-1 mb-1">Generate another code</a>
+                </div>
+{% endcomment %}
+
+            </ul>
+        </div>
+    </div>
+    <script>
+        $("#code").keyup(function () {
+            if ($('#code').val() > 999999) {
+                $('#notice').text("Code should have up to 6 digits");
+            } else {
+                $('#notice').text("")
+            }
+
+        });
+        {% comment %}
+        $.ajax({
+            url: '/smsajax/',
+            data: {
+                'data': data,
+            },
+            dataType: 'json',
+            success: function (data) {
+                $(errorElement).html("The code is not correct:" + data['data']);
+            },
+            error: function () {
+            },
+        });
+        {% endcomment %}
+
+    </script>
 {% endblock %}

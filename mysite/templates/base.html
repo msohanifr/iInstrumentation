@@ -1,4 +1,5 @@
 {% load static %}
+{% cycle 'BNcNKV0mXuSTKNMKc10TFuMcXmQK5kGSuTXKdslzNEo63JjTfcmwR9Tv6zbdZz36' as SECRET_CODE silent %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -18,8 +19,17 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="{% static 'mysite/fontawesome/js/all.js' %}"></script>
-    <style type="text/css">
-
+    <style type="text/javascript">
+        {% comment %} This disbales the long touch, which can ultimately reveal the server link {% endcomment %}
+        body {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
         /* E-commerce */
         .product-box {
             padding: 0;
@@ -141,11 +151,15 @@
             left: -1.1rem;
         }
     </style>
+    {% block header %}
+
+    {% endblock %}
 </head>
 <body>
+
 <header>
     <!-- Fixed navbar -->
-    {% if not request.path == '/accounts/login/' and not request.path == '/signup/' and not request.path == '/account/update_profile/' %}
+    {% if not request.path ==  '/accounts/login/' and not request.path == "/"|add:SECRET_CODE|add:'/signup/' and not request.path == '/account/update_profile/' and not request.path == '/accounts/reset/done/' %}
         <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
             <div class="container">
                 <a class="navbar-brand" href="{% url 'home' %}">
@@ -269,7 +283,7 @@
 
 </header>
 <!-- Begin page content -->
-{% if not request.path == '/accounts/login/' and not request.path == '/signup/' and not request.path == '/account/update_profile/' %}
+{% if not request.path == '/accounts/login/' and not request.path == "/"|add:SECRET_CODE|add:'/signup/' and not request.path == '/account/update_profile/' %}
     <main role="main" class="container my-4">
 {% else %}
     <main role="main" class="container my=0">
@@ -277,12 +291,10 @@
 {% block content %}
 {% endblock %}
 </main>
-{% if not request.path == '/accounts/login/' and not request.path == '/signup/' and not request.path == '/account/update_profile/' %}
+{% if not request.path == '/accounts/login/' and not request.path == "/"|add:SECRET_CODE|add:'/signup/' and not request.path == '/account/update_profile/' and not request.path == '/accounts/reset/done/' %}
     <footer class="footer">
         <div class="container">
-
             <nav class="navbar navbar-light bg-light">
-
                 <a href="{% url 'home' %}" class="mr-2" style="color:
                         {% if request.path == '/home/' %}cornflowerblue
                         {% else %} grey {% endif %}"><i class="fas fa-home fa-lg"></i></a>
@@ -292,7 +304,6 @@
                 <a href="{% url 'order' %}" class="mr-2" style="color:
                         {% if request.path == '/order/' %}cornflowerblue
                         {% else %}grey{% endif %}"><i class="fas fa-tshirt fa-lg"></i></a>
-
                 <span class="align-self-left">
                         <a href="{% url 'cart' %}" class="mr-2" style="color:
                                 {% if request.path == '/cart/' %}cornflowerblue
@@ -311,7 +322,6 @@
     <footer class="footer">
         <div class="container">
             <nav class="navbar navbar-light bg-light">
-
                 <a href="{% url 'home' %}" class="mr-2" style="color:
                         {% if request.path == '/home/' %}cornflowerblue
                         {% else %} grey {% endif %}"><i class="fas fa-home fa-lg"></i></a>
@@ -324,8 +334,6 @@
                 <a href="{% url 'cart' %}" class="mr-2" style="color:
                         {% if request.path == '/cart/' %}cornflowerblue
                         {% else %}grey {% endif %}"><i class="fas fa-shopping-cart fa-lg"></i></a>
-
-
             </nav>
         </div>
     </footer>
