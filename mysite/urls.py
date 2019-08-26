@@ -5,13 +5,13 @@ from mysite.core import views
 from mysite.core.views import urlsecret
 
 urlpatterns = [
-    url('', include('social_django.urls', namespace='social')),
+    url(urlsecret.SECRET_CODE + '', include('social_django.urls', namespace='social')),
     path('accounts/update_profile_after_initial/', views.update_profile_after_initial,
          name='update_profile_after_initial'),
     url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         views.activate, name='activate'),
     path(urlsecret.SECRET_CODE + '/sms/', views.send_sms, name='sendsms'),
-    path('qetuadgj85hj/sms_sent/', views.sms_sent, name='smssent'),
+    path(urlsecret.SECRET_CODE + '/sms_sent/', views.sms_sent, name='smssent'),
     url(r'^phone_activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         views.phone_activate, name='phone_activate'),
     path(urlsecret.SECRET_CODE + '/sendemailconfirmation/', views.send_email_confirmation,
@@ -26,7 +26,8 @@ urlpatterns = [
     path(urlsecret.SECRET_CODE + '/order_history', views.order_history, name='order_history'),
     path('smsajax/', views.ajax_sms, name='smsajax'),
     path('ajax/', views.ajax_order, name='ajax_test'),
-    path('profileajax/', views.profile_ajax, name='profile_ajax'),
+    path('profile_check_ajax/', views.profile_check_ajax, name='profile_check_ajax'),
+    #  path('profileajax/', views.profile_ajax, name='profile_ajax'),
     path(urlsecret.SECRET_CODE + '/cart/', views.cart_page, name='cart'),
     path(urlsecret.SECRET_CODE + '/checkout/', views.checkout, name='checkout'),
     path(urlsecret.SECRET_CODE + '/pay/', views.pay.as_view(), name='pay'),

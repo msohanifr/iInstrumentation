@@ -188,26 +188,26 @@
                             <li class="nav-tabs"></li>
                             <li class="nav-item dropdown ml-2">
                                 <a class="nav-link" href="{% url 'home' %}" role="button" style="color:
-                                        {% if request.path == '/home/' %}cornflowerblue
+                                        {% if request.path == "/"|add:SECRET_CODE|add:'/home/' %}cornflowerblue
                                         {% else %} grey {% endif %}"><i class="fas fa-home mr-3"></i>Home</a>
                             </li>
                             <li class="nav-tabs"></li>
                             <li class="nav-item dropdown ml-2">
                                 <a class="nav-link" href="{% url 'profile' %}" role="button" style="color:
-                                        {% if request.path == '/profile/' %}cornflowerblue
+                                        {% if request.path == "/"|add:SECRET_CODE|add:'/profile/' %}cornflowerblue
                                         {% else %} grey {% endif %}"><i class="fas fa-users mr-3"></i>Profile</a>
                             </li>
                             <li class="nav-tabs"></li>
                             <li class="nav-item dropdown ml-2">
                                 <a class="nav-link" href="{% url 'cart' %}" role="button" style="color:
-                                        {% if request.path == '/cart/' %}cornflowerblue
+                                        {% if request.path == "/"|add:SECRET_CODE|add:'/cart/' %}cornflowerblue
                                         {% else %} grey {% endif %}"><i class="fas fa-shopping-cart mr-3"></i>Shopping
                                     Cart</a>
                             </li>
                             <li class="nav-tabs"></li>
                             <li class="nav-item dropdown ml-2">
                                 <a class="nav-link" href="{% url 'support' %}" role="button" style="color:
-                                        {% if request.path == '/support/' %}cornflowerblue
+                                        {% if request.path == "/"|add:SECRET_CODE|add:'/support/' %}cornflowerblue
                                         {% else %} grey {% endif %}"><i class="fas fa-phone mr-3"></i>Support</a>
                             </li>
                             <li class="nav-tabs"></li>

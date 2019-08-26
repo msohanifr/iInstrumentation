@@ -111,7 +111,7 @@ class Order(models.Model):
     )
     item = models.ManyToManyField(Item)
     delivered = models.BooleanField(default=False)
-    purchase_date = models.DateField(null=False, default=timezone.now)
+    purchase_date = models.DateField(null=True, default=timezone.now)
     delivery_date = models.DateField(null=True, default=timezone.now() + timedelta(days=30))
     number = models.IntegerField(default=0, help_text='Number of items sold')
     service = models.ManyToManyField(Service)

@@ -1,7 +1,10 @@
 import random
+import re
 import time
 import json
 import pickle
+
+import googlemaps
 import stripe
 from django.contrib.auth import login, logout
 from django.contrib.sites.shortcuts import get_current_site
@@ -378,10 +381,17 @@ def update_profile(request):
     :param request:
     :return:
     """
+    print(request.method)
     if request.method == 'POST':
+        print('update_profile check 7')
+        print(request.POST)
         user_form = UserForm(request.POST, instance=request.user)
         profile_form = ProfileForm(request.POST, instance=request.user.profile)
+        print('update_profile check 8')
+        print(user_form.is_valid())
+        print(profile_form.is_valid())
         if user_form.is_valid() and profile_form.is_valid():
+            print('update_profile check 9')
             user_form_data = user_form.cleaned_data
             profile_form_data = profile_form.cleaned_data
             profile_ = Profile.objects.get(user__username=request.user)
@@ -389,14 +399,20 @@ def update_profile(request):
             pre_form_change_email = user_.email
             pre_form_change_phone = profile_.phone_number
             user_form.save()
+            print('update_profile check 1')
             profile_form.save()
             profile_ = Profile.objects.get(user=request.user)
             profile_.profile_filled = True
+            print('update_profile check 3')
             if pre_form_change_email != user_form_data['email']:
+                print('update_profile check 2')
                 profile_.email_verification_status = 0
                 # Here we have to set a bit in User model that shows we have to confirm user's email
+            print('update_profile check 4')
             if pre_form_change_phone != profile_form_data['phone_number']:
+                print('update_profile check 5')
                 profile_.phone_verification_status = 0
+            print('update_profile check 6')
             profile_.profile_filled = True
             profile_.save()
             return redirect('profile')
@@ -571,33 +587,60 @@ def ajax_sms(request):
     return JsonResponse(data)
 
 
+"""
 def profile_ajax(request):
-    """
-    Checks all inputs from profile_update page
-    :param request:
-    :return:
-    """
-    print(request.GET)
-    email = request.GET['email']
-    print(email)
-    # check if this email already exists
-    user_ = User.objects.filter(email=email)
-    if user_:
-        return JsonResponse({'data': 'Another user with the same email is registered'})
-    else:
-        return JsonResponse({'data': ''})
-    print(user_)
-    print(not user_)
-    data = {}
-    profile = Profile.objects.get(user__username=request.user)
-    data.update({
-        'data': profile.phone_verification_code,
-    })
-    return JsonResponse(data)
+/// Comments
+Checks all inputs from profile_update page
+:param request:
+:return:
+////
+print(request.GET)
+email = request.GET['email']
+print(email)
+# check if this email already exists
+user_ = User.objects.filter(email=email)
+if user_:
+    return JsonResponse({'data': 'Another user with the same email is registered'})
+else:
+    return JsonResponse({'data': ''})
+print(user_)
+print(not user_)
+data = {}
+profile = Profile.objects.get(user__username=request.user)
+data.update({
+    'data': profile.phone_verification_code,
+})
+return JsonResponse(data)
+"""
 
 
 def order_history(request):
     return render(request, 'order_history.html')
+
+
+def profile_check_ajax(request):
+    print(request.GET)
+    phone_number = request.GET['phone_number']
+    zip_code = request.GET['zip_code']
+    print(phone_number)
+    data = {}
+    if re.match(r'^[2-9]\d{2}-\d{3}-\d{4}$', phone_number):
+        data.update({
+            'phone_number': 'correct',
+        })
+    else:
+        data.update({
+            'phone_number': 'incorrect',
+        })
+    if re.match(r'^[0-9]\d{4}$', zip_code):
+        data.update({
+            'zip_code': 'correct',
+        })
+    else:
+        data.update({
+            'zip_code': 'incorrect',
+        })
+    return JsonResponse(data)
 
 
 # ------------------------------------------------------------------------------------------
