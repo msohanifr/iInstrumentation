@@ -9,89 +9,90 @@
             <div class="col-md-6 col-sm-10">
                 <form method="post">
                     {% csrf_token %}
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <span class="float-right"><h5>(<strong>{{ Items.total_items }}</strong>) items</h5></span>
-                        <h6>Items in your cart</h6>
-                    </div>
-                    <div class="ibox-content">
-                        <div class="table-responsive table-striped">
-                            <table class="table shoping-cart-table">
+                    <div class="ibox">
+                        <div class="ibox-title">
+                            <span class="float-right"><h5>(<strong>{{ Items.total_items }}</strong>) items</h5></span>
+                            <h6>Items in your cart</h6>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="table-responsive table-striped table-bordered">
+                                <table class="table shoping-cart-table">
 
-                                <tbody>
-                                {% for item in Items.values %}
-                                    {% if item.title %}
-                                        <tr>
-                                            <td class="description">
-                                                <h3>
-                                                    <a href="#" class="text-navy small">
-                                                        <h6>{{ item.title }}</h6>
-                                                    </a>
-                                                </h3>
+                                    <tbody>
+                                    {% for item in Items.values %}
+                                        {% if item.title %}
 
-                                            </td>
-                                            <td>
-                                                <small>${{ item.price }}</small>
+                                            <tr class="border-top border-primary">
+                                                <td class="description">
+                                                    <h3>
+                                                        <a class="text-navy small">
+                                                            <h6>{{ item.title }}</h6>
+                                                        </a>
+                                                    </h3>
 
-                                                <s class="small text-muted" style="visibility: hidden">$230,00</s>
-                                            </td>
-                                            <td class="">
-                                                <input type="number" min="0" name="{{ item.title }}"
-                                                       class="form-control input-s-sm col-sm-5"
-                                                       value="{{ item.count }}">
-                                            </td>
-                                            <td class="border-left">
+                                                </td>
+                                                <td>
+                                                    <small>${{ item.price }}</small>
 
-                                                <small>${{ item.total_price }}</small>
+                                                    <s class="small text-muted" style="visibility: hidden">$230,00</s>
+                                                </td>
+                                                <td class="">
+                                                    <input type="number" min="0" name="{{ item.title }}"
+                                                           class="form-control input-s-sm col-sm-5"
+                                                           value="{{ item.count }}">
+                                                </td>
+                                                <td class="border-left">
+                                                    <small>${{ item.total_price }}</small>
+                                                </td>
+                                            </tr>
 
-                                            </td>
+                                            <tr class="border-bottom border-primary">
+                                                <td colspan="2">
+                                                    <dl class="small m-b-none">
+                                                        <dt>Description:</dt>
+                                                        <dd>{{ item.description }}</dd>
+                                                    </dl>
 
-                                        </tr>
+                                                    <div class="m-t-sm">
 
-                                        <tr>
-                                    <td colspan="2">
-                                        <dl class="small m-b-none">
-                                            <dt>Description:</dt>
-                                            <dd>{{ item.description }}</dd>
-                                        </dl>
+                                                        <a href="" class="btn-outline-primary"
+                                                           id="remove_{{ item.title }}"><i
+                                                                class="fa fa-trash"></i> Remove item</a>
+                                                    </div>
 
-                                        <div class="m-t-sm">
+                                                </td>
+                                                <td>
+                                                </td>
+                                                <td>
+                                                </td>
+                                            </tr>
 
-                                            <a href="" class="text-muted" id="remove_{{ item.title }}"><i
-                                                    class="fa fa-trash"></i> Remove item</a>
-                                        </div>
-                                    </td>
-                                    <td>
+                                        {% endif %}
 
-                                    </td>
-                                    <td>
+                                    {% endfor %}
+                                    </tbody>
 
-                                    </td>
-                                </tr>
-                                    {% endif %}
-                                {% endfor %}
-                                </tbody>
+                                </table>
+                            </div>
 
-                            </table>
                         </div>
 
+                        <div class="ibox-content mt-3 mb-3">
+
+                            <button type="submit" class="btn btn-primary float-right"><i class="fa fa-sync"></i> Update
+                            </button>
+                            <button type="button" class="btn btn-secondary"
+                                    onclick="window.location.href = '/{{ SECRET_CODE }}/order/';">
+                                <i class="fa fa-arrow-left"></i> Continue shopping
+                            </button>
+
+                        </div>
                     </div>
-
-                    <div class="ibox-content">
-
-                        <button type="submit" class="btn btn-primary float-right"><i class="fa fa-sync"></i> Update
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="window.location.href = '/order/';">
-                            <i class="fa fa-arrow-left"></i> Continue shopping
-                        </button>
-
-                    </div>
-                </div>
                 </form>
             </div>
             <div class="col-md-3"></div>
             <div class="col-md-3">
-
+                <hr>
                 <div class="ibox">
                     <div class="ibox-title">
                         <h5>Cart Summary</h5>
@@ -103,6 +104,12 @@
                         <h2 class="font-bold">
                             ${{ Items.total_price }}
                         </h2>
+                        <div class="m-t-sm">
+                            <div class="btn-group mb-5">
+                                <a href="{% url 'checkout' %}" class="btn btn-outline-primary"><i
+                                        class="fa fa-shopping-cart"></i> Checkout</a>
+                            </div>
+                        </div>
 
                         <hr/>
                         <span class="text-muted small">
@@ -111,13 +118,7 @@
                             outstanding amount, we will either add it to your account, or contact you to discuss it
                             with you.
                             </span>
-                        <div class="m-t-sm">
-                            <div class="btn-group">
-                                <a href="{% url 'pay' %}" class="btn btn-primary btn-sm"><i
-                                        class="fa fa-shopping-cart"></i> Checkout</a>
-                                <a href="#" class="btn btn-white btn-sm"> Cancel</a>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
 

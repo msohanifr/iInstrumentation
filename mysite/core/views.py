@@ -203,8 +203,11 @@ def send_sms(request):
     :param request: current HTML request
     :return: HTML page to "smssent.html"
     """
-
     profile = Profile.objects.get(user__username=request.user)
+    if profile.number_of_sms_sent > 5:
+        return render(request, 'smssent.html', {
+            'above_threshold': True,
+        })
     to_phone = profile.phone_number
     account_sid = 'AC8a77fcba5f491b28d836d503873525a4'
     auth_token = 'ed2108cb7b1f056cc6c2a3ff29fed267'
@@ -224,7 +227,9 @@ def send_sms(request):
     """
     profile.number_of_sms_sent += 1
     profile.save()
-    return render(request, 'smssent.html')
+    return render(request, 'smssent.html', {
+        'above_threshold': False
+    })
 
 
 def sms_sent(request):
@@ -426,6 +431,7 @@ def update_profile(request):
         'user_form': user_form,
         'profile_form': profile_form,
         'isEmailVerified': profile_.email_verification_status,
+        'number_of_items': get_number_of_items_in_cart(request),
     })
 
 
@@ -619,6 +625,12 @@ def order_history(request):
 
 
 def profile_check_ajax(request):
+    """
+    Verifies the profile update page (registration/profile.html) information, such as zip code and phone_number format
+    before submitting the form, via ajax function
+    :param request:
+    :return:
+    """
     print(request.GET)
     phone_number = request.GET['phone_number']
     zip_code = request.GET['zip_code']
@@ -713,11 +725,20 @@ def cart_page(request):
 # ------------------------------------------------------------------------------------------
 def checkout(request):
     """
-
+    This is the last page before payment. Includes taxes, etc... and then adds the total payment amount to
+    the payment output
     :param request:
     :return:
     """
-    pass
+    try:
+        with open(request.session.session_key + '.pickle', 'rb') as handle:
+            temp_order = pickle.load(handle)
+    except:
+        temp_order = {}
+    print(temp_order)
+    return render(request, 'checkout.html', {
+        'number_of_items': get_number_of_items_in_cart(request),
+    })
 
 
 # ------------------------------------------------------------------------------------------
@@ -771,8 +792,12 @@ def get_number_of_items_in_cart(request):
 
 
 def support(request):
+    """
+    have to set the phone number from assigned vendor
+    :param request:
+    :return:
+    """
     vendor = Vendor.objects.get(profile__user__username="msohani")
     return render(request, 'support.html', {
         'phone_number': vendor.profile.phone_number,
-
     })

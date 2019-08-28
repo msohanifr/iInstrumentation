@@ -30,7 +30,8 @@ class Profile(models.Model):
     street2 = models.CharField(max_length=128, blank=True, default='')
     city = models.CharField(max_length=32, blank=False, default='')
     state = models.CharField(max_length=10, blank=False, default='')
-    zip_code = models.CharField(blank=False, default='00000', max_length=12)
+    zip_code = models.CharField(blank=False, default='00000', max_length=12,
+                                help_text="Zip code must be in XXXXX, 5 digit format")
     profile_filled = models.BooleanField(default=False)
     phone_regex = RegexValidator(regex=r'^[2-9]\d{2}-\d{3}-\d{4}$', message="Phone number must be entered in the "
                                                                             "format: 'XXX-XXX-XXXX'. Up to 15 digits "

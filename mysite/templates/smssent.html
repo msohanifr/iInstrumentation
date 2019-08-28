@@ -1,11 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block header %}
-
-
-{% endblock %}
 {% block content %}
+    {% if not above_threshold %}
     <div class="card">
         <div class="card-header">
             <h2>Phone number verification</h2>
@@ -30,6 +27,20 @@
             </ul>
         </div>
     </div>
+    {% else %}
+        <div class="card">
+            <div class="card-header">
+                <h2>Phone number verification</h2>
+            </div>
+            <div class="card-body">
+                <h6 class="card-title"><p>You can request upto 5 phone verification codes. Please contact our support to
+                    verify your phone number.</p>
+                </h6>
+            </div>
+        </div>
+        <hr class="mt-0 mb-2">
+
+    {% endif %}
     <script>
         $("#code").keyup(function () {
             if ($('#code').val() > 999999) {
@@ -55,4 +66,5 @@
         {% endcomment %}
 
     </script>
+
 {% endblock %}
