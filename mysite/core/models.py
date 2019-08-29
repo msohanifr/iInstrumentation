@@ -30,7 +30,7 @@ class Profile(models.Model):
     street2 = models.CharField(max_length=128, blank=True, default='')
     city = models.CharField(max_length=32, blank=False, default='')
     state = models.CharField(max_length=10, blank=False, default='')
-    zip_code = models.CharField(blank=False, default='00000', max_length=12,
+    zip_code = models.CharField(blank=False, default='', max_length=12,
                                 help_text="Zip code must be in XXXXX, 5 digit format")
     profile_filled = models.BooleanField(default=False)
     phone_regex = RegexValidator(regex=r'^[2-9]\d{2}-\d{3}-\d{4}$', message="Phone number must be entered in the "
@@ -43,6 +43,7 @@ class Profile(models.Model):
     phone_verification_code = models.IntegerField(default=0)
     phone_verification_status = models.IntegerField(default=0)
     number_of_sms_sent = models.IntegerField(default=0)
+    points = models.IntegerField(default=0)
 
     def __str__(self):
         return str(self.user.username + ':' + self.user.first_name + ' ' + self.user.last_name)

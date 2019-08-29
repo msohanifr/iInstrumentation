@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="card">
+    <div class="card border-dark mb-2">
+        {% comment %}          ----------- The card header, it is rremoved because it is too big
         <div class="card-header">
             <h2>Profile</h2>
         </div>
+        {% endcomment %}
         <div class="card-body">
             <h5 class="card-title">{{ firstname }}&nbsp{{ lastname }}</h5>
 
@@ -54,8 +56,16 @@
                 </li>
 
             </ul>
-            <a href="{% url 'update_profile' %}" class="btn btn-primary mt-3"><i class="fa fa-sync"></i> Update</a>
+            <div class="row justify-content-center align-items-center ">
+                <div class="btn-group mb-3 mt-3">
+                    <a href="{% url 'update_profile' %}" class="btn btn-outline-dark"><i
+                            class="fa fa-sync"></i>  Update</a>
+                </div>
+            </div>
         </div>
+    </div>
+    <div>
+        <br>
     </div>
 
 

@@ -20,7 +20,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 from mysite import settings
-from mysite.core.models import Profile, Vendor, Order
+from mysite.core.models import Profile, Vendor, Order, Item
 from twilio.rest import Client
 from mysite.core.tokens import account_activation_token, sms_activation_token
 from mysite.forms import UserForm, ProfileForm, SignUpForm
@@ -542,6 +542,12 @@ def order_page(request):
                 'count': temp_order[_.title]['count'] if temp_order.keys().__contains__(_.title) else 0,
             }
         })
+    try:
+        # Store data (serialize)
+        with open(request.session.session_key + '.pickle', 'wb') as handle:
+            pickle.dump(items, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    except:
+        "write error"
     # ----------------------------------------
     return render(request, 'order.html', {
         'Items': items,
@@ -553,7 +559,6 @@ def order_page(request):
 # ajax has to take care of the order changes and update the Pickle file
 def ajax_order(request):
     """
-
     :param request:
     :return:
     """
@@ -564,6 +569,7 @@ def ajax_order(request):
         data = unserialized_data
     except:
         data = {}
+    print(unserialized_data)
     data.update(data_json)
     try:
         # Store data (serialize)
@@ -631,10 +637,8 @@ def profile_check_ajax(request):
     :param request:
     :return:
     """
-    print(request.GET)
     phone_number = request.GET['phone_number']
     zip_code = request.GET['zip_code']
-    print(phone_number)
     data = {}
     if re.match(r'^[2-9]\d{2}-\d{3}-\d{4}$', phone_number):
         data.update({
@@ -705,12 +709,12 @@ def cart_page(request):
                 })
         except:
             pass
-        try:
-            # Store data (serialize)
-            with open(request.session.session_key + '.pickle', 'wb') as handle:
-                pickle.dump(temp_order, handle, protocol=pickle.HIGHEST_PROTOCOL)
-        except:
-            "write error"
+    try:
+        # Store data (serialize)
+        with open(request.session.session_key + '.pickle', 'wb') as handle:
+            pickle.dump(cart, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    except:
+        "write error"
     cart.update({
         'total_items': total_items,
         'total_price': total_price,
@@ -718,7 +722,6 @@ def cart_page(request):
     return render(request, 'cart.html', {
         'Items': cart,
         'number_of_items': get_number_of_items_in_cart(request),
-
     })
 
 
@@ -735,9 +738,16 @@ def checkout(request):
             temp_order = pickle.load(handle)
     except:
         temp_order = {}
-    print(temp_order)
+    total_price = 0
+    tax = 1
+    for i in temp_order.values():
+        total_price += i['price'] * i['count']
     return render(request, 'checkout.html', {
         'number_of_items': get_number_of_items_in_cart(request),
+        'items': temp_order,
+        'tax': tax,
+        'total': total_price + tax,
+        'promocode': "",
     })
 
 
