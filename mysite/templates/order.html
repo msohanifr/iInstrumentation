@@ -2,66 +2,99 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
+{% block header %}
+<style>
+    .card-body {
+        padding: .5rem;
+    }
+</style>
+{% endblock %}
 {% block content %}
+    <div class="card border-dark mb-2">
+        {% comment %}          ----------- The card header, it is rremoved because it is too big
+        <div class="card-header">
+            <h2>Profile</h2>
+        </div>
+        {% endcomment %}
+        <div class="card-body">
+            <p>To order, please select number of each laundry item from the list below.</p>
 
-    <ul class="list-group">
+            <ul class="list-group">
 
-        {% for item in Items.values %}
+                {% for item in Items.values %}
 
-            {% cycle '<div class="wrapper wrapper-content animated fadeInRight"><div class="row">' '' '' '' %}
-            <div class="col-12 col-sm-6 col-xs-6 col-md-3">
-                <div class="ibox">
-                    <div class="ibox-content product-box active">
-                        {% comment "The following invisibile inputs created to send information about the product to cart" %}
+                    {% cycle '<div class="wrapper wrapper-content animated fadeInRight"><div class="row">' '' '' '' %}
+                    <div class="col-12 col-sm-6 col-xs-6 col-md-3">
+                        <div class="ibox">
+                            <div class="ibox-content product-box active">
+                                {% comment "The following invisibile inputs created to send information about the product to cart" %}
                         {% endcomment %}
-                        <input class="small" style="visibility: hidden" name="category_{{ item.title }}" type="text"
-                               value="{{ item.category }}">
-                        <input class="small" style="visibility: hidden" name="description_{{ item.title }}"
-                               type="text"
-                               value="{{ item.description }}">
-                        {% comment %} end of invisible section  {% endcomment %}
-                        <div id="item" name="item" class="product-imitation" style="color: #0f253c">
-                            {{ item.description }}
-                        </div>
-                        <div class="product-desc">
-                                        <span class="product-price" style="background-color: cornflowerblue">
+                                <input class="small" style="visibility: hidden" name="category_{{ item.title }}" type="text"
+                                       value="{{ item.category }}">
+                                <input class="small" style="visibility: hidden" name="description_{{ item.title }}"
+                                       type="text"
+                                       value="{{ item.description }}">
+                                {% comment %} end of invisible section  {% endcomment %}
+                                <div id="item" name="item" class="product-imitation" style="color: #0f253c">
+                                    {{ item.description }}
+                                </div>
+                                <div class="product-desc">
+                                        <span class="product-price" style="background-color: black">
                                             ${{ item.price }}
                                         </span>
-                            <small class="text-muted">Category: {{ item.category }}</small>
-                            <a href="" class="product-name"><input type="hidden"
-                                                                   value="{{ item.title }}"> {{ item.title }}</a>
+                                    <small class="text-muted">Category: {{ item.category }}</small>
+                                    <a href="" class="product-name"><input type="hidden"
+                                                                           value="{{ item.title }}"> {{ item.title }}</a>
 
-                            <hr class="mt-0 mb-2">
-                            <div class="form-group ">
-                                <div class="row">
-                                    <div class="col-8">
-                                        <label for="number_of_{{ item.title }}">Please select number of
-                                            items: </label>
-                                    </div>
-                                    <div class="col-4">
-                                        <select class="form-control" id="number_of_{{ item.title }}"
-                                                name="{{ item.title }}">
+                                    <hr class="mt-0 mb-2">
+                                    <div class="form-group ">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <label for="number_of_{{ item.title }}">Please select number of
+                                                    items: </label>
+                                            </div>
+                                            <div class="col-4">
+                                                <select class="form-control" id="number_of_{{ item.title }}"
+                                                        name="{{ item.title }}">
 
-                                            {% for itemnumber in range %}
-                                                {% if itemnumber ==  item.count|stringformat:"i" %}
-                                                    <option selected>{{ itemnumber }}</option>
-                                                {% else %}
-                                                    <option>{{ itemnumber }}</option>
-                                                {% endif %}
-                                            {% endfor %}
+                                                    {% for itemnumber in range %}
+                                                        {% if itemnumber ==  item.count|stringformat:"i" %}
+                                                            <option selected>{{ itemnumber }}</option>
+                                                        {% else %}
+                                                            <option>{{ itemnumber }}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
 
-                                        </select>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <hr class="mt-0 mb-2">
                     </div>
+                    {% cycle '' '' '' '</div> </div>' %}
+                {% endfor %}
+            </ul>
+            <hr/>
+            <div class="row justify-content-center align-items-center">
+                <div class="btn-group mb-2">
+                    <a href="{% url 'cart' %}" class="btn btn-outline-dark"><i
+                            class="fa fa-shopping-cart"></i> Go to cart</a>
                 </div>
-                <hr class="mt-0 mb-2">
             </div>
-            {% cycle '' '' '' '</div> </div>' %}
-        {% endfor %}
-    </ul>
+        </div>
+        <footer class="my-3 pt-3 text-muted text-center text-small">
+        <p class="mb-1">&copy; 2019 iDryClean</p>
+
+        </footer>
+    </div>
+    <div>
+        <br>
+    </div>
+
+
 {% endblock %}
 
 {% block javascript %}

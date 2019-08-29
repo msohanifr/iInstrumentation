@@ -54,7 +54,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Simplified static file serving.
     # https://warehouse.python.org/project/whitenoise/
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    # 'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -99,17 +99,17 @@ DATABASES = {
     #    'PASSWORD': '77132708',
     # }
 
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#        'NAME': 'django_auth',
-#        'USER': 'root',
-#        'PASSWORD' : '77132708',
-#        'HOST': 'localhost',
-#        'PORT': '5432',
-#     },
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'django_auth',
+        'USER': 'root',
+        'PASSWORD': '77132708',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    },
 
 }
-
+"""
 # ----------------- START Heroku --------------------------------
 import django_heroku
 import dj_database_url
@@ -123,7 +123,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 django_heroku.settings(locals())
 # ---------------- END Heroku ------------------------------------
-
+"""
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators

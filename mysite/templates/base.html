@@ -1,24 +1,41 @@
 {% load static %}
+{% cycle 'BNcNKV0mXuSTKNMKc10TFuMcXmQK5kGSuTXKdslzNEo63JjTfcmwR9Tv6zbdZz36' as SECRET_CODE silent %}
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="{% static 'mysite/assets/img/favicons/favicon-16x16.png' %} ">
     <title>iDryClean</title>
-    <link rel="canonical" href="https://getbootstrap.com/docs/4.1/examples/sticky-footer-navbar/">
     <!-- Bootstrap core CSS -->
-    <link href="{% static 'mysite/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'mysite/dist/css/bootstrap.css' %}" rel="stylesheet">
     <link href="{% static 'mysite/assets/bootstrap-social.css' %}" rel="stylesheet">
-    <!-- Custom styles for this template -->
     <link href="{% static 'mysite/docs/4.0/examples/sticky-footer-navbar/sticky-footer-navbar.css' %}" rel="stylesheet">
     <link href="{% static 'mysite/fontawesome/css/all.css' %}" rel="stylesheet">
+    <!-- Custom styles for this template -->
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="{% static 'mysite/fontawesome/js/all.js' %}"></script>
-    <style type="text/css">
+
+    <style>
+
+        .badge {
+            position: relative;
+            top: -1rem;
+            left: -0.5rem;
+        }
+
+        {% comment %} This disbales the long touch, which can ultimately reveal the server link {% endcomment %}
+        body {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+
+        }
+
 
         /* E-commerce */
         .product-box {
@@ -135,99 +152,107 @@
             margin: 0 20px;
         }
 
-        .badge {
-            position: relative;
-            top: -1rem;
-            left: -1.1rem;
-        }
     </style>
+    {% block header %}
+
+    {% endblock %}
 </head>
 <body>
+
 <header>
+    {% comment %}  Navigation bar {% endcomment %}
     <!-- Fixed navbar -->
-    {% if not request.path == '/accounts/login/' and not request.path == '/signup/' and not request.path == '/account/update_profile/' %}
-        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-            <div class="container">
-                <a class="navbar-brand" href="{% url 'home' %}">
-                    <img src="{% static 'mysite/img/logo_small_2.gif' %}" class="rounded-circle" alt="">
-                </a>
-                {% if request.path == '/order/' %}
+    {% if not request.path ==  '/accounts/login/' and not request.path == "/"|add:SECRET_CODE|add:'/signup/' and not request.path == "/"|add:SECRET_CODE|add:'/account/update_profile/' and not request.path == '/accounts/reset/done/' %}
 
-
-                {% endif %}
-                <div>
-
-
-                </div>
-
-
-                <button class="navbar-toggler" type="button" data-toggle="collapse"
-                        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-
-                    {% if user.is_authenticated %}
-                        <ul class="navbar-nav">
-                            <li class="nav-tabs"></li>
-                            <li class="nav-tabs"></li>
-                            <li class="nav-item dropdown ml-2">
-                                <a class="nav-link" href="{% url 'home' %}" role="button" style="color:
-                                        {% if request.path == '/home/' %}cornflowerblue
-                                        {% else %} grey {% endif %}"><i class="fas fa-home mr-3"></i>Home</a>
-                            </li>
-                            <li class="nav-tabs"></li>
-                            <li class="nav-item dropdown ml-2">
-                                <a class="nav-link" href="{% url 'profile' %}" role="button" style="color:
-                                        {% if request.path == '/profile/' %}cornflowerblue
-                                        {% else %} grey {% endif %}"><i class="fas fa-users mr-3"></i>Profile</a>
-                            </li>
-                            <li class="nav-tabs"></li>
-                            <li class="nav-item dropdown ml-2">
-                                <a class="nav-link" href="{% url 'cart' %}" role="button" style="color:
-                                        {% if request.path == '/cart/' %}cornflowerblue
-                                        {% else %} grey {% endif %}"><i class="fas fa-shopping-cart mr-3"></i>Shopping
-                                    Cart</a>
-                            </li>
-                            <li class="nav-tabs"></li>
-                            <li class="nav-item dropdown ml-2">
-                                <a class="nav-link" href="{% url 'support' %}" role="button" style="color:
-                                        {% if request.path == '/support/' %}cornflowerblue
-                                        {% else %} grey {% endif %}"><i class="fas fa-phone mr-3"></i>Support</a>
-                            </li>
-                            <li class="nav-tabs"></li>
-                            <li class="nav-item dropdown ml-2">
-
-                                <a class="nav-link" href="{% url 'logout' %}" role="button"><i
-                                        class="fas fa-sign-out-alt mr-3"></i>Logout</a>
-                            </li>
-                        </ul>
-                    {% else %}
-                        <ul class="navbar-nav">
-
-                            <li class="nav-item dropdown">
-                                <a class="nav-link" href="{% url 'login' %}" role="button"><i
-                                        class="fas fa-sign-in-alt"></i>Login</a>
-                            </li>
-                            <li class="nav-item dropdown -text-width">
-
-                                <a class="nav-link" href="{% url 'signup' %}" role="button"><i
-                                        class="fas fa-user-plus"></i> Sign up</a>
-                            </li>
-                        </ul>
+        <div class="container bg-dark">
+            <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark  py-0">
+                <div class="container bg-dark">
+                    <a class="navbar-brand" href="{% url 'home' %}">
+                        <img src="{% static 'mysite/img/logo_small_2.gif' %}" class="rounded-circle" alt="">
+                    </a>
+                    {% if request.path == '/order/' %}
                     {% endif %}
+                    <div>
+                    </div>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse"
+                            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                        {% if user.is_authenticated %}
+                            <ul class="navbar-nav">
+                                <li class="nav-tabs"></li>
+                                <li class="nav-tabs"></li>
+                                <li class="nav-item dropdown ml-2">
+                                    <a class="nav-link" href="{% url 'home' %}" role="button" style="color:
+                                            {% if request.path == "/"|add:SECRET_CODE|add:'/home/' %}cornflowerblue
+                                            {% else %} grey {% endif %}"><i class="fas fa-home mr-3"></i>Home</a>
+                                </li>
+                                <li class="nav-tabs"></li>
+                                <li class="nav-item dropdown ml-2">
+                                    <a class="nav-link" href="{% url 'profile' %}" role="button" style="color:
+                                            {% if request.path == "/"|add:SECRET_CODE|add:'/profile/' %}cornflowerblue
+                                            {% else %} grey {% endif %}"><i class="fas fa-users mr-3"></i>Profile</a>
+                                </li>
+                                <li class="nav-tabs"></li>
+                                <li class="nav-item dropdown ml-2">
+                                    <a class="nav-link" href="{% url 'order' %}" role="button" style="color:
+                                            {% if request.path == "/"|add:SECRET_CODE|add:'/order/' %}cornflowerblue
+                                            {% else %} grey {% endif %}"><i class="fas fa-tshirt mr-3"></i>Order
+                                    </a>
+                                </li>
+                                <li class="nav-tabs"></li>
+                                <li class="nav-item dropdown ml-2">
+                                    <a class="nav-link" href="{% url 'cart' %}" role="button" style="color:
+                                            {% if request.path == "/"|add:SECRET_CODE|add:'/cart/' %}cornflowerblue
+                                            {% else %} grey {% endif %}"><i class="fas fa-shopping-cart mr-3"></i>Shopping
+                                        Cart</a>
+                                </li>
+                                <li class="nav-tabs"></li>
+                                <li class="nav-item dropdown ml-2">
+                                    <a class="nav-link" href="{% url 'support' %}" role="button" style="color:
+                                            {% if request.path == "/"|add:SECRET_CODE|add:'/support/' %}cornflowerblue
+                                            {% else %} grey {% endif %}"><i class="fas fa-phone mr-3"></i>Support</a>
+                                </li>
+                                <li class="nav-tabs"></li>
+                                <li class="nav-item dropdown ml-2">
+
+                                    <a class="nav-link" href="{% url 'logout' %}" role="button"><i
+                                            class="fas fa-sign-out-alt mr-3"></i>Logout</a>
+                                </li>
+                            </ul>
+                        {% else %}
+                            <ul class="navbar-nav">
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link" href="{% url 'login' %}" role="button"><i
+                                            class="fas fa-sign-in-alt"></i>Login</a>
+                                </li>
+                                <li class="nav-item dropdown -text-width">
+
+                                    <a class="nav-link" href="{% url 'signup' %}" role="button"><i
+                                            class="fas fa-user-plus"></i> Sign up</a>
+                                </li>
+                            </ul>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
-        </nav>
+            </nav>
+
+        </div>
+
+        {% comment %} Navigation bar for pages whit home and logout only {% endcomment %}
     {% elif request.path == '/account/update_profile/' %}
-        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-            <div class="container">
+        <div class="header bg-dark">
+
+        </div>
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark  py-0">
+            <div class="container bg-dark">
                 <a class="navbar-brand" href="{% url 'home' %}">
                     <img src="{% static 'mysite/img/logo_small_2.gif' %}" class="rounded-circle" alt="">
                 </a>
-
-
                 <button class="navbar-toggler" type="button" data-toggle="collapse"
                         data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -267,9 +292,13 @@
     {% endif %}
 
 
+
+    {% comment %} Navbar section ends ------------------------------------------- {% endcomment %}
 </header>
+
+
 <!-- Begin page content -->
-{% if not request.path == '/accounts/login/' and not request.path == '/signup/' and not request.path == '/account/update_profile/' %}
+{% if not request.path == '/accounts/login/' and not request.path == "/"|add:SECRET_CODE|add:'/signup/' and not request.path == '/account/update_profile/' %}
     <main role="main" class="container my-4">
 {% else %}
     <main role="main" class="container my=0">
@@ -277,25 +306,25 @@
 {% block content %}
 {% endblock %}
 </main>
-{% if not request.path == '/accounts/login/' and not request.path == '/signup/' and not request.path == '/account/update_profile/' %}
-    <footer class="footer">
+{% if not request.path == '/accounts/login/' and not request.path == "/"|add:SECRET_CODE|add:'/signup/' and not request.path == "/"|add:SECRET_CODE|add:'/account/update_profile/' and not request.path == '/accounts/reset/done/' %}
+    <footer class="footer bg-dark">
+
+    </footer>
+    <footer class="footer bg-dark">
         <div class="container">
-
-            <nav class="navbar navbar-light bg-light">
-
+            <nav class="navbar fixed-bottom navbar-dark bg-dark py-0">
                 <a href="{% url 'home' %}" class="mr-2" style="color:
-                        {% if request.path == '/home/' %}cornflowerblue
+                        {% if request.path == "/"|add:SECRET_CODE|add:'/home/' %}cornflowerblue
                         {% else %} grey {% endif %}"><i class="fas fa-home fa-lg"></i></a>
                 <a href="{% url 'profile' %}" class="mr-2" style="color:
-                        {% if request.path == '/profile/' %}cornflowerblue
+                        {% if request.path == "/"|add:SECRET_CODE|add:'/profile/' %}cornflowerblue
                         {% else %}grey{% endif %}"><i class="fas fa-users fa-lg"></i></a>
                 <a href="{% url 'order' %}" class="mr-2" style="color:
-                        {% if request.path == '/order/' %}cornflowerblue
+                        {% if request.path == "/"|add:SECRET_CODE|add:'/order/' %}cornflowerblue
                         {% else %}grey{% endif %}"><i class="fas fa-tshirt fa-lg"></i></a>
-
                 <span class="align-self-left">
-                        <a href="{% url 'cart' %}" class="mr-2" style="color:
-                                {% if request.path == '/cart/' %}cornflowerblue
+                        <a href="{% url 'cart' %}" class="mr-0" style="color:
+                                {% if request.path == "/"|add:SECRET_CODE|add:'/cart/' %}cornflowerblue
                                 {% else %}grey {% endif %}"><i class="fas fa-shopping-cart fa-lg"></i></a>
                             {% comment %} If there is no product in the cart, the cart badge should be hidden {% endcomment %}
                             <span class="badge badge-danger" id="top_cart"
@@ -307,32 +336,42 @@
             </nav>
         </div>
     </footer>
-{% elif request.path == '/account/update_profile/' and isEmailVerified == 2 %}
+{% elif request.path == "/"|add:SECRET_CODE|add:'/account/update_profile/' and isEmailVerified == 3 %}
     <footer class="footer">
         <div class="container">
-            <nav class="navbar navbar-light bg-light">
-
+            <nav class="navbar fixed-bottom navbar-dark bg-dark py-0">
                 <a href="{% url 'home' %}" class="mr-2" style="color:
-                        {% if request.path == '/home/' %}cornflowerblue
+                        {% if request.path == "/"|add:SECRET_CODE|add:'/home/' %}cornflowerblue
                         {% else %} grey {% endif %}"><i class="fas fa-home fa-lg"></i></a>
                 <a href="{% url 'profile' %}" class="mr-2" style="color:
-                        {% if request.path == '/profile/' %}cornflowerblue
+                        {% if request.path == "/"|add:SECRET_CODE|add:'/profile/' %}cornflowerblue
                         {% else %}grey{% endif %}"><i class="fas fa-users fa-lg"></i></a>
                 <a href="{% url 'order' %}" class="mr-2" style="color:
-                        {% if request.path == '/order/' %}cornflowerblue
+                        {% if request.path == "/"|add:SECRET_CODE|add:'/order/' %}cornflowerblue
                         {% else %}grey{% endif %}"><i class="fas fa-tshirt fa-lg"></i></a>
-                <a href="{% url 'cart' %}" class="mr-2" style="color:
-                        {% if request.path == '/cart/' %}cornflowerblue
-                        {% else %}grey {% endif %}"><i class="fas fa-shopping-cart fa-lg"></i></a>
-
-
-            </nav>
+                <span class="align-self-left">
+                        <a href="{% url 'cart' %}" class="mr-0" style="color:
+                                {% if request.path == "/"|add:SECRET_CODE|add:'/cart/' %}cornflowerblue
+                                {% else %}grey {% endif %}"><i class="fas fa-shopping-cart fa-lg"></i></a>
+                            {% comment %} If there is no product in the cart, the cart badge should be hidden {% endcomment %}
+                            <span class="badge badge-danger" id="top_cart"
+                                  style={% if number_of_items == 0 or not number_of_items %}"visibility: hidden">
+                                  {% else %}"visibility: inherit" >{% endif %}
+                                  {{ number_of_items }}
+                            </span>
+                </span></nav>
         </div>
     </footer>
 {% endif %}
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
+
+<script src="{% static 'mysite/fontawesome/js/all.js' %}"></script>
+
+<!-- Toastr style -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="{% static 'mysite/dist/js/bootstrap.min.js' %}"></script>
 {% block javascript %}
 {% endblock %}

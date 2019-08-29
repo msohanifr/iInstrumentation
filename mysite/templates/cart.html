@@ -1,128 +1,151 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load crispy_forms_tags %}
+
+{% block header %}
+    <style>
+        .card-body {
+            padding: .5rem;
+        }
+    </style>
+{% endblock %}
 
 {% block content %}
-    <div class="wrapper wrapper-content animated fadeInRight">
 
-        <div class="row">
-            <div class="col-md-6 col-sm-10">
-                <form method="post">
-                    {% csrf_token %}
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <span class="float-right"><h5>(<strong>{{ Items.total_items }}</strong>) items</h5></span>
-                        <h6>Items in your cart</h6>
+    <div class="card border-dark mb-2">
+
+        <div class="card-body">
+            <div class="wrapper wrapper-content animated fadeInRight">
+
+                <div class="row">
+                    <div class="col-md-6 col-sm-10">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="ibox">
+                                <div class="ibox-title">
+                                    <span class="float-right"><h5>(<strong>{{ Items.total_items }}</strong>) items</h5></span>
+                                    <h6>Items in your cart</h6>
+                                </div>
+                                <div class="ibox-content">
+                                    <div class="table-responsive table-striped table-bordered">
+                                        <table class="table shoping-cart-table">
+
+                                            <tbody>
+                                            {% for item in Items.values %}
+                                                {% if item.title %}
+
+                                                    <tr class="border-top border-dark" id="id_section_{{ item.title }}">
+                                                        <td class="description">
+                                                            <h3>
+                                                                <a class="text-navy small">
+                                                                    <h6>{{ item.title }}</h6>
+                                                                </a>
+                                                            </h3>
+
+                                                        </td>
+                                                        <td>
+                                                            <small>${{ item.price }}</small>
+
+                                                            <s class="small text-muted" style="visibility: hidden">$230,00</s>
+                                                        </td>
+                                                        <td class="">
+                                                            <input type="number" min="0" name="{{ item.title }}"
+                                                                   class="form-control input-s-sm col-sm-5"
+                                                                   value="{{ item.count }}">
+                                                        </td>
+                                                        <td class="border-left">
+                                                            <small>${{ item.total_price }}</small>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr class="border-bottom border-dark" id="id_section_{{ item.title }}_bottom">
+                                                        <td colspan="2">
+                                                            <dl class="small m-b-none">
+                                                                <dt>Description:</dt>
+                                                                <dd>{{ item.description }}</dd>
+                                                            </dl>
+
+                                                            <div class="m-t-sm">
+                                                                <button type="button" id="remove_{{ item.title }}" class="btn btn-outline-dark float-right"><i class=""></i> remove_{{ item.title }}
+                                                                </button>
+                                                            </div>
+
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                    </tr>
+
+                                                {% endif %}
+
+                                            {% endfor %}
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+
+                                </div>
+
+                                <div class="ibox-content mt-3 mb-3">
+
+                                    <button type="submit" class="btn btn-outline-dark float-right"><i class="fa fa-sync"></i> Update
+                                    </button>
+                                    <button type="button" class="btn btn-outline-dark"
+                                            onclick="window.location.href = '/{{ SECRET_CODE }}/order/';">
+                                        <i class="fa fa-arrow-left"></i> Continue shopping
+                                    </button>
+
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                    <div class="ibox-content">
-                        <div class="table-responsive table-striped">
-                            <table class="table shoping-cart-table">
-
-                                <tbody>
-                                {% for item in Items.values %}
-                                    {% if item.title %}
-                                        <tr>
-                                            <td class="description">
-                                                <h3>
-                                                    <a href="#" class="text-navy small">
-                                                        <h6>{{ item.title }}</h6>
-                                                    </a>
-                                                </h3>
-
-                                            </td>
-                                            <td>
-                                                <small>${{ item.price }}</small>
-
-                                                <s class="small text-muted" style="visibility: hidden">$230,00</s>
-                                            </td>
-                                            <td class="">
-                                                <input type="number" min="0" name="{{ item.title }}"
-                                                       class="form-control input-s-sm col-sm-5"
-                                                       value="{{ item.count }}">
-                                            </td>
-                                            <td class="border-left">
-
-                                                <small>${{ item.total_price }}</small>
-
-                                            </td>
-
-                                        </tr>
-
-                                        <tr>
-                                    <td colspan="2">
-                                        <dl class="small m-b-none">
-                                            <dt>Description:</dt>
-                                            <dd>{{ item.description }}</dd>
-                                        </dl>
-
-                                        <div class="m-t-sm">
-
-                                            <a href="" class="text-muted" id="remove_{{ item.title }}"><i
-                                                    class="fa fa-trash"></i> Remove item</a>
-                                        </div>
-                                    </td>
-                                    <td>
-
-                                    </td>
-                                    <td>
-
-                                    </td>
-                                </tr>
-                                    {% endif %}
-                                {% endfor %}
-                                </tbody>
-
-                            </table>
-                        </div>
-
-                    </div>
-
-                    <div class="ibox-content">
-
-                        <button type="submit" class="btn btn-primary float-right"><i class="fa fa-sync"></i> Update
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="window.location.href = '/order/';">
-                            <i class="fa fa-arrow-left"></i> Continue shopping
-                        </button>
-
-                    </div>
-                </div>
-                </form>
-            </div>
-            <div class="col-md-3"></div>
-            <div class="col-md-3">
-
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <h5>Cart Summary</h5>
-                    </div>
-                    <div class="ibox-content">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-3">
+                        <hr>
+                        <div class="ibox">
+                            <div class="ibox-title">
+                                <h5>Cart Summary</h5>
+                            </div>
+                            <div class="ibox-content">
                             <span>
                                 Total
                             </span>
-                        <h2 class="font-bold">
-                            ${{ Items.total_price }}
-                        </h2>
+                                <h2 class="font-bold">
+                                    ${{ Items.total_price }}
+                                </h2>
+                                <div class="m-t-sm">
+                                    <div class="btn-group mb-5">
+                                        <a href="{% url 'checkout' %}" class="btn btn-outline-dark"><i
+                                                class="fa fa-shopping-cart"></i> Checkout</a>
+                                    </div>
+                                </div>
 
-                        <hr/>
-                        <span class="text-muted small">
+                                <hr/>
+                                <span class="text-muted small">
                                 * Excluding applicable sales tax <br>
                                 ** This is estimated amount. If your items are different from listed items above, depending on
                             outstanding amount, we will either add it to your account, or contact you to discuss it
                             with you.
-                            </span>
-                        <div class="m-t-sm">
-                            <div class="btn-group">
-                                <a href="{% url 'pay' %}" class="btn btn-primary btn-sm"><i
-                                        class="fa fa-shopping-cart"></i> Checkout</a>
-                                <a href="#" class="btn btn-white btn-sm"> Cancel</a>
+                        </span>
+
                             </div>
                         </div>
+
                     </div>
                 </div>
 
             </div>
+
+
         </div>
+        <footer class="my-3 pt-3 text-muted text-center text-small">
+            <p class="mb-1">&copy; 2019 iDryClean</p>
+
+        </footer>
+
+    </div>
+    <div>
+    <br>
     </div>
 
 {% endblock %}
@@ -130,14 +153,12 @@
 
 {% block javascript %}
 
-
+    <script>
     {% for item in Items %}
-        <script>
             $("#remove_{{ item }}").click(function () {
                 const val = 0;
                 const val_json = '{"count":' + val + "}";
                 const value = '"{{ item }}":' + val_json;
-
                 $.ajax({
                     url: '/ajax/',
                     data: {
@@ -145,13 +166,13 @@
                     },
                     dataType: 'json',
                     success: function (data) {
-
+                        window.location.reload();
                     },
                     error: function () {
                     },
                 });
             });
 
-        </script>
     {% endfor %}
+    </script>
 {% endblock %}

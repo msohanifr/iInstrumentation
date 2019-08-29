@@ -1,6 +1,10 @@
+import random
+import re
 import time
 import json
 import pickle
+
+import googlemaps
 import stripe
 from django.contrib.auth import login, logout
 from django.contrib.sites.shortcuts import get_current_site
@@ -16,11 +20,17 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 from mysite import settings
-from mysite.core.models import Profile, Vendor, Order
+from mysite.core.models import Profile, Vendor, Order, Item
 from twilio.rest import Client
 from mysite.core.tokens import account_activation_token, sms_activation_token
 from mysite.forms import UserForm, ProfileForm, SignUpForm
 from django.contrib.auth.decorators import user_passes_test
+
+
+# Secret code used in urls
+class urlsecret:
+    SECRET_CODE = 'BNcNKV0mXuSTKNMKc10TFuMcXmQK5kGSuTXKdslzNEo63JjTfcmwR9Tv6zbdZz36'
+
 
 stripe.api_key = settings.STRIPE_SECRET_KEY  # new
 
@@ -150,6 +160,38 @@ def signup(request):
     })
 
 
+"""        Backup for send_sms function
+# -------------------------------------- Send SMS ------------------------------------------------
+# @user_passes_test(user_phone_verification_never_sent, login_url='/sms_sent/')  # This should be a page that asks
+
+def send_sms(request):
+profile = Profile.objects.get(user__username=request.user)
+user = User.objects.get(username=request.user)
+to_phone = profile.phone_number
+account_sid = 'AC8a77fcba5f491b28d836d503873525a4'
+auth_token = 'ed2108cb7b1f056cc6c2a3ff29fed267'
+client = Client(account_sid, auth_token)
+current_site = get_current_site(request)
+message = {
+    'user': user,
+    'domain': current_site.domain,  ## have to change this
+    'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+    'token': sms_activation_token.make_token(user),
+}
+SMS_MSG = "http://" + message['domain'] + '/phone_activate/' + message['uid'] + "/" + message['token']
+client.messages \
+    .create(
+    body=SMS_MSG,
+    from_='+18622608689',
+    to=to_phone
+)
+profile.number_of_sms_sent += 1
+profile.save()
+return render(request, 'smssent.html')
+
+"""
+
+
 # -------------------------------------- Send SMS ------------------------------------------------
 # @user_passes_test(user_phone_verification_never_sent, login_url='/sms_sent/')  # This should be a page that asks
 def send_sms(request):
@@ -161,30 +203,33 @@ def send_sms(request):
     :param request: current HTML request
     :return: HTML page to "smssent.html"
     """
-
     profile = Profile.objects.get(user__username=request.user)
-    user = User.objects.get(username=request.user)
+    if profile.number_of_sms_sent > 5:
+        return render(request, 'smssent.html', {
+            'above_threshold': True,
+        })
     to_phone = profile.phone_number
     account_sid = 'AC8a77fcba5f491b28d836d503873525a4'
     auth_token = 'ed2108cb7b1f056cc6c2a3ff29fed267'
     client = Client(account_sid, auth_token)
-    current_site = get_current_site(request)
+    profile.phone_verification_code = random.randint(111111, 999999)
     message = {
-        'user': user,
-        'domain': current_site.domain,  ## have to change this
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
-        'token': sms_activation_token.make_token(user),
+        'token': "Your verification code is: " + str(profile.phone_verification_code),
     }
-    SMS_MSG = "http://" + message['domain'] + '/phone_activate/' + message['uid'] + "/" + message['token']
+    SMS_MSG = message['token']
+    """
     client.messages \
         .create(
         body=SMS_MSG,
         from_='+18622608689',
         to=to_phone
     )
+    """
     profile.number_of_sms_sent += 1
     profile.save()
-    return render(request, 'smssent.html')
+    return render(request, 'smssent.html', {
+        'above_threshold': False
+    })
 
 
 def sms_sent(request):
@@ -284,7 +329,7 @@ def activate(request, uidb64, token):
 
 # ------------------------------------------------------------------------------------------
 @login_required
-@user_passes_test(is_user_fully_registered, login_url='/account/update_profile/')
+@user_passes_test(is_user_fully_registered, login_url='/' + urlsecret.SECRET_CODE + '/account/update_profile/')
 # @user_passes_test(is_user_email_verified, login_url='/resendemailconfirmation/')  # This should be a page that asks
 # @user_passes_test(is_user_phone_verified, login_url='/sms/')
 def home(request):
@@ -341,10 +386,17 @@ def update_profile(request):
     :param request:
     :return:
     """
+    print(request.method)
     if request.method == 'POST':
+        print('update_profile check 7')
+        print(request.POST)
         user_form = UserForm(request.POST, instance=request.user)
         profile_form = ProfileForm(request.POST, instance=request.user.profile)
+        print('update_profile check 8')
+        print(user_form.is_valid())
+        print(profile_form.is_valid())
         if user_form.is_valid() and profile_form.is_valid():
+            print('update_profile check 9')
             user_form_data = user_form.cleaned_data
             profile_form_data = profile_form.cleaned_data
             profile_ = Profile.objects.get(user__username=request.user)
@@ -352,14 +404,20 @@ def update_profile(request):
             pre_form_change_email = user_.email
             pre_form_change_phone = profile_.phone_number
             user_form.save()
+            print('update_profile check 1')
             profile_form.save()
             profile_ = Profile.objects.get(user=request.user)
             profile_.profile_filled = True
+            print('update_profile check 3')
             if pre_form_change_email != user_form_data['email']:
+                print('update_profile check 2')
                 profile_.email_verification_status = 0
                 # Here we have to set a bit in User model that shows we have to confirm user's email
+            print('update_profile check 4')
             if pre_form_change_phone != profile_form_data['phone_number']:
+                print('update_profile check 5')
                 profile_.phone_verification_status = 0
+            print('update_profile check 6')
             profile_.profile_filled = True
             profile_.save()
             return redirect('profile')
@@ -373,6 +431,7 @@ def update_profile(request):
         'user_form': user_form,
         'profile_form': profile_form,
         'isEmailVerified': profile_.email_verification_status,
+        'number_of_items': get_number_of_items_in_cart(request),
     })
 
 
@@ -437,14 +496,15 @@ def delete_files():
 # Only GET method. The submit button only refers to "CART" page.
 # the rest of this function takes care of finding vendor and associated profile
 @login_required
-@user_passes_test(is_user_email_verified, login_url='/sendemailconfirmation/')
-@user_passes_test(is_user_phone_verified, login_url='/sms/')
+@user_passes_test(is_user_email_verified, login_url='/' + urlsecret.SECRET_CODE + '/sendemailconfirmation/')
+@user_passes_test(is_user_phone_verified, login_url='/' + urlsecret.SECRET_CODE + '/sms/')
 def order_page(request):
     """
 
     :param request:
     :return:
     """
+    print("in order_page")
     delete_files()
     '''
      if request.method == 'POST':
@@ -482,6 +542,12 @@ def order_page(request):
                 'count': temp_order[_.title]['count'] if temp_order.keys().__contains__(_.title) else 0,
             }
         })
+    try:
+        # Store data (serialize)
+        with open(request.session.session_key + '.pickle', 'wb') as handle:
+            pickle.dump(items, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    except:
+        "write error"
     # ----------------------------------------
     return render(request, 'order.html', {
         'Items': items,
@@ -493,7 +559,6 @@ def order_page(request):
 # ajax has to take care of the order changes and update the Pickle file
 def ajax_order(request):
     """
-
     :param request:
     :return:
     """
@@ -504,6 +569,7 @@ def ajax_order(request):
         data = unserialized_data
     except:
         data = {}
+    print(unserialized_data)
     data.update(data_json)
     try:
         # Store data (serialize)
@@ -517,8 +583,80 @@ def ajax_order(request):
     return JsonResponse(data)
 
 
+def ajax_sms(request):
+    """
+
+    :param request:
+    :return:
+    """
+    data_json = json.loads(request.GET['data'])
+    print(data_json)
+    data = {}
+    profile = Profile.objects.get(user__username=request.user)
+    data.update({
+        'data': profile.phone_verification_code,
+    })
+    return JsonResponse(data)
+
+
+"""
+def profile_ajax(request):
+/// Comments
+Checks all inputs from profile_update page
+:param request:
+:return:
+////
+print(request.GET)
+email = request.GET['email']
+print(email)
+# check if this email already exists
+user_ = User.objects.filter(email=email)
+if user_:
+    return JsonResponse({'data': 'Another user with the same email is registered'})
+else:
+    return JsonResponse({'data': ''})
+print(user_)
+print(not user_)
+data = {}
+profile = Profile.objects.get(user__username=request.user)
+data.update({
+    'data': profile.phone_verification_code,
+})
+return JsonResponse(data)
+"""
+
+
 def order_history(request):
     return render(request, 'order_history.html')
+
+
+def profile_check_ajax(request):
+    """
+    Verifies the profile update page (registration/profile.html) information, such as zip code and phone_number format
+    before submitting the form, via ajax function
+    :param request:
+    :return:
+    """
+    phone_number = request.GET['phone_number']
+    zip_code = request.GET['zip_code']
+    data = {}
+    if re.match(r'^[2-9]\d{2}-\d{3}-\d{4}$', phone_number):
+        data.update({
+            'phone_number': 'correct',
+        })
+    else:
+        data.update({
+            'phone_number': 'incorrect',
+        })
+    if re.match(r'^[0-9]\d{4}$', zip_code):
+        data.update({
+            'zip_code': 'correct',
+        })
+    else:
+        data.update({
+            'zip_code': 'incorrect',
+        })
+    return JsonResponse(data)
 
 
 # ------------------------------------------------------------------------------------------
@@ -571,12 +709,12 @@ def cart_page(request):
                 })
         except:
             pass
-        try:
-            # Store data (serialize)
-            with open(request.session.session_key + '.pickle', 'wb') as handle:
-                pickle.dump(temp_order, handle, protocol=pickle.HIGHEST_PROTOCOL)
-        except:
-            "write error"
+    try:
+        # Store data (serialize)
+        with open(request.session.session_key + '.pickle', 'wb') as handle:
+            pickle.dump(cart, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    except:
+        "write error"
     cart.update({
         'total_items': total_items,
         'total_price': total_price,
@@ -584,18 +722,33 @@ def cart_page(request):
     return render(request, 'cart.html', {
         'Items': cart,
         'number_of_items': get_number_of_items_in_cart(request),
-
     })
 
 
 # ------------------------------------------------------------------------------------------
 def checkout(request):
     """
-
+    This is the last page before payment. Includes taxes, etc... and then adds the total payment amount to
+    the payment output
     :param request:
     :return:
     """
-    pass
+    try:
+        with open(request.session.session_key + '.pickle', 'rb') as handle:
+            temp_order = pickle.load(handle)
+    except:
+        temp_order = {}
+    total_price = 0
+    tax = 1
+    for i in temp_order.values():
+        total_price += i['price'] * i['count']
+    return render(request, 'checkout.html', {
+        'number_of_items': get_number_of_items_in_cart(request),
+        'items': temp_order,
+        'tax': tax,
+        'total': total_price + tax,
+        'promocode': "",
+    })
 
 
 # ------------------------------------------------------------------------------------------
@@ -649,8 +802,12 @@ def get_number_of_items_in_cart(request):
 
 
 def support(request):
+    """
+    have to set the phone number from assigned vendor
+    :param request:
+    :return:
+    """
     vendor = Vendor.objects.get(profile__user__username="msohani")
     return render(request, 'support.html', {
         'phone_number': vendor.profile.phone_number,
-
     })

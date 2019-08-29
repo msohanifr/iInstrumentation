@@ -13,11 +13,11 @@
                                  alt="Logo">
                         </div>
                     </div>
-                    <form method="post" novalidate>
+                    <form method="post" novalidate id="id_form">
                         {% csrf_token %}
                         {{ form|crispy }}
                         <div class="row justify-content-center">
-                            <button type="submit" class="btn btn-primary">Log in</button>
+                            <button type="button" id="id_submit" class="btn btn-primary">Log in</button>
 
                         </div>
                         <div class="row justify-content-center">
@@ -32,4 +32,14 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+
+        $('#id_submit').click(function () {
+            $("#id_username").val(($("#id_username").val()).toLowerCase())
+            $("#id_form").submit();
+        });
+    </script>
 {% endblock %}
