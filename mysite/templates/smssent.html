@@ -14,7 +14,7 @@
             <ul class="list-group list-group-flush">
                 <br/>
                 <Label>Verification code: </Label><input type="number" class="" id="code" min="0" max="999999">
-                <a href="{% url 'home' %}" class="btn btn-primary  mt-1 mb-1">Verify</a>
+                <a id="btn_code" class="btn btn-outline-dark  mt-1 mb-1">Verify</a>
                 <p id="notice" class="text-danger"></p>
 
 
@@ -22,7 +22,7 @@
                 <div class="col-sm-12"><p id="pincode-callback"></p>
                     <a href="{% url 'sendsms' %}" class="btn btn-primary  mt-1 mb-1">Generate another code</a>
                 </div>
-{% endcomment %}
+                {% endcomment %}
 
             </ul>
         </div>
@@ -41,29 +41,36 @@
         <hr class="mt-0 mb-2">
 
     {% endif %}
+{% endblock %}
+{% block javascript %}
     <script>
-        $("#code").keyup(function () {
+        $('#btn_code').click(function () {
+            console.log("in btn_code")
             if ($('#code').val() > 999999) {
                 $('#notice').text("Code should have up to 6 digits");
             } else {
                 $('#notice').text("")
+                $.ajax({
+                    url: '/smsajax/',
+                    data: {
+                        'data': $('#code').val(),
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.data == "error") {
+                            $('#notice').text("Code is not correct, try again")
+                        } else {
+                            window.location.replace("{% url 'home' %}")
+                        }
+                    },
+                    error: function () {
+
+                    },
+                });
             }
 
         });
-        {% comment %}
-        $.ajax({
-            url: '/smsajax/',
-            data: {
-                'data': data,
-            },
-            dataType: 'json',
-            success: function (data) {
-                $(errorElement).html("The code is not correct:" + data['data']);
-            },
-            error: function () {
-            },
-        });
-        {% endcomment %}
+
 
     </script>
 

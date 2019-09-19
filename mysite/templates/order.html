@@ -3,11 +3,12 @@
 {% load crispy_forms_tags %}
 
 {% block header %}
-<style>
-    .card-body {
-        padding: .5rem;
-    }
-</style>
+    <style>
+        .card-body {
+            padding: .5rem;
+        }
+
+    </style>
 {% endblock %}
 {% block content %}
     <div class="card border-dark mb-2">
@@ -16,59 +17,52 @@
             <h2>Profile</h2>
         </div>
         {% endcomment %}
+
+
         <div class="card-body">
-            <p>To order, please select number of each laundry item from the list below.</p>
-
             <ul class="list-group">
-
                 {% for item in Items.values %}
 
                     {% cycle '<div class="wrapper wrapper-content animated fadeInRight"><div class="row">' '' '' '' %}
-                    <div class="col-12 col-sm-6 col-xs-6 col-md-3">
+
+
+                    <div class="col-6 m-0">
                         <div class="ibox">
                             <div class="ibox-content product-box active">
                                 {% comment "The following invisibile inputs created to send information about the product to cart" %}
                         {% endcomment %}
-                                <input class="small" style="visibility: hidden" name="category_{{ item.title }}" type="text"
-                                       value="{{ item.category }}">
-                                <input class="small" style="visibility: hidden" name="description_{{ item.title }}"
-                                       type="text"
-                                       value="{{ item.description }}">
+
                                 {% comment %} end of invisible section  {% endcomment %}
-                                <div id="item" name="item" class="product-imitation" style="color: #0f253c">
-                                    {{ item.description }}
+                                <div id="item" name="item" class="product-imitation mt-0">
+                                    <div class="row align-items-top justify-content-center">
+                                        <button type="button" id="{{ item.title }}_minus"
+                                                style="position: absolute; left: 20px;" class="btn btn-outline-dark">
+                                            <i class="fa fa-minus fa-sm"></i>
+                                        </button>
+
+                                        <img src="{% static '/' %}{{ item.image }}" alt="Dress" height="100px">
+                                        <button type="button" id="{{ item.title }}_plus"
+                                                style="position: absolute; right: 20px;" class="btn btn-outline-dark">
+                                            <i class="fa fa-plus fa-sm"></i>
+                                        </button>
+
+                                    </div>
                                 </div>
                                 <div class="product-desc">
                                         <span class="product-price" style="background-color: black">
                                             ${{ item.price }}
+                                            <span class="badge badge-danger" id="{{ item.title }}_count"
+                                                  style={% if item.count == 0 or not item.count %}"visibility: hidden">
+                                                  {% else %}"visibility: inherit" >{% endif %}
+                                                  {{ item.count }}
+                                            </span>
                                         </span>
-                                    <small class="text-muted">Category: {{ item.category }}</small>
-                                    <a href="" class="product-name"><input type="hidden"
-                                                                           value="{{ item.title }}"> {{ item.title }}</a>
 
-                                    <hr class="mt-0 mb-2">
-                                    <div class="form-group ">
-                                        <div class="row">
-                                            <div class="col-8">
-                                                <label for="number_of_{{ item.title }}">Please select number of
-                                                    items: </label>
-                                            </div>
-                                            <div class="col-4">
-                                                <select class="form-control" id="number_of_{{ item.title }}"
-                                                        name="{{ item.title }}">
 
-                                                    {% for itemnumber in range %}
-                                                        {% if itemnumber ==  item.count|stringformat:"i" %}
-                                                            <option selected>{{ itemnumber }}</option>
-                                                        {% else %}
-                                                            <option>{{ itemnumber }}</option>
-                                                        {% endif %}
-                                                    {% endfor %}
-
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <small class="text-muted">{{ item.category }}</small>
+                                    <a class="product-name" style="font-size: 10px"><input type="hidden"
+                                                                                           value="{{ item.title }}"> {{ item.description }}
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -86,7 +80,7 @@
             </div>
         </div>
         <footer class="my-3 pt-3 text-muted text-center text-small">
-        <p class="mb-1">&copy; 2019 iDryClean</p>
+            <p class="mb-1">&copy; 2019 iDryClean</p>
 
         </footer>
     </div>
@@ -99,32 +93,78 @@
 
 {% block javascript %}
 
+    <script>
+        $(document).ready(function () {
+            {% for item in Items %}
 
-    {% for item in Items %}
-        <script>
-            $("#number_of_{{ item }}").change(function () {
-                const val = $(this).val();
-                const val_json = '{"count":' + val + "}";
-                const value = '"{{ item }}":' + val_json;
+                console.log("in the function")
+                $("#number_of_{{ item }}").change(function () {
+                    const val = $(this).val();
+                    const val_json = '{"count":' + val + "}";
+                    const value = '"{{ item }}":' + val_json;
 
-                $.ajax({
-                    url: '/ajax/',
-                    data: {
-                        'data': value,
-                    },
-                    dataType: 'json',
-                    success: function (data) {
-                        console.log(data['number_of_items'])
-                        document.getElementById("top_cart").style.visibility = "inherit";
-                        document.getElementById("top_cart").innerText = data['number_of_items'];
+                    $.ajax({
+                        url: '/ajax/',
+                        data: {
+                            'data': value,
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            console.log(data['number_of_items']);
+                            document.getElementById("top_cart").style.visibility = "inherit";
+                            document.getElementById("top_cart").innerText = data['number_of_items'];
 
-                    },
-                    error: function () {
-                    },
+                        },
+                        error: function () {
+                        },
+                    });
                 });
-            });
+                $("#{{ item }}_minus").click(function () {
+                    console.log("{{ item }}_minus")
+                    const val_json = '{"count":' + '-1' + "}";
+                    const value = '"{{ item }}":' + val_json;
+                    $.ajax({
+                        url: '/ajax/',
+                        data: {
+                            'data': value,
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            document.getElementById("top_cart").style.visibility = "inherit";
+                            document.getElementById("top_cart").innerText = data['number_of_items'];
+                            document.getElementById("{{ item }}_count").style.visibility = "inherit";
+                            document.getElementById("{{ item }}_count").innerText = data['{{ item }}']['count'];
+                        },
+                        error: function () {
+                        },
+                    });
+                });
 
-        </script>
-    {% endfor %}
+
+                $("#{{ item }}_plus").click(function () {
+                    console.log("{{ item }}_plus")
+                    const val_json = '{"count":' + '1' + "}";
+                    const value = '"{{ item }}":' + val_json;
+                    $.ajax({
+                        url: '/ajax/',
+                        data: {
+                            'data': value,
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            document.getElementById("top_cart").style.visibility = "inherit";
+                            document.getElementById("top_cart").innerText = data['number_of_items'];
+                            document.getElementById("{{ item }}_count").style.visibility = "inherit";
+                            document.getElementById("{{ item }}_count").innerText = data['{{ item }}']['count'];
+                        },
+                        error: function () {
+                        },
+                    });
+                });
+
+            {% endfor %}
+        });
+
+    </script>
 {% endblock %}
 

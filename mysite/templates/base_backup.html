@@ -22,7 +22,7 @@
         .badge {
             position: relative;
             top: -1rem;
-            right: 0rem;
+            left: -0.5rem;
         }
 
         {% comment %} This disbales the long touch, which can ultimately reveal the server link {% endcomment %}
@@ -53,20 +53,22 @@
 
         .product-imitation {
             text-align: center;
-            background-color: white;
+            padding: 90px 0;
+            background-color: #f8f8f9;
             color: #bebec3;
-            font-weight: 300;
+            font-weight: 600;
         }
 
         .cart-product-imitation {
             text-align: center;
+            padding-top: 30px;
             height: 80px;
             width: 80px;
-            background-color: white;
-            color: white;
+            background-color: #f8f8f9;
         }
 
         .product-imitation.xl {
+            padding: 120px 0;
         }
 
         .product-desc {
@@ -92,8 +94,6 @@
 
         table.shoping-cart-table {
             margin-bottom: 0;
-            border-right: 1px solid black;
-            border-left: 1px solid black;
         }
 
         table.shoping-cart-table tr td {
@@ -107,11 +107,11 @@
         }
 
         table.shoping-cart-table tr td:last-child {
-            width: 100%;
+            width: 80px;
         }
 
         .product-name {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 600;
             color: #676a6c;
             display: block;
@@ -124,13 +124,13 @@
         }
 
         .product-price {
-            font-size: 10px;
+            font-size: 14px;
             font-weight: 600;
             color: #ffffff;
             background-color: #1f79b3;
-            padding: 4px 4px;
+            padding: 6px 12px;
             position: absolute;
-            top: -2px;
+            top: -32px;
             right: 0;
         }
 
@@ -141,7 +141,7 @@
         .image-imitation {
             background-color: #f8f8f9;
             text-align: center;
-            height: 180px;
+            padding: 200px 0;
         }
 
         .product-main-price small {
@@ -150,10 +150,6 @@
 
         .product-images {
             margin: 0 20px;
-        }
-
-        .product-box.active {
-            height: 180px;
         }
 
     </style>
@@ -166,7 +162,7 @@
 <header>
     {% comment %}  Navigation bar {% endcomment %}
     <!-- Fixed navbar -->
-
+    {% comment %}
     {% if not request.path ==  '/accounts/login/' and not request.path == "/"|add:SECRET_CODE|add:'/signup/' and not request.path == "/"|add:SECRET_CODE|add:'/account/update_profile/' and not request.path == '/accounts/reset/done/' %}
 
         <div class="container bg-dark">
@@ -249,7 +245,7 @@
         </div>
 
         {% comment %} Navigation bar for pages whit home and logout only {% endcomment %}
-
+    {% comment %}
     {% elif request.path == '/account/update_profile/' %}
         <div class="header bg-dark">
 
@@ -305,7 +301,7 @@
 
 <!-- Begin page content -->
 {% if not request.path == '/accounts/login/' and not request.path == "/"|add:SECRET_CODE|add:'/signup/' and not request.path == '/account/update_profile/' %}
-    <main role="main" class="container my-2">
+    <main role="main" class="container my-4">
 {% else %}
     <main role="main" class="container my=0">
 {% endif %}
@@ -336,7 +332,7 @@
                             <span class="badge badge-danger" id="top_cart"
                                   style={% if number_of_items == 0 or not number_of_items %}"visibility: hidden">
                                   {% else %}"visibility: inherit" >{% endif %}
-                                {{ number_of_items }}
+                                  {{ number_of_items }}
                             </span>
                 </span>
             </nav>

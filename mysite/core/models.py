@@ -15,11 +15,11 @@ class Profile(models.Model):
     :param:
     user_email_verification: a flag for email verification.
                             0: verification has not started,
-                            1: verification has been sent once
+                            1: XX
                             2: verification successful
     phone_verification_status: a flag for phone verification
                             0: verification has not started,
-                            1: verification has been sent once,
+                            1: XX,
                             2: verification successful
     :return:
 
@@ -70,6 +70,7 @@ class Item(models.Model):
                                 default='Men')  # Category: Men, Women, Bottom, Top (Create a mixed list of these
     # values)
     description = models.CharField(max_length=128, default='')
+    _photo = models.ImageField(upload_to='images/', null=True)
 
     class Meta:
         ordering = ('title',)
@@ -115,7 +116,6 @@ class Order(models.Model):
     delivered = models.BooleanField(default=False)
     purchase_date = models.DateField(null=True, default=timezone.now)
     delivery_date = models.DateField(null=True, default=timezone.now() + timedelta(days=30))
-    number = models.IntegerField(default=0, help_text='Number of items sold')
     service = models.ManyToManyField(Service)
     client = models.ForeignKey(
         Profile,
