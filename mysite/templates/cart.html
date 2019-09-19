@@ -17,7 +17,7 @@
             <div class="wrapper wrapper-content animated fadeInRight">
 
                 <div class="row">
-                    <div class="col-md-6 col-sm-10">
+                    <div class="col-12">
                         <form method="post">
                             {% csrf_token %}
                             <div class="ibox">
@@ -33,44 +33,44 @@
                                             {% for item in Items.values %}
                                                 {% if item.title %}
 
-                                                    <tr class="border-top border-dark" id="id_section_{{ item.title }}">
-                                                        <td class="description">
+                                                    <tr class="border-top border-dark d-flex"
+                                                        id="id_section_{{ item.title }}">
+                                                        <td class="description col-3">
                                                             <h3>
                                                                 <a class="text-navy small">
-                                                                    <h6>{{ item.title }}</h6>
+                                                                    <p style="font-size: 12px; font-weight: bold">{{ item.title }}</p>
                                                                 </a>
                                                             </h3>
 
                                                         </td>
-                                                        <td>
-                                                            <small>${{ item.price }}</small>
-
-                                                            <s class="small text-muted" style="visibility: hidden">$230,00</s>
+                                                        <td class="col-3">
+                                                            <p style="font-size: 10px">${{ item.price }}</p>
                                                         </td>
-                                                        <td class="">
+                                                        <td class="col-3">
                                                             <input type="number" min="0" name="{{ item.title }}"
                                                                    class="form-control input-s-sm col-sm-5"
+                                                                   id="{{ item.title }}_number"
                                                                    value="{{ item.count }}">
                                                         </td>
-                                                        <td class="border-left">
-                                                            <small>${{ item.total_price }}</small>
+                                                        <td class="border-left col-3">
+                                                            <p style="font-size: 10px">${{ item.total_price }}</p>
                                                         </td>
                                                     </tr>
 
-                                                    <tr class="border-bottom border-dark" id="id_section_{{ item.title }}_bottom">
-                                                        <td colspan="2">
+                                                    <tr class="border-bottom border-dark d-flex"
+                                                        id="id_section_{{ item.title }}_bottom">
+                                                        <td class="col-8">
                                                             <dl class="small m-b-none">
                                                                 <dt>Description:</dt>
-                                                                <dd>{{ item.description }}</dd>
+                                                                <dd style="font-size: 10px">{{ item.description }}</dd>
                                                             </dl>
-
-                                                            <div class="m-t-sm">
-                                                                <button type="button" id="remove_{{ item.title }}" class="btn btn-outline-dark float-right"><i class=""></i> remove_{{ item.title }}
-                                                                </button>
-                                                            </div>
-
                                                         </td>
-                                                        <td>
+
+                                                        <td class="col-3">
+                                                            <button type="button" id="remove_{{ item.title }}"
+                                                                    class="btn btn-outline-dark float-right"><i
+                                                                    class=""></i> Remove
+                                                            </button>
                                                         </td>
                                                         <td>
                                                         </td>
@@ -156,7 +156,7 @@
     <script>
     {% for item in Items %}
             $("#remove_{{ item }}").click(function () {
-                const val = 0;
+                const val = -$("#{{ item }}_number").val();
                 const val_json = '{"count":' + val + "}";
                 const value = '"{{ item }}":' + val_json;
                 $.ajax({

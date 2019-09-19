@@ -17,16 +17,18 @@
 
                     {% else %}
                         <p>Your email is not verified</p>
-                        <a href="{% url 'send_email_confirmation' %}" class="btn btn-primary">Send email
+                        <a href="{% url 'send_email_confirmation' %}" class="btn btn-outline-dark">Send email
                             verification</a>
-                        <a href="{% url 'profile' %}" class="btn btn-primary mt-1 mb-1">I have verified my email</a>
+                        <a href="{% url 'profile' %}" class="btn btn-outline-dark mt-1 mb-1">I have verified my
+                            email</a>
 
                     {% endif %}
                     {% if isEmailVerified == 1 %}
                         <p> Please confirm your email address to complete the registration. </p>
-                        <a href="{% url 'send_email_confirmation' %}" class="btn btn-primary mt-1 mb-1">Send email
+                        <a href="{% url 'send_email_confirmation' %}" class="btn btn-outline-dark mt-1 mb-1">Send email
                             verification</a>
-                        <a href="{% url 'profile' %}" class="btn btn-primary mt-1 mb-1">I have verified my email</a>
+                        <a href="{% url 'profile' %}" class="btn btn-outline-dark mt-1 mb-1">I have verified my
+                            email</a>
                     {% endif %}
                 </li>
                 <li class="list-group-item">
@@ -39,10 +41,20 @@
                         <p>If you have not received a verification code, you can request one by clicking on the button
                             below. Please note that you CAN NOT
                             request more than 3 verification codes.</p>
-                        <a href="{% url 'sendsms' %}" class="btn btn-primary">send phone verification</a>
+                        <a href="{% url 'sendsms' %}" class="btn btn-outline-dark">send phone verification</a>
                     {% else %}
                         <P>Your phone is not verified</P>
-                        <a href="{% url 'sendsms' %}" class="btn btn-primary">send phone verification</a>
+                        <div class="row">
+                            <div class="col-6">
+                                <a href="{% url 'smssent' %}" class="btn btn-outline-dark">enter code and verify
+                                    phone</a>
+                            </div>
+                            <div class="col-6">
+                                <a href="{% url 'sendsms' %}" class="btn btn-outline-dark">send phone verification</a>
+                            </div>
+                        </div>
+
+
                     {% endif %}
                 </li>
                 <li class="list-group-item">

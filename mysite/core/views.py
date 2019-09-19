@@ -26,6 +26,7 @@ from mysite.core.tokens import account_activation_token, sms_activation_token
 from mysite.forms import UserForm, ProfileForm, SignUpForm
 from django.contrib.auth.decorators import user_passes_test
 
+MAX_THRESHOLD_NUM_OF_SMS_CAN_BE_SENT = 3
 
 # Secret code used in urls
 class urlsecret:
@@ -131,9 +132,9 @@ def signup(request):
         if form.is_valid():
             user = form.save(commit=False)
             user.save()
-            # Set email_verification to 0
+            # Set email_verification to 0, means user's email is not verified yet
             profile = Profile.objects.get(user__username=user.username)
-            profile.email_verification_status = 0  # means email verification has been started
+            profile.email_verification_status = 0  # means email verification has not been done
             profile.save()
             # Create email message
             current_site = get_current_site(request)
@@ -203,8 +204,12 @@ def send_sms(request):
     :param request: current HTML request
     :return: HTML page to "smssent.html"
     """
+    try:
+        pass
+    except:
+        pass
     profile = Profile.objects.get(user__username=request.user)
-    if profile.number_of_sms_sent > 5:
+    if profile.number_of_sms_sent > MAX_THRESHOLD_NUM_OF_SMS_CAN_BE_SENT:
         return render(request, 'smssent.html', {
             'above_threshold': True,
         })
@@ -490,6 +495,7 @@ def delete_files():
             if i.isfile():
                 if i.mtime <= time_in_secs:
                     i.remove()
+                    print('removing files')
 
 
 # ------------------------------------------------------------------------------------------
@@ -540,6 +546,7 @@ def order_page(request):
                 'category': _.category,
                 'price': _.price,
                 'count': temp_order[_.title]['count'] if temp_order.keys().__contains__(_.title) else 0,
+                'image': str(_._photo),
             }
         })
     try:
@@ -569,18 +576,22 @@ def ajax_order(request):
         data = unserialized_data
     except:
         data = {}
-    print(unserialized_data)
-    data.update(data_json)
+    try:
+        for _ in data_json:
+            data[_]['count'] = data[_]['count'] + int(data_json[_]['count'])
+    except:
+        pass
+    # data.update(data_json)
     try:
         # Store data (serialize)
         with open(request.session.session_key + '.pickle', 'wb') as handle:
             pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
     except:
-        "write error"
+        pass
     data.update({
         'number_of_items': get_number_of_items_in_cart(request),
     })
-    return JsonResponse(data)
+    return JsonResponse(data, safe=False)
 
 
 def ajax_sms(request):
@@ -590,11 +601,17 @@ def ajax_sms(request):
     :return:
     """
     data_json = json.loads(request.GET['data'])
-    print(data_json)
     data = {}
+    response = ""
     profile = Profile.objects.get(user__username=request.user)
+    if data_json == profile.phone_verification_code:
+        profile.phone_verification_status = 2
+        profile.save()
+        response = "correct"
+    else:
+        response = "error"
     data.update({
-        'data': profile.phone_verification_code,
+        'data': response,
     })
     return JsonResponse(data)
 
@@ -675,7 +692,9 @@ def cart_page(request):
         with open(request.session.session_key + '.pickle', 'rb') as handle:
             temp_order = pickle.load(handle)
     except:
+        print('oho exception in 1')
         temp_order = {}
+    print(' in cart 1: temp_order:: ', temp_order)
     for _ in temp_order:
         try:
             if items_from_form.get(_):
@@ -688,6 +707,7 @@ def cart_page(request):
     # this has to be the vendor assigned to the client
     vendor = Vendor.objects.get(profile__user__username="msohani")
     items_from_vendor = vendor.item.all()
+    print(' in cart 2: items_from_vendor:: ', items_from_vendor)
     cart = {}
     total_items = 0
     total_price = 0
@@ -729,10 +749,28 @@ def cart_page(request):
 def checkout(request):
     """
     This is the last page before payment. Includes taxes, etc... and then adds the total payment amount to
-    the payment output
+    the payment output.
     :param request:
     :return:
     """
+    # Set your secret key: remember to change this to your live secret key in production
+    # See your keys here: https://dashboard.stripe.com/account/apikeys
+    stripe.api_key = 'sk_test_38pWvScfn2ajZK6irXe95U8F00V1vvirR0'
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[{
+            'name': 'T-shirt',
+            'description': 'Comfortable cotton t-shirt',
+            # 'images': ['https://example.com/t-shirt.png'],
+            'amount': 500,
+            'currency': 'usd',
+            'quantity': 1,
+        }],
+        client_reference_id="123456",
+        customer_email='customer@example.com',
+        success_url='https://example.com/success',
+        cancel_url='https://example.com/cancel',
+    )
     try:
         with open(request.session.session_key + '.pickle', 'rb') as handle:
             temp_order = pickle.load(handle)
@@ -748,6 +786,7 @@ def checkout(request):
         'tax': tax,
         'total': total_price + tax,
         'promocode': "",
+        'CHECKOUT_SESSION_ID': session['id'],
     })
 
 

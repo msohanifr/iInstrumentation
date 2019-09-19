@@ -102,8 +102,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'django_auth',
-        'USER': 'root',
-        'PASSWORD': '77132708',
+        'USER': 'postgres',
+        'PASSWORD': 'docker',
         'HOST': 'localhost',
         'PORT': '5432',
     },
@@ -204,3 +204,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # https://warehouse.python.org/project/whitenoise/
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Media directory for pictures, etc...
+MEDIA_URL = '/mysite/static/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'mysite/static')

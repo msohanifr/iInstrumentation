@@ -34,4 +34,4 @@ class ProfileForm(forms.ModelForm):
 class SaleForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ('vendor', 'item', 'number', 'purchase_date', 'client')
+        fields = ('vendor', 'item', 'purchase_date', 'client')
