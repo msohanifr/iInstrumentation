@@ -36,13 +36,13 @@
                                 <div id="item" name="item" class="product-imitation mt-0">
                                     <div class="row align-items-top justify-content-center">
                                         <button type="button" id="{{ item.title }}_minus"
-                                                style="position: absolute; left: 20px;" class="btn btn-outline-dark">
+                                                style="position: absolute; left: 20px;" class="btn btn-outline-primary">
                                             <i class="fa fa-minus fa-sm"></i>
                                         </button>
 
                                         <img src="{% static '/' %}{{ item.image }}" alt="Dress" height="100px">
                                         <button type="button" id="{{ item.title }}_plus"
-                                                style="position: absolute; right: 20px;" class="btn btn-outline-dark">
+                                                style="position: absolute; right: 20px;" class="btn btn-outline-primary">
                                             <i class="fa fa-plus fa-sm"></i>
                                         </button>
 
@@ -74,7 +74,7 @@
             <hr/>
             <div class="row justify-content-center align-items-center">
                 <div class="btn-group mb-2">
-                    <a href="{% url 'cart' %}" class="btn btn-outline-dark"><i
+                    <a href="{% url 'cart' %}" class="btn btn-outline-primary"><i
                             class="fa fa-shopping-cart"></i> Go to cart</a>
                 </div>
             </div>

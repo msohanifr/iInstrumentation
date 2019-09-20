@@ -578,7 +578,8 @@ def ajax_order(request):
         data = {}
     try:
         for _ in data_json:
-            data[_]['count'] = data[_]['count'] + int(data_json[_]['count'])
+            if data[_]['count'] + int(data_json[_]['count']) >= 0:
+                data[_]['count'] = data[_]['count'] + int(data_json[_]['count'])
     except:
         pass
     # data.update(data_json)
@@ -679,6 +680,8 @@ def profile_check_ajax(request):
 # ------------------------------------------------------------------------------------------
 # If number of items is zero, then remove the items
 @login_required
+@user_passes_test(is_user_email_verified, login_url='/' + urlsecret.SECRET_CODE + '/sendemailconfirmation/')
+@user_passes_test(is_user_phone_verified, login_url='/' + urlsecret.SECRET_CODE + '/sms/')
 def cart_page(request):
     """
 
@@ -746,6 +749,7 @@ def cart_page(request):
 
 
 # ------------------------------------------------------------------------------------------
+@login_required
 def checkout(request):
     """
     This is the last page before payment. Includes taxes, etc... and then adds the total payment amount to

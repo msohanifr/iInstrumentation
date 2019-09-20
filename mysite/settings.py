@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-
+"""
 DATABASES = {
     # 'default': {
     #   'ENGINE': 'django.db.backends.sqlite3',
@@ -110,6 +110,8 @@ DATABASES = {
 
 }
 """
+
+
 # ----------------- START Heroku --------------------------------
 import django_heroku
 import dj_database_url
@@ -123,7 +125,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 django_heroku.settings(locals())
 # ---------------- END Heroku ------------------------------------
-"""
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators

@@ -41,16 +41,16 @@
                         <p>If you have not received a verification code, you can request one by clicking on the button
                             below. Please note that you CAN NOT
                             request more than 3 verification codes.</p>
-                        <a href="{% url 'sendsms' %}" class="btn btn-outline-dark">send phone verification</a>
+                        <a href="{% url 'sendsms' %}" class="btn btn-outline-primary">send phone verification</a>
                     {% else %}
                         <P>Your phone is not verified</P>
                         <div class="row">
                             <div class="col-6">
-                                <a href="{% url 'smssent' %}" class="btn btn-outline-dark">enter code and verify
+                                <a href="{% url 'smssent' %}" class="btn btn-outline-primary">enter code and verify
                                     phone</a>
                             </div>
                             <div class="col-6">
-                                <a href="{% url 'sendsms' %}" class="btn btn-outline-dark">send phone verification</a>
+                                <a href="{% url 'sendsms' %}" class="btn btn-outline-primary">send phone verification</a>
                             </div>
                         </div>
 
@@ -70,7 +70,7 @@
             </ul>
             <div class="row justify-content-center align-items-center ">
                 <div class="btn-group mb-3 mt-3">
-                    <a href="{% url 'update_profile' %}" class="btn btn-outline-dark"><i
+                    <a href="{% url 'update_profile' %}" class="btn btn-outline-primary"><i
                             class="fa fa-sync"></i>  Update</a>
                 </div>
             </div>
