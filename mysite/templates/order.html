@@ -97,7 +97,6 @@
         $(document).ready(function () {
             {% for item in Items %}
 
-                console.log("in the function")
                 $("#number_of_{{ item }}").change(function () {
                     const val = $(this).val();
                     const val_json = '{"count":' + val + "}";
@@ -110,7 +109,6 @@
                         },
                         dataType: 'json',
                         success: function (data) {
-                            console.log(data['number_of_items']);
                             document.getElementById("top_cart").style.visibility = "inherit";
                             document.getElementById("top_cart").innerText = data['number_of_items'];
 
@@ -120,7 +118,6 @@
                     });
                 });
                 $("#{{ item }}_minus").click(function () {
-                    console.log("{{ item }}_minus")
                     const val_json = '{"count":' + '-1' + "}";
                     const value = '"{{ item }}":' + val_json;
                     $.ajax({
@@ -142,7 +139,6 @@
 
 
                 $("#{{ item }}_plus").click(function () {
-                    console.log("{{ item }}_plus")
                     const val_json = '{"count":' + '1' + "}";
                     const value = '"{{ item }}":' + val_json;
                     $.ajax({
