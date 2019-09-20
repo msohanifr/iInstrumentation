@@ -488,7 +488,7 @@ def delete_files():
     :return:
     """
     d = Path("mysite/..")
-    for i in d.walk():
+    for i in d.listdir():
         if i.endswith(".pickle"):
             days = 30
             time_in_secs = time.time() - (days * 24 * 60 * 60)
@@ -534,7 +534,7 @@ def order_page(request):
     items = {}
     # ----------------------------------------
     # create a range of digits 0:20 in string format
-    range_ = []
+    #range_ = []    TO BE DELETED
     #for _ in range(0, 20):
     #    range_.append(str(_))
     for _ in items_from_vendor:
@@ -557,7 +557,7 @@ def order_page(request):
     # ----------------------------------------
     return render(request, 'order.html', {
         'Items': items,
-        #'range': range_,
+        #'range': range_,    To BE DELETED
         'number_of_items': get_number_of_items_in_cart(request),
     })
 
