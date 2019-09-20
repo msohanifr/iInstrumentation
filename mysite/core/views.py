@@ -510,7 +510,6 @@ def order_page(request):
     :param request:
     :return:
     """
-    print("in order_page")
     delete_files()
     '''
      if request.method == 'POST':
@@ -536,8 +535,8 @@ def order_page(request):
     # ----------------------------------------
     # create a range of digits 0:20 in string format
     range_ = []
-    for _ in range(0, 20):
-        range_.append(str(_))
+    #for _ in range(0, 20):
+    #    range_.append(str(_))
     for _ in items_from_vendor:
         items.update({
             _.title: {
@@ -558,7 +557,7 @@ def order_page(request):
     # ----------------------------------------
     return render(request, 'order.html', {
         'Items': items,
-        'range': range_,
+        #'range': range_,
         'number_of_items': get_number_of_items_in_cart(request),
     })
 
