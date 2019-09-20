@@ -11,4 +11,5 @@ dj-database-url
 gunicorn
 whitenoise
 django_heroku
-googlemaps
+googlemap
+Pillow
