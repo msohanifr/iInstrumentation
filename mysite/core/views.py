@@ -1,3 +1,4 @@
+import decimal
 import random
 import re
 import time
@@ -391,17 +392,10 @@ def update_profile(request):
     :param request:
     :return:
     """
-    print(request.method)
     if request.method == 'POST':
-        print('update_profile check 7')
-        print(request.POST)
         user_form = UserForm(request.POST, instance=request.user)
         profile_form = ProfileForm(request.POST, instance=request.user.profile)
-        print('update_profile check 8')
-        print(user_form.is_valid())
-        print(profile_form.is_valid())
         if user_form.is_valid() and profile_form.is_valid():
-            print('update_profile check 9')
             user_form_data = user_form.cleaned_data
             profile_form_data = profile_form.cleaned_data
             profile_ = Profile.objects.get(user__username=request.user)
@@ -409,20 +403,14 @@ def update_profile(request):
             pre_form_change_email = user_.email
             pre_form_change_phone = profile_.phone_number
             user_form.save()
-            print('update_profile check 1')
             profile_form.save()
             profile_ = Profile.objects.get(user=request.user)
             profile_.profile_filled = True
-            print('update_profile check 3')
             if pre_form_change_email != user_form_data['email']:
-                print('update_profile check 2')
                 profile_.email_verification_status = 0
                 # Here we have to set a bit in User model that shows we have to confirm user's email
-            print('update_profile check 4')
             if pre_form_change_phone != profile_form_data['phone_number']:
-                print('update_profile check 5')
                 profile_.phone_verification_status = 0
-            print('update_profile check 6')
             profile_.profile_filled = True
             profile_.save()
             return redirect('profile')
@@ -495,7 +483,6 @@ def delete_files():
             if i.isfile():
                 if i.mtime <= time_in_secs:
                     i.remove()
-                    print('removing files')
 
 
 # ------------------------------------------------------------------------------------------
@@ -694,9 +681,7 @@ def cart_page(request):
         with open(request.session.session_key + '.pickle', 'rb') as handle:
             temp_order = pickle.load(handle)
     except:
-        print('oho exception in 1')
         temp_order = {}
-    print(' in cart 1: temp_order:: ', temp_order)
     for _ in temp_order:
         try:
             if items_from_form.get(_):
@@ -709,7 +694,6 @@ def cart_page(request):
     # this has to be the vendor assigned to the client
     vendor = Vendor.objects.get(profile__user__username="msohani")
     items_from_vendor = vendor.item.all()
-    print(' in cart 2: items_from_vendor:: ', items_from_vendor)
     cart = {}
     total_items = 0
     total_price = 0
@@ -771,8 +755,8 @@ def checkout(request):
         }],
         client_reference_id="123456",
         customer_email='customer@example.com',
-        success_url='https://example.com/success',
-        cancel_url='https://example.com/cancel',
+        success_url='https://idryclean.herokuapp.com/BNcNKV0mXuSTKNMKc10TFuMcXmQK5kGSuTXKdslzNEo63JjTfcmwR9Tv6zbdZz36/home/',
+        cancel_url='https://idryclean.herokuapp.com/BNcNKV0mXuSTKNMKc10TFuMcXmQK5kGSuTXKdslzNEo63JjTfcmwR9Tv6zbdZz36/home/',
     )
     try:
         with open(request.session.session_key + '.pickle', 'rb') as handle:
@@ -780,14 +764,15 @@ def checkout(request):
     except:
         temp_order = {}
     total_price = 0
-    tax = 1
     for i in temp_order.values():
         total_price += i['price'] * i['count']
+    tax = decimal.Decimal(total_price) * decimal.Decimal(6.625/100)  # 6.25 is NJ TAX RATE, should be changed based on state
+    tax = decimal.Decimal(tax).quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_DOWN)
     return render(request, 'checkout.html', {
         'number_of_items': get_number_of_items_in_cart(request),
         'items': temp_order,
         'tax': tax,
-        'total': total_price + tax,
+        'total': decimal.Decimal(total_price + tax),
         'promocode': "",
         'CHECKOUT_SESSION_ID': session['id'],
     })

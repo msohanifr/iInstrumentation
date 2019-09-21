@@ -17,9 +17,9 @@
 
                     {% else %}
                         <p>Your email is not verified</p>
-                        <a href="{% url 'send_email_confirmation' %}" class="btn btn-outline-dark">Send email
+                        <a href="{% url 'send_email_confirmation' %}" class="btn btn-outline-primary">Send email
                             verification</a>
-                        <a href="{% url 'profile' %}" class="btn btn-outline-dark mt-1 mb-1">I have verified my
+                        <a href="{% url 'profile' %}" class="btn btn-outline-primary mt-1 mb-1">I have verified my
                             email</a>
 
                     {% endif %}

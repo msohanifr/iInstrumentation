@@ -29,7 +29,12 @@ class Profile(models.Model):
     street1 = models.CharField(max_length=128, blank=False, default='')
     street2 = models.CharField(max_length=128, blank=True, default='')
     city = models.CharField(max_length=32, blank=False, default='')
-    state = models.CharField(max_length=10, blank=False, default='')
+    STATES = (
+        ('S', 'Small'),
+        ('M', 'Medium'),
+        ('L', 'Large'),
+    )
+    state = models.CharField(max_length=2, blank=False, default='', choices=STATES)
     zip_code = models.CharField(blank=False, default='', max_length=12,
                                 help_text="Zip code must be in XXXXX, 5 digit format")
     profile_filled = models.BooleanField(default=False)
@@ -70,7 +75,7 @@ class Item(models.Model):
                                 default='Men')  # Category: Men, Women, Bottom, Top (Create a mixed list of these
     # values)
     description = models.CharField(max_length=128, default='')
-    _photo = models.ImageField(upload_to='images/', null=True)
+    _photo = models.CharField(default='images/', max_length=32, null=True)
 
     class Meta:
         ordering = ('title',)
