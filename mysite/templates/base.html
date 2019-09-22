@@ -322,9 +322,6 @@
                 <a href="{% url 'home' %}" class="mr-2" style="color:
                         {% if request.path == "/"|add:SECRET_CODE|add:'/home/' %}cornflowerblue
                         {% else %} grey {% endif %}"><i class="fas fa-home"></i><small> Home</small></a>
-                <a href="{% url 'profile' %}" class="mr-2" style="color:
-                        {% if request.path == "/"|add:SECRET_CODE|add:'/profile/' %}cornflowerblue
-                        {% else %}grey{% endif %}"><i class="fas fa-users"></i><small> Profile</small></a>
                 <a href="{% url 'order' %}" class="mr-2" style="color:
                         {% if request.path == "/"|add:SECRET_CODE|add:'/order/' %}cornflowerblue
                         {% else %}grey{% endif %}"><i class="fas fa-tshirt"></i><small> Order</small></a>
@@ -349,9 +346,6 @@
                 <a href="{% url 'home' %}" class="mr-2" style="color:
                         {% if request.path == "/"|add:SECRET_CODE|add:'/home/' %}cornflowerblue
                         {% else %} grey {% endif %}"><i class="fas fa-home fa-lg"></i></a>
-                <a href="{% url 'profile' %}" class="mr-2" style="color:
-                        {% if request.path == "/"|add:SECRET_CODE|add:'/profile/' %}cornflowerblue
-                        {% else %}grey{% endif %}"><i class="fas fa-users fa-lg"></i></a>
                 <a href="{% url 'order' %}" class="mr-2" style="color:
                         {% if request.path == "/"|add:SECRET_CODE|add:'/order/' %}cornflowerblue
                         {% else %}grey{% endif %}"><i class="fas fa-tshirt fa-lg"></i></a>

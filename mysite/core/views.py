@@ -6,10 +6,12 @@ import json
 import pickle
 
 import googlemaps
+import requests
 import stripe
 from django.contrib.auth import login, logout
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import EmailMessage
+from django.core import mail
+from django.core.mail import EmailMessage, send_mail
 from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
@@ -281,22 +283,21 @@ def send_email_confirmation(request):
     :param request:
     :return: renders the confirmation for email page
     """
+    #send_mail('Email confirmation', 'This is a test', 'postmaster@sandboxf7bd24553c2145c1b8ab0f41f6ec6a03.mailgun.org', ['logixsohani@gmail.com'])
+
     user = User.objects.get(username=request.user)
     # user.is_active = False
     # user.save()
     to_email = user.email
     current_site = get_current_site(request)
-    mail_subject = 'Activate your account.'
+    mail_subject = 'Email activation request'
     message = render_to_string('acc_active_email.html', {
         'user': user,
         'domain': current_site.domain,  ## have to change this
         'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
         'token': account_activation_token.make_token(user),
     })
-    email = EmailMessage(
-        mail_subject, message, to=[to_email]
-    )
-    email.send()
+    mail.send_mail(mail_subject, mail_subject, 'admin@sandboxf7bd24553c2145c1b8ab0f41f6ec6a03.mailgun.org`', ['logixsohani@gmail.com'], html_message=message)
     return redirect('home')
     # return render(request, 'confirm_email.html')
 
@@ -307,7 +308,6 @@ def confirm_email_sent(request):
 
 def activate(request, uidb64, token):
     """
-
     :param request:
     :param uidb64:
     :param token:
@@ -336,8 +336,8 @@ def activate(request, uidb64, token):
 # ------------------------------------------------------------------------------------------
 @login_required
 @user_passes_test(is_user_fully_registered, login_url='/' + urlsecret.SECRET_CODE + '/account/update_profile/')
-# @user_passes_test(is_user_email_verified, login_url='/resendemailconfirmation/')  # This should be a page that asks
-# @user_passes_test(is_user_phone_verified, login_url='/sms/')
+#@user_passes_test(is_user_email_verified, login_url='/resendemailconfirmation/')  # This should be a page that asks
+#@user_passes_test(is_user_phone_verified, login_url='/sms/')
 def home(request):
     """
 
@@ -356,7 +356,6 @@ def home(request):
             'lastname': request.user.last_name,
             'orders': order,
             'number_of_items': get_number_of_items_in_cart(request),
-
         })
     else:
         return redirect('login')
@@ -838,3 +837,4 @@ def support(request):
     return render(request, 'support.html', {
         'phone_number': vendor.profile.phone_number,
     })
+
