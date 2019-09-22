@@ -203,20 +203,6 @@
                                 </li>
                                 <li class="nav-tabs"></li>
                                 <li class="nav-item dropdown ml-2">
-                                    <a class="nav-link" href="{% url 'order' %}" role="button" style="color:
-                                            {% if request.path == "/"|add:SECRET_CODE|add:'/order/' %}cornflowerblue
-                                            {% else %} grey {% endif %}"><i class="fas fa-tshirt mr-3"></i>Order
-                                    </a>
-                                </li>
-                                <li class="nav-tabs"></li>
-                                <li class="nav-item dropdown ml-2">
-                                    <a class="nav-link" href="{% url 'cart' %}" role="button" style="color:
-                                            {% if request.path == "/"|add:SECRET_CODE|add:'/cart/' %}cornflowerblue
-                                            {% else %} grey {% endif %}"><i class="fas fa-shopping-cart mr-3"></i>Shopping
-                                        Cart</a>
-                                </li>
-                                <li class="nav-tabs"></li>
-                                <li class="nav-item dropdown ml-2">
                                     <a class="nav-link" href="{% url 'support' %}" role="button" style="color:
                                             {% if request.path == "/"|add:SECRET_CODE|add:'/support/' %}cornflowerblue
                                             {% else %} grey {% endif %}"><i class="fas fa-phone mr-3"></i>Support</a>
