@@ -1,21 +1,14 @@
 {% load static %}
 {% cycle 'BNcNKV0mXuSTKNMKc10TFuMcXmQK5kGSuTXKdslzNEo63JjTfcmwR9Tv6zbdZz36' as SECRET_CODE silent %}
 <!DOCTYPE html>
-<!--
-Template Name:  SmartAdmin Responsive WebApp - Template build with Twitter Bootstrap 4
-Version: 4.0.2
-Author: Sunnyat Ahmmed
-Website: http://gootbootstrap.com
-Purchase: https://wrapbootstrap.com/theme/smartadmin-responsive-webapp-WB0573SK0
-License: You must have a valid license purchased only from wrapbootstrap.com (link above) in order to legally use this theme for your project.
--->
+
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <title>
-        Page Titile - category_1 - SmartAdmin v4.0.2
+        iDryClean
     </title>
-    <meta name="description" content="Page Titile">
+    <meta name="description" content="Page Title">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, minimal-ui">
     <!-- Call App Mode on ios devices -->
@@ -33,10 +26,8 @@ License: You must have a valid license purchased only from wrapbootstrap.com (li
     <link href="{% static 'mysite/assets/bootstrap-social.css' %}" rel="stylesheet">
     <link href="{% static 'mysite/docs/4.0/examples/sticky-footer-navbar/sticky-footer-navbar.css' %}" rel="stylesheet">
     <link href="{% static 'mysite/fontawesome/css/all.css' %}" rel="stylesheet">
-    <!--<link rel="stylesheet" media="screen, print" href="css/your_styles.css">-->
 </head>
 <body class="mod-bg-1 ">
-<!-- DOC: script to save and load page settings -->
 <script>
     /**
      *	This script should be placed right after the body tag for fast execution
@@ -117,9 +108,11 @@ License: You must have a valid license purchased only from wrapbootstrap.com (li
     }
     .nav-link-text {
         color: #bebec3;
+        font-size: larger;
     }
     .page-sidebar {
         background-color: #1f79b3;
+        width: 200px;
     }
     .page-sidebar .page-logo {
         background-color: #1f79b3;
@@ -223,7 +216,7 @@ License: You must have a valid license purchased only from wrapbootstrap.com (li
     }
 
     .product-price {
-        font-size: 10px;
+        font-size: 13px;
         font-weight: 600;
         color: #ffffff;
         background-color: #1f79b3;
@@ -244,7 +237,7 @@ License: You must have a valid license purchased only from wrapbootstrap.com (li
     }
 
     .product-main-price small {
-        font-size: 10px;
+        font-size: 15px;
     }
 
     .product-images {
@@ -314,6 +307,9 @@ License: You must have a valid license purchased only from wrapbootstrap.com (li
                                 <span class="nav-link-text" data-i18n="nav.application_intel_introduction"><i class="fal fa-phone mr-2"></i>
                                      Support</span>
                             </a>
+                        </li>
+                        <li>
+                         <a><span class="nav-link-text"></span></a>
                         </li>
                         <li>
                             <a href="{% url 'logout' %}" title="Profile" data-filter-tags="application intel">
@@ -539,14 +535,14 @@ $(document).ready(function () {
             <nav class="navbar fixed-bottom navbar-dark bg-dark py-0">
                 <a href="{% url 'home' %}" class="mr-2" style="color:
                         {% if request.path == "/"|add:SECRET_CODE|add:'/home/' %}cornflowerblue
-                        {% else %} grey {% endif %}"><i class="fas fa-home"></i><small> Home</small></a>
+                        {% else %} grey {% endif %}"><i class="fas fa-home"></i> Home</a>
                 <a href="{% url 'order' %}" class="mr-2" style="color:
                         {% if request.path == "/"|add:SECRET_CODE|add:'/order/' %}cornflowerblue
-                        {% else %}grey{% endif %}"><i class="fas fa-tshirt"></i><small> Order</small></a>
+                        {% else %}grey{% endif %}"><i class="fas fa-tshirt"></i> Order</a>
                 <span class="align-self-left">
                         <a href="{% url 'cart' %}" class="mr-0" style="color:
                                 {% if request.path == "/"|add:SECRET_CODE|add:'/cart/' %}cornflowerblue
-                                {% else %}grey {% endif %}"><i class="fas fa-shopping-cart"></i><small> Cart</small></a>
+                                {% else %}grey {% endif %}"><i class="fas fa-shopping-cart"></i> Cart</a>
                             {% comment %} If there is no product in the cart, the cart badge should be hidden {% endcomment %}
                             <span class="badge badge-danger" id="top_cart"
                                   style={% if number_of_items == 0 or not number_of_items %}"visibility: hidden">
@@ -581,13 +577,7 @@ $(document).ready(function () {
         </div>
     </footer>
 {% endif %}
-<!-- Bootstrap core JavaScript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-
 <script src="{% static 'mysite/fontawesome/js/all.js' %}"></script>
-
-<!-- Toastr style -->
 
 <script src="{% static 'mysite/dist/js/bootstrap.min.js' %}"></script>
 {% block javascript %}

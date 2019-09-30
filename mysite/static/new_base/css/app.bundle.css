@@ -6362,10 +6362,10 @@ body:not(.mod-pace-custom) .pace {
   -ms-user-select: none;
       user-select: none; }
   body:not(.mod-pace-custom) .pace .pace-progress {
-    background: #886ab5;
+    background: #1f79b3;
     position: fixed;
     z-index: 2000;
-    top: 0;
+    top: 66px;
     right: 100%;
     width: 100%;
     height: 3px; }
