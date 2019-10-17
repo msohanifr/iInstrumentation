@@ -308,7 +308,7 @@
                             <li>
                                 <a href="{% url 'profile' %}" title="Profile" data-filter-tags="application intel">
                                 <span class="nav-link-text" data-i18n="nav.application_intel_introduction"><i
-                                        class="fal fa-user mr-2"></i>
+                                        class="fal fa-cog mr-2"></i>
                                      Profile</span>
                                 </a>
                             </li>
@@ -437,59 +437,11 @@
                     </div>
 
                 </header>
-            {% elif  request.path ==  '/accounts/login/' or request.path == "/"|add:SECRET_CODE|add:'/account/update_profile/' or request.path == "/"|add:SECRET_CODE|add:'/signup/'%}
+            {% elif  request.path ==  '/accounts/login/' %}
 
-                <!-- BEGIN Page Header -->
-                <header class="page-header bg-dark fixed-top" role="banner" style="height: 50px">
-                    <!-- we need this logo when user switches to nav-function-top -->
-                    <div class="page-logo">
-                        <a href="#" class="page-logo-link press-scale-down d-flex align-items-center position-relative"
-                           data-toggle="modal" data-target="#modal-shortcut">
-                            {% comment %}
-                            <img src="img/logo.png" alt="SmartAdmin WebApp" aria-roledescription="logo">
-                            {% endcomment %}
-                            <span class="page-logo-text mr-1">SmartAdmin WebApp</span>
-                            <span class="position-absolute text-white opacity-50 small pos-top pos-right mr-2 mt-n2">SeedProject</span>
-                            <i class="fal fa-angle-down d-inline-block ml-1 fs-lg color-primary-300"></i>
-                        </a>
-                    </div>
-                    <!-- DOC: nav menu layout change shortcut -->
-                    <div class="hidden-md-down dropdown-icon-menu position-relative">
-                        <a href="#" class="header-btn btn js-waves-off" data-action="toggle"
-                           data-class="nav-function-hidden" title="Hide Navigation">
-                            <i class="ni ni-menu"></i>
-                        </a>
-                        <ul>
-                            <li>
-                                <a href="#" class="btn js-waves-off" data-action="toggle"
-                                   data-class="nav-function-minify" title="Minify Navigation">
-                                    <i class="ni ni-minify-nav"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="btn js-waves-off" data-action="toggle"
-                                   data-class="nav-function-fixed" title="Lock Navigation">
-                                    <i class="ni ni-lock-nav"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    {% comment %}
-                    <!-- DOC: mobile button appears during mobile width -->
-                    <div class="hidden-lg-up">
-                        <a href="#" class="header-btn btn press-scale-down" data-action="toggle"
-                           data-class="mobile-nav-on">
-                            <i class="ni ni-menu"></i>
-                        </a>
-                    </div>
-                    {% endcomment %}
-
-                    <div class="ml-auto d-flex">
-
-
-                    </div>
-
-                </header>
+                {% comment %}
+                    A different header can be set for login page
+                {% endcomment %}
 
             {% endif %}
             <!-- END Page Header -->
@@ -600,7 +552,7 @@ $(document).ready(function () {
 </script>-->
 
 
-{% if not request.path == '/accounts/password_reset/' and not request.path == '/accounts/password_reset/done/' and not request.path == '/accounts/login/' and not request.path == "/"|add:SECRET_CODE|add:'/signup/' and not request.path == "/"|add:SECRET_CODE|add:'/account/update_profile/' and not request.path == '/accounts/reset/done/' %}
+{% if not request.path == '/accounts/login/' and not request.path == "/"|add:SECRET_CODE|add:'/signup/' and not request.path == "/"|add:SECRET_CODE|add:'/account/update_profile/' and not request.path == '/accounts/reset/done/' %}
     <footer class="footer bg-dark">
 
     </footer>
@@ -616,13 +568,14 @@ $(document).ready(function () {
                 <span class="align-self-left">
                         <a href="{% url 'cart' %}" class="mr-0" style="color:
                                 {% if request.path == "/"|add:SECRET_CODE|add:'/cart/' %}cornflowerblue
-                                {% else %}grey {% endif %}"><i class="fas fa-shopping-cart"></i> Cart</a>
-                            {% comment %} If there is no product in the cart, the cart badge should be hidden {% endcomment %}
+                                {% else %}grey {% endif %}"><i class="fas fa-shopping-cart"></i> Orders</a>
+                            {% comment %} If there is no product in the cart, the cart badge should be hidden
                             <span class="badge badge-danger" id="top_cart"
                                   style={% if number_of_items == 0 or not number_of_items %}"visibility: hidden">
                                   {% else %}"visibility: inherit" >{% endif %}
                                   {{ number_of_items }}
                             </span>
+                            {% endcomment %}
                 </span>
             </nav>
         </div>
@@ -652,24 +605,18 @@ $(document).ready(function () {
     </footer>
 {% elif request.path == '/accounts/login/' or request.path == "/"|add:SECRET_CODE|add:'/signup/' %}
 
-
-    <footer class="footer bg-dark fixed-bottom" style="height: 0px">
+{% comment %}
+A different footer can be set for login page
+    <footer class="footer bg-dark fixed-bottom">
         <div class="container">
-            <nav class="navbar fixed-bottom navbar-dark bg-dark py-0" style="height: 50px">
+            <nav class="navbar fixed-bottom navbar-dark bg-dark py-0">
                 <a href="{% url 'home' %}" class="mr-2" style="visibility: hidden"><i class="fas fa-home fa-lg"></i></a>
 
             </nav>
         </div>
     </footer>
-{% else %}
-    <footer class="footer bg-dark fixed-bottom" >
-        <div class="container">
-            <nav class="navbar fixed-bottom navbar-dark bg-dark py-0" style="height: 50px">
-                <a href="{% url 'home' %}" class="mr-2" style="visibility: hidden"><i class="fas fa-home fa-lg"></i></a>
+{% endcomment %}
 
-            </nav>
-        </div>
-    </footer>
 {% endif %}
 <script src="{% static 'new_base/js/vendors.bundle.js' %}"></script>
 <script src="{% static 'new_base/js/app.bundle.js' %}"></script>

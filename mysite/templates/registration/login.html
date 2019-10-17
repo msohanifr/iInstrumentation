@@ -2,8 +2,21 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
+{% block header %}
+    <style>
+        body {
+            overflow-y:hidden;
+        }
+        .page-wrapper {
+            height: 1px;
+            justify-content: center;
+        }
+    </style>
+
+{% endblock %}
+
 {% block content %}
-    <div class="row justify-content-center">
+    <div class="row justify-content-center  align-middle">
         <div class="col-lg-6 col-sm-12">
             <div class="card border-dark">
                 <div class="card-body">
@@ -39,6 +52,10 @@
 
 {% block javascript %}
     <script>
+        $(document).ready(function () {
+           $('#js-page-content').removeClass('mt-5');
+            $('#js-page-content').addClass(' justify-content-center');
+        });
 
         $('#id_submit').click(function () {
             $("#id_username").val(($("#id_username").val()).toLowerCase())

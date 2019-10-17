@@ -6365,7 +6365,7 @@ body:not(.mod-pace-custom) .pace {
     background: #1f79b3;
     position: fixed;
     z-index: 2000;
-    top: 66px;
+    top: 0;
     right: 100%;
     width: 100%;
     height: 3px; }

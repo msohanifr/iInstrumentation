@@ -1,47 +1,6 @@
-{% load static %}
-<!doctype html>
-<html lang="en">
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <!-- Bootstrap core CSS -->
-    <link href="{% static 'mysite/dist/css/bootstrap.css' %}" rel="stylesheet">
-    <link href="{% static 'mysite/assets/bootstrap-social.css' %}" rel="stylesheet">
-    <link href="{% static 'mysite/docs/4.0/examples/sticky-footer-navbar/sticky-footer-navbar.css' %}" rel="stylesheet">
-    <link href="{% static 'mysite/fontawesome/css/all.css' %}" rel="stylesheet">
-
-    <title>Hello, world!</title>
-</head>
-<body>
-
-<div class="card" style="width: 18rem;">
-    <img class="card-img-top" src="..." alt="Card image cap">
-    <div class="card-body">
-        <h5 class="card-title">Email verification</h5>
-        <p class="card-text">Hi {{ user.username }},
-
-            Please click on the link to confirm your registration</p>
-        <a href="http://{{ domain }}{% url 'activate' uidb64=uid token=token %}" class="btn btn-primary">Verify</a>
-    </div>
-</div>
-
-
-
+Please click on the link to confirm your registration
+http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
 
 iDryClean, L.L.C.
 22 Dixon Dr., Florhampark, NJ 07932, USA
 (870) 814-6955
-
-<!-- Optional JavaScript -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="{% static 'mysite/fontawesome/js/all.js' %}"></script>
-
-<!-- Toastr style -->
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script src="{% static 'mysite/dist/js/bootstrap.min.js' %}"></script>
-</body>
-</html>

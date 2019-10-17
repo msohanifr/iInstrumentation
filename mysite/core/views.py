@@ -31,9 +31,11 @@ from django.contrib.auth.decorators import user_passes_test
 
 MAX_THRESHOLD_NUM_OF_SMS_CAN_BE_SENT = 3
 
-# Secret code used in urls
-class urlsecret:
-    SECRET_CODE = 'BNcNKV0mXuSTKNMKc10TFuMcXmQK5kGSuTXKdslzNEo63JjTfcmwR9Tv6zbdZz36'
+
+# ---------------------------------------------------------------
+# ---------------------- MISC -----------------------------------
+# ---------------------------------------------------------------
+
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY  # new
@@ -51,7 +53,33 @@ def handler403(request):
     return render(request, '403.html', status=403)
 
 
-# --------------------------------  USER_PASSES_TEST FUNCTION DEFINITIONS -------------------------------
+# Secret code used in urls
+class urlsecret:
+    SECRET_CODE = 'BNcNKV0mXuSTKNMKc10TFuMcXmQK5kGSuTXKdslzNEo63JjTfcmwR9Tv6zbdZz36'
+
+
+# deletes .pickle files older than one day
+def delete_files():
+    """
+
+    :return:
+    """
+    d = Path("mysite/..")
+    for i in d.listdir():
+        if i.endswith(".pickle"):
+            days = 30  # RETENTION PERIOD
+            time_in_secs = time.time() - (days * 24 * 60 * 60)
+            if i.isfile():
+                if i.mtime <= time_in_secs:
+                    i.remove()
+
+
+# ---------------------------------------------------------------
+# ---------------------- CUSTOMER -------------------------------
+# ---------------------------------------------------------------
+
+
+# --------  USER_PASSES_TEST FUNCTION DEFINITIONS ---------------
 def is_user_email_verified(user):
     """
     This is @user_passes_test function. Checks if user has verified email
@@ -112,10 +140,26 @@ def is_user_fully_registered(user):
     return profile.profile_filled
 
 
-# --------------------------------- END_USER_PASSES_TEST ------------------------------------------------
+def is_vendor(user):
+    """
+    Tests if user is Vendor. In that case, send user to vendor pages
+    :param user:
+    :return:
+    """
 
-# ----------------   Chronological login process   -----------------------------------------
-# ------------------------------------------------------------------------------------------
+    try:
+        profile = Profile.objects.get(user__username=user)
+        profile.vendor
+        result = True
+        print('yes vendor')
+    except:
+        result = False
+        print('no not vendor')
+    return not result
+# --------------------------------- END_USER_PASSES_TEST -------
+
+# ----------------   Chronological login process   -------------
+# --------------------------------------------------------------
 def signup(request):
     """
     Registers user's profile information such as Address, Phone, etc
@@ -225,14 +269,14 @@ def send_sms(request):
         'token': "Your verification code is: " + str(profile.phone_verification_code),
     }
     SMS_MSG = message['token']
-    """
+
     client.messages \
         .create(
         body=SMS_MSG,
         from_='+18622608689',
         to=to_phone
     )
-    """
+
     profile.number_of_sms_sent += 1
     profile.save()
     return render(request, 'smssent.html', {
@@ -283,7 +327,7 @@ def send_email_confirmation(request):
     :param request:
     :return: renders the confirmation for email page
     """
-    #send_mail('Email confirmation', 'This is a test', 'postmaster@sandboxf7bd24553c2145c1b8ab0f41f6ec6a03.mailgun.org', ['logixsohani@gmail.com'])
+    # send_mail('Email confirmation', 'This is a test', 'postmaster@sandboxf7bd24553c2145c1b8ab0f41f6ec6a03.mailgun.org', ['logixsohani@gmail.com'])
 
     user = User.objects.get(username=request.user)
     # user.is_active = False
@@ -297,7 +341,8 @@ def send_email_confirmation(request):
         'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
         'token': account_activation_token.make_token(user),
     })
-    mail.send_mail(mail_subject, mail_subject, 'admin@sandboxf7bd24553c2145c1b8ab0f41f6ec6a03.mailgun.org`', ['logixsohani@gmail.com'], html_message=message)
+    mail.send_mail(mail_subject, mail_subject, 'admin@sandboxf7bd24553c2145c1b8ab0f41f6ec6a03.mailgun.org`',
+                   ['logixsohani@gmail.com'], html_message=message)
     return redirect('home')
     # return render(request, 'confirm_email.html')
 
@@ -326,21 +371,70 @@ def activate(request, uidb64, token):
         profile_.save()
         # login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         # logout(request)
-        return HttpResponse("Thank you for your email confirmation. If you haven't confirmed your phone number yet, "
-                            "do so by "
-                            "requesting a phone confirmation and clicking on the link in your text message")
+
+        return HttpResponse("""
+        <!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Jekyll v3.8.5">
+    <title>Floating labels example · Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+   
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="floating-labels.css" rel="stylesheet">
+  </head>
+  <body>
+  <div class="text-center mb-4 mt-6">
+    <h1 class="h3 mb-3 mt-5 font-weight-normal">Email confirmation</h1>
+    <p>Thanks for confirming your email address. We use email to communicate with you. <br>
+    Please make sure to keep your email address up to date by going to:<br>
+    <code>Profile -> Update Profile</code>  
+  </div>
+  <div class="checkbox mb-3">
+   
+  </div>
+  <p class="mt-5 mb-3 text-muted text-center fixed-bottom">iDryClean team &copy; 2017-2019</p>
+</form>
+</body>
+</html>
+        """)
     else:
         return HttpResponse('Activation link is invalid! You can send another request in your home page')
-
-
 # ------------------------------------------------------------------------------------------
 @login_required
+@user_passes_test(is_vendor, login_url='/' + urlsecret.SECRET_CODE + '/vendor/')
 @user_passes_test(is_user_fully_registered, login_url='/' + urlsecret.SECRET_CODE + '/account/update_profile/')
-#@user_passes_test(is_user_email_verified, login_url='/resendemailconfirmation/')  # This should be a page that asks
-#@user_passes_test(is_user_phone_verified, login_url='/sms/')
+# @user_passes_test(is_user_email_verified, login_url='/resendemailconfirmation/')  # This should be a page that asks
+# @user_passes_test(is_user_phone_verified, login_url='/sms/')
 def home(request):
     """
-
     :param request:
     :return:
     """
@@ -363,6 +457,7 @@ def home(request):
 
 # ------------------------------------------------------------------------------------------
 @login_required
+@user_passes_test(is_vendor, login_url='/' + urlsecret.SECRET_CODE + '/vendor/')
 def profile(request):
     profile = Profile.objects.get(user__username=request.user.username)
     user = User.objects.get(username=request.user.username)
@@ -379,6 +474,7 @@ def profile(request):
         'state': profile.state,
         'zip': profile.zip_code,
         'number_of_items': get_number_of_items_in_cart(request),
+        'credit_card': profile.payment_method,
 
     })
 
@@ -386,6 +482,7 @@ def profile(request):
 @transaction.atomic
 # @user_passes_test(is_user_email_verified, login_url='/resendemailconfirmation/')
 @login_required
+@user_passes_test(is_vendor, login_url='/' + urlsecret.SECRET_CODE + '/vendor/')
 def update_profile(request):
     """
     :param request:
@@ -468,26 +565,11 @@ def signup_additional(request):
 #    template_name = '*.html'
 
 
-# deletes .pickle files older than one day
-def delete_files():
-    """
-
-    :return:
-    """
-    d = Path("mysite/..")
-    for i in d.listdir():
-        if i.endswith(".pickle"):
-            days = 30
-            time_in_secs = time.time() - (days * 24 * 60 * 60)
-            if i.isfile():
-                if i.mtime <= time_in_secs:
-                    i.remove()
-
-
 # ------------------------------------------------------------------------------------------
 # Only GET method. The submit button only refers to "CART" page.
 # the rest of this function takes care of finding vendor and associated profile
 @login_required
+@user_passes_test(is_vendor, login_url='/' + urlsecret.SECRET_CODE + '/vendor/')
 @user_passes_test(is_user_email_verified, login_url='/' + urlsecret.SECRET_CODE + '/sendemailconfirmation/')
 @user_passes_test(is_user_phone_verified, login_url='/' + urlsecret.SECRET_CODE + '/sms/')
 def order_page(request):
@@ -520,8 +602,8 @@ def order_page(request):
     items = {}
     # ----------------------------------------
     # create a range of digits 0:20 in string format
-    #range_ = []    TO BE DELETED
-    #for _ in range(0, 20):
+    # range_ = []    TO BE DELETED
+    # for _ in range(0, 20):
     #    range_.append(str(_))
     for _ in items_from_vendor:
         items.update({
@@ -543,7 +625,7 @@ def order_page(request):
     # ----------------------------------------
     return render(request, 'order.html', {
         'Items': items,
-        #'range': range_,    To BE DELETED
+        # 'range': range_,    To BE DELETED
         'number_of_items': get_number_of_items_in_cart(request),
     })
 
@@ -665,6 +747,7 @@ def profile_check_ajax(request):
 # ------------------------------------------------------------------------------------------
 # If number of items is zero, then remove the items
 @login_required
+@user_passes_test(is_vendor, login_url='/' + urlsecret.SECRET_CODE + '/vendor/')
 @user_passes_test(is_user_email_verified, login_url='/' + urlsecret.SECRET_CODE + '/sendemailconfirmation/')
 @user_passes_test(is_user_phone_verified, login_url='/' + urlsecret.SECRET_CODE + '/sms/')
 def cart_page(request):
@@ -753,7 +836,7 @@ def checkout(request):
             'quantity': 1,
         }],
         client_reference_id="123456",
-        customer_email='customer@example.com',
+        customer_email='matmat1@example.com',
         success_url='https://idryclean.herokuapp.com/BNcNKV0mXuSTKNMKc10TFuMcXmQK5kGSuTXKdslzNEo63JjTfcmwR9Tv6zbdZz36/home/',
         cancel_url='https://idryclean.herokuapp.com/BNcNKV0mXuSTKNMKc10TFuMcXmQK5kGSuTXKdslzNEo63JjTfcmwR9Tv6zbdZz36/home/',
     )
@@ -765,7 +848,8 @@ def checkout(request):
     total_price = 0
     for i in temp_order.values():
         total_price += i['price'] * i['count']
-    tax = decimal.Decimal(total_price) * decimal.Decimal(6.625/100)  # 6.25 is NJ TAX RATE, should be changed based on state
+    tax = decimal.Decimal(total_price) * decimal.Decimal(
+        6.625 / 100)  # 6.25 is NJ TAX RATE, should be changed based on state
     tax = decimal.Decimal(tax).quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_DOWN)
     return render(request, 'checkout.html', {
         'number_of_items': get_number_of_items_in_cart(request),
@@ -838,3 +922,98 @@ def support(request):
         'phone_number': vendor.profile.phone_number,
     })
 
+
+def charge(request):
+    if request.method == 'POST':
+        print(request.POST)
+    stripe.api_key = 'sk_test_38pWvScfn2ajZK6irXe95U8F00V1vvirR0'
+
+    # Token is created using Checkout or Elements!
+    # Get the payment token ID submitted by the form:
+    token = request.POST['stripeToken']
+
+    charge = stripe.Charge.create(
+        amount=1999,
+        currency='usd',
+        description='Example charge',
+        source=token,
+        receipt_email='logixsohani@gmail.com',
+    )
+    return render(request, 'Vendor/charge.html')
+
+
+def save_card(request):
+    profile_ = Profile.objects.get(user__username=request.user)
+    if request.method == 'POST':
+        pass
+    if request.method == 'GET':
+        setup_intent = stripe.SetupIntent.create()
+    return render(request, 'save_card.html', {
+        'client_secret': setup_intent.client_secret,
+        'credit_id': profile_.customer_id,
+    })
+
+
+def save_card_ajax(request):
+    data = json.loads(request.GET['data'])
+    profile_ = Profile.objects.get(user__username=request.user)
+    # This creates a new Customer and attaches the PaymentMethod in one API call.
+    customer = stripe.Customer.create(
+        payment_method=data['payment_method'],
+        description="Customer for jenny.rosen@example.com",
+        email=profile_.user.email,
+        name=profile_.user.first_name + " " + profile_.user.last_name,
+    )
+    cards = stripe.Customer.list_sources(
+        customer['id'],
+        limit=3,
+        object='card'
+    )
+    print(cards)
+    # print(customer)
+    # This is for payment. Has to be moved to the vendor charging function
+    stripe.api_key = 'sk_test_38pWvScfn2ajZK6irXe95U8F00V1vvirR0'
+    paymentresponse = stripe.PaymentIntent.create(
+        amount=50,
+        currency='usd',
+        payment_method_types=['card'],
+        customer=customer['id'],
+        payment_method=data['payment_method'],
+        off_session=True,
+        confirm=True,
+    )
+    # print(paymentresponse)
+    profile_.payment_method = data['payment_method']
+    profile_.customer_id = customer['id']
+    profile_.save()
+    return JsonResponse({'data': 0})
+
+
+def delete_card_ajax(request):
+    data = request.GET['data']
+    print(data)
+    stripe.api_key = "sk_test_38pWvScfn2ajZK6irXe95U8F00V1vvirR0"
+    response = stripe.Customer.delete_source(
+        data,
+    )
+    print(response)
+    return JsonResponse({"data": 0})
+
+
+def delete_profile(request):
+    user_ = User.objects.get(username=request.user)
+    profile_ = Profile.objects.get(user__username=request.user)
+    user_.delete()
+    profile_.delete()
+    return redirect('/accounts/logout/')
+
+# ---------------------------------------------------------------------------
+# ---------------------- Customer STRIPE TRANSACTIONS -----------------------
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# ---------------------- VENDOR ---------------------------------------------
+# ---------------------------------------------------------------------------
+def vendor(request):
+    return render(request, 'Vendor/vendor_home.html')

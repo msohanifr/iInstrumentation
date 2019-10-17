@@ -22,6 +22,7 @@ urlpatterns = [
     path(urlsecret.SECRET_CODE + '/signup_additional/', views.signup_additional, name='signup_additional'),
     path(urlsecret.SECRET_CODE + '/profile/', views.profile, name='profile'),
     path(urlsecret.SECRET_CODE + '/account/update_profile/', views.update_profile, name='update_profile'),
+    path(urlsecret.SECRET_CODE + '/account/delete_profile/', views.delete_profile, name='delete_profile'),
     path(urlsecret.SECRET_CODE + '/order/', views.order_page, name='order'),
     path(urlsecret.SECRET_CODE + '/order_history', views.order_history, name='order_history'),
     path('smsajax/', views.ajax_sms, name='smsajax'),
@@ -31,9 +32,16 @@ urlpatterns = [
     path(urlsecret.SECRET_CODE + '/cart/', views.cart_page, name='cart'),
     path(urlsecret.SECRET_CODE + '/checkout/', views.checkout, name='checkout'),
     path(urlsecret.SECRET_CODE + '/pay/', views.pay.as_view(), name='pay'),
+    path(urlsecret.SECRET_CODE + '/charge/', views.charge, name='charge'),
+    path(urlsecret.SECRET_CODE + '/save_card/', views.save_card, name='save_card'),
+    path('save_card_ajax/', views.save_card_ajax, name='save_card_ajax'),
+    path('delete_card_ajax/', views.delete_card_ajax, name='delete_card_ajax'),
     path(urlsecret.SECRET_CODE + '/charged/', views.charged, name='charged'),
+
     path('accounts/', include('django.contrib.auth.urls')),
     path(urlsecret.SECRET_CODE + '/support/', views.support, name='support'),
     path(urlsecret.SECRET_CODE + '/admin/', admin.site.urls),
     path(urlsecret.SECRET_CODE + '/logout/', views.logout, name='logout'),
+    # VENDOR
+    path(urlsecret.SECRET_CODE + '/vendor/', views.vendor, name='vendor'),
 ]

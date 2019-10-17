@@ -259,12 +259,10 @@
         $("#buy").click(function () {
             var stripe = Stripe('pk_test_FOkbM012GxQqlDGkNz0Nb2ju00dMHMrWz2');
             stripe.redirectToCheckout({
-
                 sessionId: '{{CHECKOUT_SESSION_ID|safe}}',
             }).then(function (result) {
 
             });
         });
-
     </script>
 {% endblock %}

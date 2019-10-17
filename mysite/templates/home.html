@@ -35,9 +35,16 @@
             {% else %}
                 <li class="list-group-item">
                     <p> Your phone number is not verified </p>
-                    <a href="{% url 'smssent' %}" class="btn btn-outline-primary mt-1 mb-1">enter code and verify
+                    <div class="row justify-content-center align-items-center ">
+                        <div class="btn-group mb-2 mt-2">
+                    <a href="{% url 'smssent' %}" class="btn btn-outline-primary mt-1 mb-1">Enter code and verify
                         phone</a>
-                    <a href="{% url 'sendsms' %}" class="btn btn-outline-primary mt-1 mb-1">send phone verification</a>
+                        </div>
+                        <div class="btn-group mb-2 mt-2">
+                    <a href="{% url 'sendsms' %}" class="btn btn-outline-primary mt-1 mb-1">
+                        <i class="fa fa-paper-plane"></i> Send phone verification</a>
+                        </div>
+                    </div>
                 </li>
             {% endif %}
 
