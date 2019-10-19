@@ -1,5 +1,15 @@
 {% extends 'base.html' %}
-
+{% load static %}
+{% block header %}
+<style>
+.notransition {
+-webkit-transition: none !important;
+-moz-transition: none !important;
+-o-transition: none !important;
+transition: none !important;
+}
+</style>
+{% endblock %}
 {% block content %}
     {% comment %} When customer doesn't have a credit card and is trying to add a card {% endcomment %}
     <div class="card border-dark mb-2">
@@ -7,7 +17,7 @@
             <h5 class="card-title">Please enter your credit card information to create faster checkout</h5>
             <!--Example 4-->
             <script src="https://js.stripe.com/v3/"></script>
-            <input id="cardholder-name" type="text" value="Mohammad" style="visibility: hidden">
+            <input id="cardholder-name" type="text" value="{{ name }}" style="visibility: hidden">
             <form action="/{{ secret_code }}/add_card/" method="post" id="payment-form">
                 {% csrf_token %}
                 <label for="card-element">
@@ -35,22 +45,35 @@
 
 {% endblock %}
 {% block javascript %}
-
-    <script src="https://js.stripe.com/v3/"></script>
-
-    {% comment %}  ---------- DELETE CREDIT CARD ------------- {% endcomment %}
-
-
-    {% comment %} Add credit card and customer {% endcomment %}
     <script>
+        var style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = '* {' +
+            '/*CSS transitions*/' +
+            ' -o-transition-property: none !important;' +
+            ' -moz-transition-property: none !important;' +
+            ' -ms-transition-property: none !important;' +
+            ' -webkit-transition-property: none !important;' +
+            '  transition-property: none !important;' +
+            '/*CSS transforms*/' +
+            '  -o-transform: none !important;' +
+            ' -moz-transform: none !important;' +
+            '   -ms-transform: none !important;' +
+            '  -webkit-transform: none !important;' +
+            '   transform: none !important;' +
+            '  /*CSS animations*/' +
+            '   -webkit-animation: none !important;' +
+            '   -moz-animation: none !important;' +
+            '   -o-animation: none !important;' +
+            '   -ms-animation: none !important;' +
+            '   animation: none !important;}';
+        document.getElementsByTagName('head')[0].appendChild(style);
+        $('body').toggleClass('notransition');
         $(document).ready(function () {
-
             // Create a Stripe client.
             var stripe = Stripe('pk_test_FOkbM012GxQqlDGkNz0Nb2ju00dMHMrWz2');
-
             // Create an instance of Elements.
             var elements = stripe.elements();
-
             // Custom styling can be passed to options when creating an Element.
             // (Note that this demo uses a wider set of styles than the guide below.)
             var style = {
@@ -100,9 +123,6 @@
                         stripeTokenHandler(result.token);
                     }
                 });
-
-
-
 
             });
 
