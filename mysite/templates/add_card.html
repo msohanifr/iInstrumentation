@@ -55,12 +55,12 @@ transition: none !important;
             ' -ms-transition-property: none !important;' +
             ' -webkit-transition-property: none !important;' +
             '  transition-property: none !important;' +
-            '/*CSS transforms*/' +
-            '  -o-transform: none !important;' +
-            ' -moz-transform: none !important;' +
-            '   -ms-transform: none !important;' +
-            '  -webkit-transform: none !important;' +
-            '   transform: none !important;}';
+            '  /*CSS animations*/' +
+            '   -webkit-animation: none !important;' +
+            '   -moz-animation: none !important;' +
+            '   -o-animation: none !important;' +
+            '   -ms-animation: none !important;' +
+            '   animation: none !important;;}';
         document.getElementsByTagName('head')[0].appendChild(style);
         $('body').toggleClass('notransition');
         $(document).ready(function () {
