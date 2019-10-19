@@ -16,14 +16,14 @@
                     {% if isEmailVerified %}
 
                     {% else %}
-                        <p>Your email is not verified</p>
+                        <p style="color: #dc3545">Your email is not verified</p>
                         <div class="row justify-content-center align-items-center ">
 
-                            <div class="btn-group mb-3 mt-3 ml-2">
+                            <div class="btn-group mb-1 mt-1 ml-2">
                                 <a href="{% url 'profile' %}" class="btn btn-outline-primary mt-1 mb-1">I have verified my
                                     email</a>
                             </div>
-                            <div class="btn-group mb-3 mt-3 ml-2">
+                            <div class="btn-group mb-1 mt-1 ml-2">
                             <a href="{% url 'send_email_confirmation' %}" class="btn btn-outline-primary">
                                 <i class="fa fa-paper-plane"></i> Send email
                                 verification</a>
@@ -32,14 +32,14 @@
 
                     {% endif %}
                     {% if isEmailVerified == 1 %}
-                        <p> Please confirm your email address to complete the registration. </p>
+                        <p style="color: #dc3545"> Please confirm your email address to complete the registration. </p>
                         <div class="row justify-content-center align-items-center ">
 
-                            <div class="btn-group mb-3 mt-3">
+                            <div class="btn-group mb-1 mt-1">
                                 <a href="{% url 'profile' %}" class="btn btn-outline-primary mt-1 mb-1">I have verified my
                                     email</a>
                             </div>
-                            <div class="btn-group mb-3 mt-3 ml-2">
+                            <div class="btn-group mb-1 mt-1 ml-2">
                             <a href="{% url 'send_email_confirmation' %}" class="btn btn-outline-primary mt-1 mb-1">Send
                                 email
                                 verification</a>
@@ -60,17 +60,17 @@
                         <a href="{% url 'sendsms' %}" class="btn btn-outline-primary mt-1 mb-1"> send phone
                             verification</a>
                     {% else %}
-                        <P>Your phone is not verified</P>
+                        <P style="color: #dc3545">Your phone is not verified</P>
                         <div class="row justify-content-center align-items-center ">
-                        <div class="btn-group mb-2 mt-2">
+                        <div class="btn-group mb-1 mt-1">
                         <a href="{% url 'smssent' %}" class="btn btn-outline-primary">enter code and verify
                             phone</a>
                         </div>
-                        <div class="btn-group mb-2 mt-2 ml-2">
-                        <a href="{% url 'sendsms' %}" class="btn btn-outline-primary">
-                            <i class="fa fa-paper-plane"></i> Send phone
-                            verification</a>
-                        </div>
+                        <div class="btn-group mb-1 mt-1 ml-2">
+                            <a href="{% url 'sendsms' %}" class="btn btn-outline-primary">
+                                <i class="fa fa-paper-plane"></i> Send phone
+                                verification</a>
+                            </div>
                         </div>
                     {% endif %}
                 </li>
@@ -83,57 +83,22 @@
                         {% if not state == "" %}, {{ state }}{% endif %}
                         {% if not zip == "" %}, {{ zip }}{% endif %}</p>
                 </li>
-
-
             </ul>
+            <h6 class="text-danger mt-2 text-center">If you delete your profile, you have to create another account.</h6>
             <div class="row justify-content-center align-items-center ">
-                <div class="btn-group mt-2 mb-2">
+
+                <div class="btn-group mt-2 mb-1">
                     <a href="{% url 'update_profile' %}" class="btn btn-outline-primary"><i
                             class="fa fa-edit"></i> Edit profile</a>
                 </div>
-                <div class="btn-group mb-2 mt-2 ml-2">
-                    <a href="{% url 'delete_profile' %}" class="btn btn-outline-primary"><i
+                <div class="btn-group mb-1 mt-2 ml-2">
+                    <a href="{% url 'delete_profile' %}" class="btn btn-outline-danger"><i
                             class="fa fa-trash"></i> Delete profile</a>
                 </div>
             </div>
         </div>
     </div>
-    <div class="card border-dark mb-2">
-        {% comment %}          ----------- The card header, it is rremoved because it is too big
-        <div class="card-header">
-            <h2>Profile</h2>
-        </div>
-        {% endcomment %}
-        <div class="card-body">
-            <h5 class="card-title">Payment information</h5>
 
-            <ul class="list-group list-group-flush">
-                {% if credit_card == '' %}
-                    <li class="list-group-item">
-                        <p> Your credit card is not saved</p>
-                        <div class="row justify-content-center align-items-center ">
-                            <div class="btn-group mb-3 mt-3">
-                                <a href="{% url 'save_card' %}" class="btn btn-outline-primary mt-1 mb-1"><i
-                                        class="fa fa-credit-card"></i> Add credit card
-                                </a>
-                            </div>
-                        </div>
-                    </li>
-                {% else %}
-                    <li class="list-group-item">
-                        <p> Your credit card is saved</p>
-                        <div class="row justify-content-center align-items-center ">
-                            <div class="btn-group mb-1 mt-1">
-                                <a href="{% url 'save_card' %}" class="btn btn-outline-primary mt-1 mb-1">Update credit card
-                                </a>
-                            </div>
-                        </div>
-                    </li>
-                {% endif %}
-            </ul>
-
-        </div>
-    </div>
     <div>
         <br>
     </div>

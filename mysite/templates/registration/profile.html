@@ -22,10 +22,17 @@
                         {% csrf_token %}
                         {{ user_form|crispy }}
                         {{ profile_form|crispy }}
+                        {% if request.path ==  "/"|add:SECRET_CODE|add:'/account/update_profile/' and not profile_filled%}
                         <button type="button" class="btn btn-outline-danger"
-                                onclick="window.location.href =  '/{{ SECRET_CODE }}/profile/';">
+                                onclick="window.location.href =  '/{{ SECRET_CODE }}/logout/';">
                             Cancel
                         </button>
+                        {% elif request.path ==  "/"|add:SECRET_CODE|add:'/account/update_profile/' and profile_filled%}
+                            <button type="button" class="btn btn-outline-danger"
+                                    onclick="window.location.href =  '/{{ SECRET_CODE }}/profile/';">
+                                Cancel
+                            </button>
+                        {% endif %}
                         <button type="button" id="id_submit" class="btn btn-outline-primary">Save changes</button>
 
                         {% comment %}

@@ -2,8 +2,9 @@
 {% cycle 'BNcNKV0mXuSTKNMKc10TFuMcXmQK5kGSuTXKdslzNEo63JjTfcmwR9Tv6zbdZz36' as SECRET_CODE silent %}
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" style="background-color: white">
 <head>
+
     <meta charset="utf-8">
     <title>
         iDryClean
@@ -27,7 +28,7 @@
     <link href="{% static 'mysite/docs/4.0/examples/sticky-footer-navbar/sticky-footer-navbar.css' %}" rel="stylesheet">
     <link href="{% static 'mysite/fontawesome/css/all.css' %}" rel="stylesheet">
 </head>
-<body class="mod-bg-1 ">
+<body style="background-color: white">
 <script>
     /**
      *    This script should be placed right after the body tag for fast execution
@@ -79,7 +80,6 @@
 
 </script>
 <style>
-
 
     {% comment %} This disbales the long touch, which can ultimately reveal the server link {% endcomment %}
     body {
@@ -246,9 +246,9 @@
 
 {% endblock %}
 <!-- BEGIN Page Wrapper -->
-<div class="page-wrapper">
-    <div class="page-inner">
-        {% if not request.path ==  '/accounts/login/' and not request.path == "/"|add:SECRET_CODE|add:'/signup/' and not request.path == "/"|add:SECRET_CODE|add:'/account/update_profile/' and not request.path == '/accounts/reset/done/' %}
+<div class="page-wrapper" style="background-color: white">
+    <div class="page-inner" style="background-color: white">
+        {% if not request.path ==  '/accounts/password_reset/' and not request.path ==  '/accounts/login/' and not request.path == "/"|add:SECRET_CODE|add:'/signup/' and not request.path == "/"|add:SECRET_CODE|add:'/account/update_profile/' and not request.path == '/accounts/reset/done/' %}
 
             <!-- BEGIN Left Aside -->
             <aside class="page-sidebar bg-info-100">
@@ -310,6 +310,13 @@
                                 <span class="nav-link-text" data-i18n="nav.application_intel_introduction"><i
                                         class="fal fa-user mr-2"></i>
                                      Profile</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'settings' %}" title="Settings" data-filter-tags="application intel">
+                                <span class="nav-link-text" data-i18n="nav.application_intel_introduction"><i
+                                        class="fal fa-cogs mr-2"></i>
+                                     Settings</span>
                                 </a>
                             </li>
                             <li>
@@ -384,8 +391,8 @@
             </aside>
             <!-- END Left Aside -->
         {% endif %}
-        <div class="page-content-wrapper">
-            {% if not request.path ==  '/accounts/login/' and not request.path == "/"|add:SECRET_CODE|add:'/signup/' and not request.path == "/"|add:SECRET_CODE|add:'/account/update_profile/' and not request.path == '/accounts/reset/done/' %}
+        <div class="page-content-wrapper" style="background-color: white">
+            {% if not request.path ==  '/accounts/password_reset/done/' and not request.path ==  '/accounts/password_reset/' and not request.path ==  '/accounts/login/' and not request.path == "/"|add:SECRET_CODE|add:'/signup/' and not request.path == "/"|add:SECRET_CODE|add:'/account/update_profile/' and not request.path == '/accounts/reset/done/' %}
 
                 <!-- BEGIN Page Header -->
                 <header class="page-header bg-dark fixed-top" role="banner">
@@ -439,63 +446,12 @@
                 </header>
             {% elif  request.path ==  '/accounts/login/' or request.path == "/"|add:SECRET_CODE|add:'/account/update_profile/' or request.path == "/"|add:SECRET_CODE|add:'/signup/'%}
 
-                <!-- BEGIN Page Header -->
-                <header class="page-header bg-dark fixed-top" role="banner" style="height: 50px">
-                    <!-- we need this logo when user switches to nav-function-top -->
-                    <div class="page-logo">
-                        <a href="#" class="page-logo-link press-scale-down d-flex align-items-center position-relative"
-                           data-toggle="modal" data-target="#modal-shortcut">
-                            {% comment %}
-                            <img src="img/logo.png" alt="SmartAdmin WebApp" aria-roledescription="logo">
-                            {% endcomment %}
-                            <span class="page-logo-text mr-1">SmartAdmin WebApp</span>
-                            <span class="position-absolute text-white opacity-50 small pos-top pos-right mr-2 mt-n2">SeedProject</span>
-                            <i class="fal fa-angle-down d-inline-block ml-1 fs-lg color-primary-300"></i>
-                        </a>
-                    </div>
-                    <!-- DOC: nav menu layout change shortcut -->
-                    <div class="hidden-md-down dropdown-icon-menu position-relative">
-                        <a href="#" class="header-btn btn js-waves-off" data-action="toggle"
-                           data-class="nav-function-hidden" title="Hide Navigation">
-                            <i class="ni ni-menu"></i>
-                        </a>
-                        <ul>
-                            <li>
-                                <a href="#" class="btn js-waves-off" data-action="toggle"
-                                   data-class="nav-function-minify" title="Minify Navigation">
-                                    <i class="ni ni-minify-nav"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="btn js-waves-off" data-action="toggle"
-                                   data-class="nav-function-fixed" title="Lock Navigation">
-                                    <i class="ni ni-lock-nav"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    {% comment %}
-                    <!-- DOC: mobile button appears during mobile width -->
-                    <div class="hidden-lg-up">
-                        <a href="#" class="header-btn btn press-scale-down" data-action="toggle"
-                           data-class="mobile-nav-on">
-                            <i class="ni ni-menu"></i>
-                        </a>
-                    </div>
-                    {% endcomment %}
-
-                    <div class="ml-auto d-flex">
-
-
-                    </div>
-
-                </header>
 
             {% endif %}
             <!-- END Page Header -->
             <!-- BEGIN Page Content -->
             <!-- the #js-page-content id is needed for some plugins to initialize -->
-            <main id="js-page-content" role="main" class="page-content mt-5">
+            <main id="js-page-content" role="main" class="page-content mt-5" style="background-color: white">
 
                 {% block content %}
 
@@ -601,10 +557,7 @@ $(document).ready(function () {
 
 
 {% if not request.path == '/accounts/password_reset/' and not request.path == '/accounts/password_reset/done/' and not request.path == '/accounts/login/' and not request.path == "/"|add:SECRET_CODE|add:'/signup/' and not request.path == "/"|add:SECRET_CODE|add:'/account/update_profile/' and not request.path == '/accounts/reset/done/' %}
-    <footer class="footer bg-dark">
-
-    </footer>
-    <footer class="footer bg-dark">
+    <footer class="footer bg-dark" style="height: 0px;">
         <div class="container">
             <nav class="navbar fixed-bottom navbar-dark bg-dark py-0">
                 <a href="{% url 'home' %}" class="mr-2" style="color:
@@ -650,18 +603,11 @@ $(document).ready(function () {
                 </span></nav>
         </div>
     </footer>
-{% elif request.path == '/accounts/login/' or request.path == "/"|add:SECRET_CODE|add:'/signup/' %}
+{% elif request.path == '/accounts/login/' or request.path == "/"|add:SECRET_CODE|add:'/signup/' or request.path == "/"|add:SECRET_CODE|add:'/account/update_profile/'%}
 
 
-    <footer class="footer bg-dark fixed-bottom" style="height: 0px">
-        <div class="container">
-            <nav class="navbar fixed-bottom navbar-dark bg-dark py-0" style="height: 50px">
-                <a href="{% url 'home' %}" class="mr-2" style="visibility: hidden"><i class="fas fa-home fa-lg"></i></a>
-
-            </nav>
-        </div>
-    </footer>
 {% else %}
+    {% comment %}
     <footer class="footer bg-dark fixed-bottom" >
         <div class="container">
             <nav class="navbar fixed-bottom navbar-dark bg-dark py-0" style="height: 50px">
@@ -670,6 +616,7 @@ $(document).ready(function () {
             </nav>
         </div>
     </footer>
+    {% endcomment %}
 {% endif %}
 <script src="{% static 'new_base/js/vendors.bundle.js' %}"></script>
 <script src="{% static 'new_base/js/app.bundle.js' %}"></script>

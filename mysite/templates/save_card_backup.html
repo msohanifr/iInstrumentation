@@ -169,40 +169,45 @@
             <div class="card-body">
                 <h5 class="card-title">You already have a saved card</h5>
                 <!--Example 4-->
-                <input id="delete-credit-id" type="text" value={{ credit_id }} style="visibility: hidden">
-                <div class="btn-group mb-2">
-                    <button id="delete-card-button" class='btn btn-outline-danger mt-2'>Delete Card</button>
+                <input id="delete-credit-id" type="text" value="{{ credit_id }}" style="visibility: hidden">
+                <div class="row justify-content-center align-items-center">
+                    <div class="btn-group mb-2">
+                        <button id="delete-card-button" class='btn btn-outline-danger mt-2'>Delete Card</button>
+                    </div>
                 </div>
             </div>
         </div>
     {% else %}
-    <div class="card border-dark mb-2">
-        <div class="card-body">
-            <h5 class="card-title">Please enter your credit card information</h5>
+        {% comment %} When customer doesn't have a credit card and is trying to add a card {% endcomment %}
+        <div class="card border-dark mb-2">
+            <div class="card-body">
+                <h5 class="card-title">Please enter your credit card information</h5>
 
 
-            <!--Example 4-->
-            <input id="cardholder-name" type="text" value="Mohammad" style="visibility: hidden">
-            <div class="cell creditcard card-element" id="credit_card" >
+                <!--Example 4-->
+                <input id="cardholder-name" type="text" value="Mohammad" style="visibility: hidden">
+                <div class="cell creditcard card-element" id="credit_card" >
 
-                <!-- Used to display form errors. -->
-                <div id="card-errors" role="alert"></div>
-                <!-- placeholder for Elements -->
-                <div id="card-element"></div>
-            </div>
-            <div class="row justify-content-center align-items-center">
-                <div class="btn-group mb-2 ml-2">
-                    <button id="card-button" class='btn btn-outline-primary mt-2' data-secret="{{ client_secret }}">Save Card</button>
+                    <!-- Used to display form errors. -->
+                    <div id="card-errors" role="alert"></div>
+                    <!-- placeholder for Elements -->
+                    <div id="card-element"></div>
+                </div>
+                <div class="row justify-content-center align-items-center">
+                    <div class="btn-group mb-2 ml-2">
+                        <button id="card-button" class='btn btn-outline-primary mt-2' data-secret="{{ client_secret }}">Save Card</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     {% endif %}
 
 {% endblock %}
 {% block javascript %}
 
     <script src="https://js.stripe.com/v3/"></script>
+
+    {% comment %}  ---------- DELETE CREDIT CARD ------------- {% endcomment %}
     <script>
         $('#delete-card-button').click(function () {
             console.log('delete');
@@ -214,26 +219,23 @@
                 },
                 dataType: 'json',
                 success: function (data) {
+                    console.log('success');
+                    console.log(data);
                     window.location.reload();
                 },
                 error: function () {
-                    console.log('error')
+                    console.log('error');
                 },
             });
         });
     </script>
+
+    {% comment %} Add credit card and customer {% endcomment %}
     <script>
+        $(document).ready(function () {
 
-
-    $(document).ready(function () {
-
-            $.ajax({
-                url: "https://js.stripe.com/v3/",
-                dataType: "script",
-                cache: true
-            });
             // Create a Stripe client.
-            var stripe = Stripe('pk_test_FOkbM012GxQqlDGkNz0Nb2ju00dMHMrWz2');
+            var stripe = Stripe('{{stripe_publishable_key}}');
             var elements = stripe.elements({
 
                 // Stripe's examples are localized to specific languages, but if
@@ -272,8 +274,6 @@
             var cardButton = document.getElementById('card-button');
             var clientSecret = cardButton.dataset.secret;
 
-
-            cardButton.addEventListener('click', function (ev) {
                 stripe.handleCardSetup(
                     clientSecret, cardElement, {
                         payment_method_data: {
@@ -284,7 +284,6 @@
                     if (result.error) {
                         // Display error.message in your UI.
                     } else {
-
                         // The setup has succeeded. Display a success message.
                         $.ajax({
                             url: '/save_card_ajax/',
@@ -293,7 +292,7 @@
                             },
                             dataType: 'json',
                             success: function (data) {
-
+                                window.location.reload();
                             },
                             error: function () {
                             },
@@ -301,7 +300,6 @@
 
                     }
                 });
-            });
 
 
 

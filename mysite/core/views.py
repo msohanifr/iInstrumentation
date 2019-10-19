@@ -30,12 +30,12 @@ from mysite.forms import UserForm, ProfileForm, SignUpForm
 from django.contrib.auth.decorators import user_passes_test
 
 MAX_THRESHOLD_NUM_OF_SMS_CAN_BE_SENT = 3
-
+STRIPE_API_KEY = "sk_test_38pWvScfn2ajZK6irXe95U8F00V1vvirR0"
+STRIPE_PUBLISHABLE_KEY = "pk_test_FOkbM012GxQqlDGkNz0Nb2ju00dMHMrWz2"
 
 # ---------------------------------------------------------------
 # ---------------------- MISC -----------------------------------
 # ---------------------------------------------------------------
-
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY  # new
@@ -151,11 +151,11 @@ def is_vendor(user):
         profile = Profile.objects.get(user__username=user)
         profile.vendor
         result = True
-        print('yes vendor')
     except:
         result = False
-        print('no not vendor')
     return not result
+
+
 # --------------------------------- END_USER_PASSES_TEST -------
 
 # ----------------   Chronological login process   -------------
@@ -427,6 +427,8 @@ def activate(request, uidb64, token):
         """)
     else:
         return HttpResponse('Activation link is invalid! You can send another request in your home page')
+
+
 # ------------------------------------------------------------------------------------------
 @login_required
 @user_passes_test(is_vendor, login_url='/' + urlsecret.SECRET_CODE + '/vendor/')
@@ -441,7 +443,6 @@ def home(request):
     # home page: show only when user is logged in, otherwise go to sigin page
     if request.user.is_authenticated:
         profile = Profile.objects.get(user__username=request.user.username)
-        user_ = User.objects.get(username=request.user.username)
         order = Order.objects.filter(client__user__username=request.user.username)
         return render(request, 'home.html', {
             'isPhoneVerified': profile.phone_verification_status,
@@ -460,8 +461,18 @@ def home(request):
 @user_passes_test(is_vendor, login_url='/' + urlsecret.SECRET_CODE + '/vendor/')
 def profile(request):
     profile = Profile.objects.get(user__username=request.user.username)
+    if profile.customer_id:
+        cards = stripe.Customer.list_sources(
+            profile.customer_id,
+            limit=3,
+            object='card'
+        )
+        cards = cards.data
+    else:
+        cards = []
     user = User.objects.get(username=request.user.username)
     return render(request, 'profile.html', {
+        'cards': len(cards),
         'isPhoneVerified': profile.phone_verification_status,
         'isEmailVerified': profile.email_verification_status,
         'firstname': user.first_name,
@@ -474,8 +485,37 @@ def profile(request):
         'state': profile.state,
         'zip': profile.zip_code,
         'number_of_items': get_number_of_items_in_cart(request),
-        'credit_card': profile.payment_method,
+    })
 
+
+# ------------------------------------------------------------------------------------------
+@login_required
+@user_passes_test(is_vendor, login_url='/' + urlsecret.SECRET_CODE + '/vendor/')
+def settings(request):
+    profile = Profile.objects.get(user__username=request.user.username)
+    user = User.objects.get(username=request.user.username)
+    if profile.customer_id:
+        cards = stripe.Customer.list_sources(
+            profile.customer_id,
+            limit=3,
+            object='card'
+        )
+        cards = cards.data
+    else:
+        cards = []
+    return render(request, 'settings.html', {
+        'cards': len(cards),
+        'isPhoneVerified': profile.phone_verification_status,
+        'isEmailVerified': profile.email_verification_status,
+        'firstname': user.first_name,
+        'lastname': user.last_name,
+        'email': user.email,
+        'phone': profile.phone_number,
+        'street1': profile.street1,
+        'street2': profile.street2,
+        'city': profile.city,
+        'state': profile.state,
+        'zip': profile.zip_code,
     })
 
 
@@ -521,6 +561,7 @@ def update_profile(request):
         'profile_form': profile_form,
         'isEmailVerified': profile_.email_verification_status,
         'number_of_items': get_number_of_items_in_cart(request),
+        'profile_filled': profile_.profile_filled,
     })
 
 
@@ -824,7 +865,7 @@ def checkout(request):
     """
     # Set your secret key: remember to change this to your live secret key in production
     # See your keys here: https://dashboard.stripe.com/account/apikeys
-    stripe.api_key = 'sk_test_38pWvScfn2ajZK6irXe95U8F00V1vvirR0'
+    stripe.api_key = STRIPE_API_KEY
     session = stripe.checkout.Session.create(
         payment_method_types=['card'],
         line_items=[{
@@ -926,7 +967,7 @@ def support(request):
 def charge(request):
     if request.method == 'POST':
         print(request.POST)
-    stripe.api_key = 'sk_test_38pWvScfn2ajZK6irXe95U8F00V1vvirR0'
+    stripe.api_key = STRIPE_API_KEY
 
     # Token is created using Checkout or Elements!
     # Get the payment token ID submitted by the form:
@@ -942,64 +983,6 @@ def charge(request):
     return render(request, 'Vendor/charge.html')
 
 
-def save_card(request):
-    profile_ = Profile.objects.get(user__username=request.user)
-    if request.method == 'POST':
-        pass
-    if request.method == 'GET':
-        setup_intent = stripe.SetupIntent.create()
-    return render(request, 'save_card.html', {
-        'client_secret': setup_intent.client_secret,
-        'credit_id': profile_.customer_id,
-    })
-
-
-def save_card_ajax(request):
-    data = json.loads(request.GET['data'])
-    profile_ = Profile.objects.get(user__username=request.user)
-    # This creates a new Customer and attaches the PaymentMethod in one API call.
-    customer = stripe.Customer.create(
-        payment_method=data['payment_method'],
-        description="Customer for jenny.rosen@example.com",
-        email=profile_.user.email,
-        name=profile_.user.first_name + " " + profile_.user.last_name,
-    )
-    cards = stripe.Customer.list_sources(
-        customer['id'],
-        limit=3,
-        object='card'
-    )
-    print(cards)
-    # print(customer)
-    # This is for payment. Has to be moved to the vendor charging function
-    stripe.api_key = 'sk_test_38pWvScfn2ajZK6irXe95U8F00V1vvirR0'
-    paymentresponse = stripe.PaymentIntent.create(
-        amount=50,
-        currency='usd',
-        payment_method_types=['card'],
-        customer=customer['id'],
-        payment_method=data['payment_method'],
-        off_session=True,
-        confirm=True,
-    )
-    # print(paymentresponse)
-    profile_.payment_method = data['payment_method']
-    profile_.customer_id = customer['id']
-    profile_.save()
-    return JsonResponse({'data': 0})
-
-
-def delete_card_ajax(request):
-    data = request.GET['data']
-    print(data)
-    stripe.api_key = "sk_test_38pWvScfn2ajZK6irXe95U8F00V1vvirR0"
-    response = stripe.Customer.delete_source(
-        data,
-    )
-    print(response)
-    return JsonResponse({"data": 0})
-
-
 def delete_profile(request):
     user_ = User.objects.get(username=request.user)
     profile_ = Profile.objects.get(user__username=request.user)
@@ -1007,9 +990,119 @@ def delete_profile(request):
     profile_.delete()
     return redirect('/accounts/logout/')
 
+
 # ---------------------------------------------------------------------------
 # ---------------------- Customer STRIPE TRANSACTIONS -----------------------
 # ---------------------------------------------------------------------------
+"""
+def temp_payment():
+    
+This is temp. Has to be changed later
+:return:
+
+# This is for payment. Has to be moved to the vendor charging function
+stripe.api_key = STRIPE_API_KEY
+paymentresponse = stripe.PaymentIntent.create(
+    amount=50,
+    currency='usd',
+    payment_method_types=['card'],
+    customer=customer['id'],
+    payment_method=data['payment_method'],
+    off_session=True,
+    confirm=True,
+)
+
+"""
+
+
+def add_card(request):
+    """
+    This is credit card setting page. ADD/Remove credit card. If user has credit card on file, it will grab
+    client's secret and ID
+    :param request:
+    :return:
+    """
+    profile_ = Profile.objects.get(user__username=request.user)
+    if request.method == 'POST':
+        # check if customer already exists
+        # if exists then get the customer id and list credit cards
+        local_customer = profile_.customer_id
+        if local_customer:
+            customer = stripe.Customer.retrieve(local_customer)
+            card = stripe.Customer.create_source(
+                local_customer,
+                source=request.POST['stripeToken'],
+            )
+        else:
+            # if not create
+            customer = stripe.Customer.create(
+                source=request.POST['stripeToken'],
+                description="",
+                email=profile_.user.email,
+                name=profile_.user.first_name + " " + profile_.user.last_name,
+            )
+            profile_.customer_id = customer['id']
+            profile_.save()
+            print('in post')
+        cards = stripe.Customer.list_sources(
+            profile_.customer_id,
+            limit=3,
+            object='card'
+        )
+        return redirect(manage_card)
+    else:
+        # GET
+        if profile_.customer_id:
+            cards = stripe.Customer.list_sources(
+                profile_.customer_id,
+                limit=3,
+                object='card'
+            )
+        else:
+            cards = []
+        # setup_intent = stripe.SetupIntent.create()
+        return render(request, 'add_card.html', {
+            'cards': cards,
+            'customer_id': profile_.customer_id,
+            'stripe_publishable_key': STRIPE_PUBLISHABLE_KEY,
+            'name': profile_.user.first_name + " " + profile_.user.last_name,
+            'secret_code': urlsecret.SECRET_CODE,
+        })
+
+
+def manage_card(request):
+    """
+    This is credit card setting page. ADD/Remove credit card. If user has credit card on file, it will grab
+    client's secret and ID
+    :param request:
+    :return:
+    """
+    profile_ = Profile.objects.get(user__username=request.user)
+    if profile_.customer_id:
+        cards = stripe.Customer.list_sources(
+            profile_.customer_id,
+            limit=3,
+            object='card'
+        )
+    else:
+        cards = []
+    return render(request, 'manage_card.html', {
+        'number_of_cards': len(cards),
+        'cards': cards,
+        'customer_id': profile_.customer_id,
+        'stripe_publishable_key': STRIPE_PUBLISHABLE_KEY,
+        'name': profile_.user.first_name + " " + profile_.user.last_name,
+    })
+
+
+def delete_card_ajax(request):
+    data = request.GET['data']
+    profile_ = Profile.objects.get(user__username=request.user)
+    stripe.Customer.delete_source(
+        profile_.customer_id,
+        data
+    )
+    return JsonResponse({"data": 0})
 
 
 # ---------------------------------------------------------------------------

@@ -11,17 +11,42 @@
             height: 1px;
             justify-content: center;
         }
+        .alert {
+            font-size: 10px;
+            width: 100%;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        .alert-block {
+            padding: 0px;
+            margin-top: 5px;
+        }
+
+        ul {
+            margin: 0px;
+            padding: 5px;
+        }
+        ul>li {
+            list-style-type: none;
+            list-style-position: inside;
+            padding: 0px 0px 0px 0rem;
+            margin: 0px;
+        }
+
+
     </style>
 
 {% endblock %}
 
 {% block content %}
-    <div class="row justify-content-center  align-middle">
-        <div class="col-lg-6 col-sm-12">
+    <div class="row">
+
+        <div class="col-lg-12 col-sm-12 justify-content-center">
             <div class="card border-dark">
                 <div class="card-body">
                     <div class="d-flex justify-content-center">
-                        <div class="brand_logo_container ">
+                        <div class="brand_logo_container">
                             <img src="{% static 'mysite/img/logo.gif' %}" class="brand_logo rounded-circle small"
                                  alt="Logo">
                         </div>
@@ -31,17 +56,13 @@
                         {{ form|crispy }}
                         <div class="row justify-content-center">
                             <button type="button" id="id_submit" class="btn btn-outline-primary">Log in</button>
-
                         </div>
-
-
                     </form>
                     <div class="row justify-content-center">
-                        <a href="{% url 'password_reset' %}" class="btn btn-white mt-2" style="color: #0d8ddb">Forgot your username/password?</a>
+                        <a href="{% url 'password_reset' %}" class="btn btn-white mt-1" style="color: #0d8ddb">Forgot your username/password?</a>
                     </div>
                     <p class="text-muted text-center"><small>Do not have an account?</small></p>
                     <div class="row justify-content-center">
-
                         <a class="btn btn-sm btn-outline-primary" href="{% url 'signup' %}">Create an account</a>
                     </div>
                 </div>
@@ -57,6 +78,12 @@
             $('#js-page-content').addClass(' justify-content-center');
         });
 
+        $('#id_password').keyup(function(e){
+           if(e.keyCode==13){
+               $("#id_username").val(($("#id_username").val()).toLowerCase())
+               $("#id_form").submit();
+           }
+        });
         $('#id_submit').click(function () {
             $("#id_username").val(($("#id_username").val()).toLowerCase())
             $("#id_form").submit();
