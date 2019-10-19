@@ -54,7 +54,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Simplified static file serving. ENABLE WITH HEROKU
     # https://warehouse.python.org/project/whitenoise/
-    #'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-
+"""
 DATABASES = {
     # 'default': {
     #   'ENGINE': 'django.db.backends.sqlite3',
@@ -128,7 +128,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 django_heroku.settings(locals())
 # ---------------- END Heroku ------------------------------------
-"""
+
 
 
 # Password validation
