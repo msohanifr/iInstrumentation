@@ -488,7 +488,7 @@ def delete_files():
     :return:
     """
     d = Path("mysite/..")
-    for i in d.walk():
+    for i in d.listdir():
         if i.endswith(".pickle"):
             days = 30
             time_in_secs = time.time() - (days * 24 * 60 * 60)
@@ -510,7 +510,6 @@ def order_page(request):
     :param request:
     :return:
     """
-    print("in order_page")
     delete_files()
     '''
      if request.method == 'POST':
@@ -535,9 +534,9 @@ def order_page(request):
     items = {}
     # ----------------------------------------
     # create a range of digits 0:20 in string format
-    range_ = []
-    for _ in range(0, 20):
-        range_.append(str(_))
+    #range_ = []    TO BE DELETED
+    #for _ in range(0, 20):
+    #    range_.append(str(_))
     for _ in items_from_vendor:
         items.update({
             _.title: {
@@ -558,7 +557,7 @@ def order_page(request):
     # ----------------------------------------
     return render(request, 'order.html', {
         'Items': items,
-        'range': range_,
+        #'range': range_,    To BE DELETED
         'number_of_items': get_number_of_items_in_cart(request),
     })
 
@@ -578,7 +577,8 @@ def ajax_order(request):
         data = {}
     try:
         for _ in data_json:
-            data[_]['count'] = data[_]['count'] + int(data_json[_]['count'])
+            if data[_]['count'] + int(data_json[_]['count']) >= 0:
+                data[_]['count'] = data[_]['count'] + int(data_json[_]['count'])
     except:
         pass
     # data.update(data_json)
@@ -679,6 +679,8 @@ def profile_check_ajax(request):
 # ------------------------------------------------------------------------------------------
 # If number of items is zero, then remove the items
 @login_required
+@user_passes_test(is_user_email_verified, login_url='/' + urlsecret.SECRET_CODE + '/sendemailconfirmation/')
+@user_passes_test(is_user_phone_verified, login_url='/' + urlsecret.SECRET_CODE + '/sms/')
 def cart_page(request):
     """
 
@@ -746,6 +748,7 @@ def cart_page(request):
 
 
 # ------------------------------------------------------------------------------------------
+@login_required
 def checkout(request):
     """
     This is the last page before payment. Includes taxes, etc... and then adds the total payment amount to

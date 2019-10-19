@@ -1,5 +1,5 @@
 # start from an official image
-FROM python:3.6
+FROM python:3.6.9
 
 # arbitrary location choice: you can change the directory
 RUN mkdir -p /opt/services/djangoapp/src
@@ -17,5 +17,6 @@ EXPOSE 8000
 # define the default command to run when starting the container
 CMD ["gunicorn", "--chdir", "mysite", "--bind", ":8000", "mysite.wsgi:application"]
 #CMD ["python","manage.py","runserver","0:8000"]
+RUN python /opt/services/djangoapp/src/manage python collectstatic --noinput
 RUN python /opt/services/djangoapp/src/manage.py makemigrations
 RUN python /opt/services/djangoapp/src/manage.py migrate
