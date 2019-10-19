@@ -6032,7 +6032,7 @@ input[type="checkbox"]:checked + .custom-control-label {
 
 /* #COMPONENTS (can be removed but may or may not impact other components)
 ========================================================================== */
-/*@import '_modules/_form-switches';*/
+
 @media (min-width: 1399px) {
   .page-sidebar {
     -webkit-transform: translate3d(0, 0, 0);
