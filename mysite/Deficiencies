@@ -1,0 +1,5 @@
+1) Format email activation "acc_active_email.html" file
+2) Format payment page
+3) Create payment successful and unsuccessful pages
+4) Email is sent with a delay, consider sending email asynch
+5) Payment page is showing a blank screen before going to payment (what is different from other pages?)

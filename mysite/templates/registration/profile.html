@@ -1,6 +1,17 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 
+{% block header %}
+    <style>
+
+        .page-wrapper {
+            height: 1px;
+            justify-content: center;
+        }
+    </style>
+
+{% endblock %}
+
 {% block content %}
     <div class="row justify-content-center">
         <div class="col-lg-8 col-sm-12">
@@ -11,10 +22,17 @@
                         {% csrf_token %}
                         {{ user_form|crispy }}
                         {{ profile_form|crispy }}
+                        {% if request.path ==  "/"|add:SECRET_CODE|add:'/account/update_profile/' and not profile_filled%}
                         <button type="button" class="btn btn-outline-danger"
-                                onclick="window.location.href =  '/{{ SECRET_CODE }}/profile/';">
+                                onclick="window.location.href =  '/{{ SECRET_CODE }}/logout/';">
                             Cancel
                         </button>
+                        {% elif request.path ==  "/"|add:SECRET_CODE|add:'/account/update_profile/' and profile_filled%}
+                            <button type="button" class="btn btn-outline-danger"
+                                    onclick="window.location.href =  '/{{ SECRET_CODE }}/profile/';">
+                                Cancel
+                            </button>
+                        {% endif %}
                         <button type="button" id="id_submit" class="btn btn-outline-primary">Save changes</button>
 
                         {% comment %}
@@ -25,15 +43,23 @@
                 </div>
             </div>
         </div>
+        <div class="col-12">
+            <p style="visibility: hidden">.</p>
+        </div>
     </div>
 
 
 {% endblock %}
 
+
 {% block javascript %}
+
+
     <script>
         $(document).ready(function () {
             $('#id_username').prop('disabled', true);
+            $('#js-page-content').removeClass('mt-5');
+            $('#js-page-content').addClass(' justify-content-center');
         })
         $("#id_email").keyup(function () {
             var data = {'email': $("#id_email").val()};

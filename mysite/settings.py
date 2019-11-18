@@ -52,7 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # Simplified static file serving.
+    # Simplified static file serving. ENABLE WITH HEROKU
     # https://warehouse.python.org/project/whitenoise/
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
@@ -83,6 +83,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
+
 """
 DATABASES = {
     # 'default': {
@@ -109,8 +110,8 @@ DATABASES = {
 
 }
 
-
 """
+
 # ----------------- START Heroku --------------------------------
 import django_heroku
 import dj_database_url
@@ -127,7 +128,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 django_heroku.settings(locals())
 # ---------------- END Heroku ------------------------------------
-
 
 
 
@@ -149,12 +149,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTHENTICATION_BACKENDS = (
-    'social_core.backends.open_id.OpenIdAuth',  # for Google authentication
-    'social_core.backends.google.GoogleOpenId',  # for Google authentication
-    'social_core.backends.google.GoogleOAuth2',  # for Google authentication
-    'django.contrib.auth.backends.ModelBackend',
-)
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
@@ -178,21 +172,6 @@ LOGIN_REDIRECT_URL = 'update_profile'
 LOGOUT_REDIRECT_URL = 'home'
 HOME_REDIRECT_URL = 'home'
 
-SOCIAL_AUTH_URL_NAMESPACE = 'social'
-SOCIAL_AUTH_REVOKE_TOKENS_ON_DISCONNECT = True
-
-# Facebook Authentication OAuth
-SOCIAL_AUTH_FACEBOOK_KEY = '656568284863956'  # App ID
-SOCIAL_AUTH_FACEBOOK_SECRET = '6bc9016937d10f844de6ee2ffd57ea1'
-SOCIAL_AUTH_FACEBOOK_SCOPE = ['email', 'user_link']  # add this
-SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {  # add this
-    'fields': 'id, name, email, picture.type(large)'
-}
-SOCIAL_AUTH_FACEBOOK_EXTRA_DATA = [  # add this
-    ('name', 'name'),
-    ('email', 'email'),
-    ('picture', 'picture'),
-]
 
 # Google Authentication OAuth
 
@@ -202,9 +181,15 @@ STRIPE_SECRET_KEY = 'sk_test_38pWvScfn2ajZK6irXe95U8F00V1vvirR0'
 STRIPE_PUBLISHABLE_KEY = 'pk_test_FOkbM012GxQqlDGkNz0Nb2ju00dMHMrWz2'
 
 # my_project/settings.py    Should use a service like Mailgun
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 #EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
+EMAIL_HOST = 'smtp.mailgun.org'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'postmaster@sandboxe92ac662e90b4de3bb03859ab2b180b3.mailgun.org'
+EMAIL_HOST_PASSWORD = '7b95f6113b9d28b1ebf5fb5792705162-bbbc8336-e9b2d306'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'mail@sandbox.mgsend.net'
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/

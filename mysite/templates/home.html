@@ -2,30 +2,57 @@
 
 {% block content %}
     <div class="card border-dark mb-2">
-        {% comment %}          ----------- The card header, it is rremoved because it is too big
+    {% comment %}          ----------- The card header, it is rremoved because it is too big
         <div class="card-header">
             <h2>Home</h2>
         </div>
         {% endcomment %}
 
-        <div class="card-body">
-            <h5 class="card-title">Hi {{ firstname }}!</h5>
+    <div class="card-body">
+        <h5 class="card-title">Hi {{ firstname }}!</h5>
+        <ul class="list-group list-group-flush">
             {% if isEmailVerified %}
 
             {% else %}
-                <p>Your email is not verified</p>
-                <a href="{% url 'send_email_confirmation' %}" class="btn btn-primary mt-1 mb-1">Send email
-                    verification</a>
-                <a href="{% url 'home' %}" class="btn btn-dark mt-1 mb-1">I have verified my email</a>
+                <li class="list-group-item">
+                    <p  style="color: #dc3545">Your email is not verified</p>
+                    <div class="row justify-content-center align-items-center ">
+                    <a href="{% url 'home' %}" class="btn btn-outline-primary mt-1 mb-1">I have verified my email</a>
+                        <a href="{% url 'send_email_confirmation' %}" class="btn btn-outline-primary mt-1 mb-1 ml-1">
+                            <i class="fa fa-paper-plane"></i> Send email verification</a>
+                    </div>
+                </li>
+            {% endif %}
 
-            {% endif %}
             {% if isEmailVerified == 1 %}
-                <p> Please confirm your email address to complete the registration. </p>
-                <a href="{% url 'send_email_confirmation' %}" class="btn btn-primary mt-1 mb-1">Send email
-                    verification</a>
-                <a href="{% url 'home' %}" class="btn btn-primary mt-1 mb-1">I have verified my email</a>
+                <li class="list-group-item">
+                    <p  style="color: #dc3545"> Please confirm your email address to complete the registration. </p>
+                    <div class="row justify-content-center align-items-center ">
+
+                    <a href="{% url 'send_email_confirmation' %}" class="btn btn-outline-primary mt-1 mb-1">Send email
+                        verification</a>
+                    <a href="{% url 'home' %}" class="btn btn-outline-primary mt-1 mb-1">I have verified my email</a>
+                    </div>
+                </li>
             {% endif %}
-            <ul class="list-group list-group-flush">
+            {% if isPhoneVerified %}
+
+            {% else %}
+                <li class="list-group-item">
+                    <p style="color: #dc3545"> Your phone number is not verified </p>
+                    <div class="row justify-content-center align-items-center ">
+                        <div class="btn-group mb-1 mt-1">
+                    <a href="{% url 'smssent' %}" class="btn btn-outline-primary mt-1 mb-1">Enter code and verify
+                        phone</a>
+                        </div>
+                        <div class="btn-group mb-1 mt-1 ml-1">
+                    <a href="{% url 'sendsms' %}" class="btn btn-outline-primary mt-1 mb-1">
+                        <i class="fa fa-paper-plane"></i> Send phone verification</a>
+                        </div>
+                    </div>
+                </li>
+            {% endif %}
+
                 <li class="list-group-item">
                     <p><a class="fas fa-coins"></a> Points <sup>*</sup>:</p>
                     {% if points %}
@@ -61,12 +88,7 @@
                     {% endif %}
                 </li>
             </ul>
-            <div class="row justify-content-center align-items-center ">
-                <div class="btn-group mb-2 mt-3">
-                    <a href="{% url 'order' %}" class="btn btn-outline-primary"><i
-                            class="fa fa-tshirt"></i> Dry Cleaning Please</a>
-                </div>
-            </div>
+
 
         </div>
         <footer class="my-3 text-muted text-center text-small">

@@ -16,19 +16,35 @@
                     {% if isEmailVerified %}
 
                     {% else %}
-                        <p>Your email is not verified</p>
-                        <a href="{% url 'send_email_confirmation' %}" class="btn btn-outline-dark">Send email
-                            verification</a>
-                        <a href="{% url 'profile' %}" class="btn btn-outline-dark mt-1 mb-1">I have verified my
-                            email</a>
+                        <p style="color: #dc3545">Your email is not verified</p>
+                        <div class="row justify-content-center align-items-center ">
+
+                            <div class="btn-group mb-1 mt-1 ml-2">
+                                <a href="{% url 'profile' %}" class="btn btn-outline-primary mt-1 mb-1">I have verified my
+                                    email</a>
+                            </div>
+                            <div class="btn-group mb-1 mt-1 ml-2">
+                            <a href="{% url 'send_email_confirmation' %}" class="btn btn-outline-primary">
+                                <i class="fa fa-paper-plane"></i> Send email
+                                verification</a>
+                        </div>
+                        </div>
 
                     {% endif %}
                     {% if isEmailVerified == 1 %}
-                        <p> Please confirm your email address to complete the registration. </p>
-                        <a href="{% url 'send_email_confirmation' %}" class="btn btn-outline-dark mt-1 mb-1">Send email
-                            verification</a>
-                        <a href="{% url 'profile' %}" class="btn btn-outline-dark mt-1 mb-1">I have verified my
-                            email</a>
+                        <p style="color: #dc3545"> Please confirm your email address to complete the registration. </p>
+                        <div class="row justify-content-center align-items-center ">
+
+                            <div class="btn-group mb-1 mt-1">
+                                <a href="{% url 'profile' %}" class="btn btn-outline-primary mt-1 mb-1">I have verified my
+                                    email</a>
+                            </div>
+                            <div class="btn-group mb-1 mt-1 ml-2">
+                            <a href="{% url 'send_email_confirmation' %}" class="btn btn-outline-primary mt-1 mb-1">Send
+                                email
+                                verification</a>
+                            </div>
+                        </div>
                     {% endif %}
                 </li>
                 <li class="list-group-item">
@@ -41,20 +57,21 @@
                         <p>If you have not received a verification code, you can request one by clicking on the button
                             below. Please note that you CAN NOT
                             request more than 3 verification codes.</p>
-                        <a href="{% url 'sendsms' %}" class="btn btn-outline-primary">send phone verification</a>
+                        <a href="{% url 'sendsms' %}" class="btn btn-outline-primary mt-1 mb-1"> send phone
+                            verification</a>
                     {% else %}
-                        <P>Your phone is not verified</P>
-                        <div class="row">
-                            <div class="col-6">
-                                <a href="{% url 'smssent' %}" class="btn btn-outline-primary">enter code and verify
-                                    phone</a>
-                            </div>
-                            <div class="col-6">
-                                <a href="{% url 'sendsms' %}" class="btn btn-outline-primary">send phone verification</a>
+                        <P style="color: #dc3545">Your phone is not verified</P>
+                        <div class="row justify-content-center align-items-center ">
+                        <div class="btn-group mb-1 mt-1">
+                        <a href="{% url 'smssent' %}" class="btn btn-outline-primary">enter code and verify
+                            phone</a>
+                        </div>
+                        <div class="btn-group mb-1 mt-1 ml-2">
+                            <a href="{% url 'sendsms' %}" class="btn btn-outline-primary">
+                                <i class="fa fa-paper-plane"></i> Send phone
+                                verification</a>
                             </div>
                         </div>
-
-
                     {% endif %}
                 </li>
                 <li class="list-group-item">
@@ -66,16 +83,22 @@
                         {% if not state == "" %}, {{ state }}{% endif %}
                         {% if not zip == "" %}, {{ zip }}{% endif %}</p>
                 </li>
-
             </ul>
+            <h6 class="text-danger mt-2 text-center">If you delete your profile, you have to create another account.</h6>
             <div class="row justify-content-center align-items-center ">
-                <div class="btn-group mb-3 mt-3">
+
+                <div class="btn-group mt-2 mb-1">
                     <a href="{% url 'update_profile' %}" class="btn btn-outline-primary"><i
-                            class="fa fa-sync"></i>  Update</a>
+                            class="fa fa-edit"></i> Edit profile</a>
+                </div>
+                <div class="btn-group mb-1 mt-2 ml-2">
+                    <a href="{% url 'delete_profile' %}" class="btn btn-outline-danger"><i
+                            class="fa fa-trash"></i> Delete profile</a>
                 </div>
             </div>
         </div>
     </div>
+
     <div>
         <br>
     </div>

@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block header %}
+<style>
+.notransition {
+-webkit-transition: none !important;
+-moz-transition: none !important;
+-o-transition: none !important;
+transition: none !important;
+}
+</style>
+{% endblock %}
+{% block content %}
+    {% comment %} When customer doesn't have a credit card and is trying to add a card {% endcomment %}
+    <div class="card border-dark mb-2">
+        <div class="card-body">
+            <h5 class="card-title">Please enter your credit card information to create faster checkout</h5>
+            <!--Example 4-->
+            <script src="https://js.stripe.com/v3/"></script>
+            <input id="cardholder-name" type="text" value="{{ name }}" style="visibility: hidden">
+            <form action="/{{ secret_code }}/add_card/" method="post" id="payment-form">
+                {% csrf_token %}
+                <label for="card-element">
+                    Credit or debit card
+                </label>
+                <div id="card-element" class="card border-light">
+                    <!-- A Stripe Element will be inserted here. -->
+                </div>
+
+                <!-- Used to display form errors. -->
+                <div id="card-errors" role="alert"></div>
+                <div class="row justify-content-center align-items-center">
+                    <div class="btn-group mb-2">
+                        <button id="card-button" class="btn btn-outline-primary mt-2" data-secret="{{ client_secret }}">
+                            <i class="fa fa-credit-card"></i> Add</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div>
+        <br>
+    </div>
+
+
+{% endblock %}
+{% block javascript %}
+    <script>
+        var style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = '* {' +
+            '/*CSS transitions*/' +
+            ' -o-transition-property: none !important;' +
+            ' -moz-transition-property: none !important;' +
+            ' -ms-transition-property: none !important;' +
+            ' -webkit-transition-property: none !important;' +
+            '  transition-property: none !important;' +
+            '/*CSS transforms*/' +
+            '   -ms-transform: none !important;' +
+            '  -webkit-transform: none !important;' +
+            '   transform: none !important' +
+            '  /*CSS animations*/' +
+            '   -webkit-animation: none !important;' +
+            '   -moz-animation: none !important;' +
+            '   -o-animation: none !important;' +
+            '   -ms-animation: none !important;' +
+            '   animation: none !important;;}';
+        document.getElementsByTagName('head')[0].appendChild(style);
+        $('body').toggleClass('notransition');
+        $(document).ready(function () {
+            // Create a Stripe client.
+            var stripe = Stripe('pk_test_FOkbM012GxQqlDGkNz0Nb2ju00dMHMrWz2');
+            // Create an instance of Elements.
+            var elements = stripe.elements();
+            // Custom styling can be passed to options when creating an Element.
+            // (Note that this demo uses a wider set of styles than the guide below.)
+            var style = {
+                base: {
+                    color: '#32325d',
+                    fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                    fontSmoothing: 'antialiased',
+                    fontSize: '20px',
+                    '::placeholder': {
+                        color: '#676a6c'
+                    }
+                },
+                invalid: {
+                    color: '#fa755a',
+                    iconColor: '#fa755a'
+                }
+            };
+
+            // Create an instance of the card Element.
+            var card = elements.create('card', {style: style});
+
+            // Add an instance of the card Element into the `card-element` <div>.
+            card.mount('#card-element');
+            // Handle real-time validation errors from the card Element.
+            card.addEventListener('change', function(event) {
+                var displayError = document.getElementById('card-errors');
+                if (event.error) {
+                    displayError.textContent = event.error.message;
+                } else {
+                    displayError.textContent = '';
+                }
+            });
+
+            // Handle form submission.
+            var form = document.getElementById('payment-form');
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                console.log('in the middle')
+
+                stripe.createToken(card).then(function(result) {
+                    if (result.error) {
+                        // Inform the user if there was an error.
+                        var errorElement = document.getElementById('card-errors');
+                        errorElement.textContent = result.error.message;
+                    } else {
+                        // Send the token to your server.
+                        stripeTokenHandler(result.token);
+                    }
+                });
+
+            });
+
+            // Submit the form with the token ID.
+            // card info
+            function stripeTokenHandler(token) {
+                // Insert the token ID into the form so it gets submitted to the server
+                var form = document.getElementById('payment-form');
+                var hiddenInput = document.createElement('input');
+                hiddenInput.setAttribute('type', 'hidden');
+                hiddenInput.setAttribute('name', 'stripeToken');
+                hiddenInput.setAttribute('value', token.id);
+                form.appendChild(hiddenInput);
+                // Submit the form
+                form.submit();
+            }
+
+        }); // window
+
+    </script>
+{% endblock %}

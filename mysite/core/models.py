@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.contrib.postgres.fields import ArrayField
 from django.core.validators import RegexValidator
 from django.db import models
 from django.contrib.auth.models import User
@@ -29,7 +30,10 @@ class Profile(models.Model):
     street1 = models.CharField(max_length=128, blank=False, default='')
     street2 = models.CharField(max_length=128, blank=True, default='')
     city = models.CharField(max_length=32, blank=False, default='')
-    state = models.CharField(max_length=10, blank=False, default='')
+    STATES = (
+        ('NJ', 'Newjersey'),
+    )
+    state = models.CharField(max_length=2, blank=False, default='', choices=STATES)
     zip_code = models.CharField(blank=False, default='', max_length=12,
                                 help_text="Zip code must be in XXXXX, 5 digit format")
     profile_filled = models.BooleanField(default=False)
@@ -44,6 +48,7 @@ class Profile(models.Model):
     phone_verification_status = models.IntegerField(default=0)
     number_of_sms_sent = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
+    customer_id = models.CharField(max_length=32, default='', null=True, blank=True)
 
     def __str__(self):
         return str(self.user.username + ':' + self.user.first_name + ' ' + self.user.last_name)
@@ -70,13 +75,14 @@ class Item(models.Model):
                                 default='Men')  # Category: Men, Women, Bottom, Top (Create a mixed list of these
     # values)
     description = models.CharField(max_length=128, default='')
-    _photo = models.ImageField(upload_to='images/', null=True)
+    _photo = models.CharField(default='images/', max_length=32, null=True)
+    vendor_name = models.CharField(max_length=32, null=True, default='')
 
     class Meta:
-        ordering = ('title',)
+        ordering = ('vendor_name',)
 
     def __str__(self):
-        return self.description
+        return "Vendor: "+str(self.vendor_name)+" | Title:"+str(self.title)
 
 
 class Service(models.Model):
@@ -100,6 +106,10 @@ class Vendor(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
     )
+    #  Vendor.objects.filter(supporting_zip_codes__contains=[7932])
+    supporting_zip_codes = ArrayField(models.IntegerField(null=True, blank=True), null=True, blank=True)
+    rating = models.IntegerField(null=True) # Rating for the vendor
+    customers = models.ManyToManyField(User, blank=True)  # customers for this Vendor
 
     def __str__(self):
         return self.profile.user.username
@@ -121,7 +131,7 @@ class Order(models.Model):
         Profile,
         on_delete=models.CASCADE,
     )
-    last_status = models.CharField(null=True, default="", max_length=128)
+    last_status = models.CharField(null=True, default="", max_length=32)
 
     def __str__(self):
         return str(self.item.name) + ' ' + str(self.vendor.profile.user.username)

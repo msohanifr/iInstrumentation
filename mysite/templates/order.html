@@ -7,7 +7,6 @@
         .card-body {
             padding: .5rem;
         }
-
     </style>
 {% endblock %}
 {% block content %}
@@ -31,21 +30,25 @@
                             <div class="ibox-content product-box active">
                                 {% comment "The following invisibile inputs created to send information about the product to cart" %}
                         {% endcomment %}
-
                                 {% comment %} end of invisible section  {% endcomment %}
                                 <div id="item" name="item" class="product-imitation mt-0">
                                     <div class="row align-items-top justify-content-center">
+                                        {% comment %}
+                                        -----------  MINUS BUTTON -------------------------
                                         <button type="button" id="{{ item.title }}_minus"
                                                 style="position: absolute; left: 20px;" class="btn btn-outline-primary">
                                             <i class="fa fa-minus fa-sm"></i>
                                         </button>
-
+                                        {% endcomment %}
                                         <img src="{% static '/' %}{{ item.image }}" alt="Dress" height="100px">
+                                        {% comment %}
+                                        ----------- PLUS BUTTON ---------------------------
                                         <button type="button" id="{{ item.title }}_plus"
-                                                style="position: absolute; right: 20px;" class="btn btn-outline-primary">
+                                                style="position: absolute; right: 20px;"
+                                                class="btn btn-outline-primary">
                                             <i class="fa fa-plus fa-sm"></i>
                                         </button>
-
+                                        {% endcomment %}
                                     </div>
                                 </div>
                                 <div class="product-desc">

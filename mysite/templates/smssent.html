@@ -3,30 +3,33 @@
 
 {% block content %}
     {% if not above_threshold %}
-    <div class="card">
-        <div class="card-header">
-            <h2>Phone number verification</h2>
-        </div>
-        <div class="card-body">
+        <div class="card border-dark mb-2">
+
+            <div class="card-body">
             <h6 class="card-title"><p>A text message with verification code has been sent to your phone, please enter
-                the code</p>
-            </h6>
-            <ul class="list-group list-group-flush">
-                <br/>
-                <Label>Verification code: </Label><input type="number" class="" id="code" min="0" max="999999">
-                <a id="btn_code" class="btn btn-outline-dark  mt-1 mb-1">Verify</a>
-                <p id="notice" class="text-danger"></p>
+                    the code</p>
+                </h6>
+                <ul class="list-group list-group-flush">
+                    <br/>
+                    <Label>Verification code: </Label><input type="number" class="" id="code" min="0" max="999999">
+                    <div class="row justify-content-center align-items-center ">
+                        <div class="btn-group mb-2 mt-2">
+                            <a id="btn_code" class="btn btn-outline-primary mt-1 mb-1">
+                                <font color="#1e90ff"> <i class="fa fa-key"></i> Verify </font></a>
+                        </div>
+                    </div>
+                    <p id="notice" class="text-danger"></p>
 
 
-                {% comment %}
+                    {% comment %}
                 <div class="col-sm-12"><p id="pincode-callback"></p>
                     <a href="{% url 'sendsms' %}" class="btn btn-primary  mt-1 mb-1">Generate another code</a>
                 </div>
                 {% endcomment %}
 
-            </ul>
+                </ul>
+            </div>
         </div>
-    </div>
     {% else %}
         <div class="card">
             <div class="card-header">

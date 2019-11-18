@@ -7,6 +7,8 @@
             padding: .5rem;
         }
     </style>
+
+
 {% endblock %}
 
 {% block content %}
@@ -88,7 +90,8 @@
 
                                 <div class="ibox-content mt-3 mb-3">
 
-                                    <button type="submit" class="btn btn-outline-primary float-right"><i class="fa fa-sync"></i> Update
+                                    <button type="submit" class="btn btn-outline-primary float-right"><i
+                                            class="fa fa-sync"></i> Update
                                     </button>
                                     <button type="button" class="btn btn-outline-primary"
                                             onclick="window.location.href = '/{{ SECRET_CODE }}/order/';">
@@ -145,7 +148,7 @@
 
     </div>
     <div>
-    <br>
+        <br>
     </div>
 
 {% endblock %}
@@ -154,7 +157,7 @@
 {% block javascript %}
 
     <script>
-    {% for item in Items %}
+        {% for item in Items %}
             $("#remove_{{ item }}").click(function () {
                 const val = -$("#{{ item }}_number").val();
                 const val_json = '{"count":' + val + "}";
@@ -164,6 +167,7 @@
                     data: {
                         'data': value,
                     },
+                    type: "POST",
                     dataType: 'json',
                     success: function (data) {
                         window.location.reload();
@@ -173,6 +177,6 @@
                 });
             });
 
-    {% endfor %}
+        {% endfor %}
     </script>
 {% endblock %}

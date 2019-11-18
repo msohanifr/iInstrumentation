@@ -1,3 +1,4 @@
+import decimal
 import random
 import re
 import time
@@ -5,10 +6,12 @@ import json
 import pickle
 
 import googlemaps
+import requests
 import stripe
 from django.contrib.auth import login, logout
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import EmailMessage
+from django.core import mail
+from django.core.mail import EmailMessage, send_mail
 from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
@@ -27,10 +30,12 @@ from mysite.forms import UserForm, ProfileForm, SignUpForm
 from django.contrib.auth.decorators import user_passes_test
 
 MAX_THRESHOLD_NUM_OF_SMS_CAN_BE_SENT = 3
+STRIPE_API_KEY = "sk_test_38pWvScfn2ajZK6irXe95U8F00V1vvirR0"
+STRIPE_PUBLISHABLE_KEY = "pk_test_FOkbM012GxQqlDGkNz0Nb2ju00dMHMrWz2"
 
-# Secret code used in urls
-class urlsecret:
-    SECRET_CODE = 'BNcNKV0mXuSTKNMKc10TFuMcXmQK5kGSuTXKdslzNEo63JjTfcmwR9Tv6zbdZz36'
+# ---------------------------------------------------------------
+# ---------------------- MISC -----------------------------------
+# ---------------------------------------------------------------
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY  # new
@@ -48,7 +53,33 @@ def handler403(request):
     return render(request, '403.html', status=403)
 
 
-# --------------------------------  USER_PASSES_TEST FUNCTION DEFINITIONS -------------------------------
+# Secret code used in urls
+class urlsecret:
+    SECRET_CODE = 'BNcNKV0mXuSTKNMKc10TFuMcXmQK5kGSuTXKdslzNEo63JjTfcmwR9Tv6zbdZz36'
+
+
+# deletes .pickle files older than one day
+def delete_files():
+    """
+
+    :return:
+    """
+    d = Path("mysite/..")
+    for i in d.listdir():
+        if i.endswith(".pickle"):
+            days = 30  # RETENTION PERIOD
+            time_in_secs = time.time() - (days * 24 * 60 * 60)
+            if i.isfile():
+                if i.mtime <= time_in_secs:
+                    i.remove()
+
+
+# ---------------------------------------------------------------
+# ---------------------- CUSTOMER -------------------------------
+# ---------------------------------------------------------------
+
+
+# --------  USER_PASSES_TEST FUNCTION DEFINITIONS ---------------
 def is_user_email_verified(user):
     """
     This is @user_passes_test function. Checks if user has verified email
@@ -109,10 +140,26 @@ def is_user_fully_registered(user):
     return profile.profile_filled
 
 
-# --------------------------------- END_USER_PASSES_TEST ------------------------------------------------
+def is_vendor(user):
+    """
+    Tests if user is Vendor. In that case, send user to vendor pages
+    :param user:
+    :return:
+    """
 
-# ----------------   Chronological login process   -----------------------------------------
-# ------------------------------------------------------------------------------------------
+    try:
+        profile = Profile.objects.get(user__username=user)
+        profile.vendor
+        result = True
+    except:
+        result = False
+    return not result
+
+
+# --------------------------------- END_USER_PASSES_TEST -------
+
+# ----------------   Chronological login process   -------------
+# --------------------------------------------------------------
 def signup(request):
     """
     Registers user's profile information such as Address, Phone, etc
@@ -222,14 +269,14 @@ def send_sms(request):
         'token': "Your verification code is: " + str(profile.phone_verification_code),
     }
     SMS_MSG = message['token']
-    """
+
     client.messages \
         .create(
         body=SMS_MSG,
         from_='+18622608689',
         to=to_phone
     )
-    """
+
     profile.number_of_sms_sent += 1
     profile.save()
     return render(request, 'smssent.html', {
@@ -280,22 +327,22 @@ def send_email_confirmation(request):
     :param request:
     :return: renders the confirmation for email page
     """
+    # send_mail('Email confirmation', 'This is a test', 'postmaster@sandboxf7bd24553c2145c1b8ab0f41f6ec6a03.mailgun.org', ['logixsohani@gmail.com'])
+
     user = User.objects.get(username=request.user)
     # user.is_active = False
     # user.save()
     to_email = user.email
     current_site = get_current_site(request)
-    mail_subject = 'Activate your account.'
+    mail_subject = 'Email activation request'
     message = render_to_string('acc_active_email.html', {
         'user': user,
         'domain': current_site.domain,  ## have to change this
         'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
         'token': account_activation_token.make_token(user),
     })
-    email = EmailMessage(
-        mail_subject, message, to=[to_email]
-    )
-    email.send()
+    mail.send_mail(mail_subject, mail_subject, 'admin@sandboxf7bd24553c2145c1b8ab0f41f6ec6a03.mailgun.org`',
+                   ['logixsohani@gmail.com'], html_message=message)
     return redirect('home')
     # return render(request, 'confirm_email.html')
 
@@ -306,7 +353,6 @@ def confirm_email_sent(request):
 
 def activate(request, uidb64, token):
     """
-
     :param request:
     :param uidb64:
     :param token:
@@ -325,28 +371,78 @@ def activate(request, uidb64, token):
         profile_.save()
         # login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         # logout(request)
-        return HttpResponse("Thank you for your email confirmation. If you haven't confirmed your phone number yet, "
-                            "do so by "
-                            "requesting a phone confirmation and clicking on the link in your text message")
+
+        return HttpResponse("""
+        <!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Jekyll v3.8.5">
+    <title>Floating labels example · Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+   
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="floating-labels.css" rel="stylesheet">
+  </head>
+  <body>
+  <div class="text-center mb-4 mt-6">
+    <h1 class="h3 mb-3 mt-5 font-weight-normal">Email confirmation</h1>
+    <p>Thanks for confirming your email address. We use email to communicate with you. <br>
+    Please make sure to keep your email address up to date by going to:<br>
+    <code>Profile -> Update Profile</code>  
+  </div>
+  <div class="checkbox mb-3">
+   
+  </div>
+  <p class="mt-5 mb-3 text-muted text-center fixed-bottom">iDryClean team &copy; 2017-2019</p>
+</form>
+</body>
+</html>
+        """)
     else:
         return HttpResponse('Activation link is invalid! You can send another request in your home page')
 
 
 # ------------------------------------------------------------------------------------------
 @login_required
+@user_passes_test(is_vendor, login_url='/' + urlsecret.SECRET_CODE + '/vendor/')
 @user_passes_test(is_user_fully_registered, login_url='/' + urlsecret.SECRET_CODE + '/account/update_profile/')
 # @user_passes_test(is_user_email_verified, login_url='/resendemailconfirmation/')  # This should be a page that asks
 # @user_passes_test(is_user_phone_verified, login_url='/sms/')
 def home(request):
     """
-
     :param request:
     :return:
     """
     # home page: show only when user is logged in, otherwise go to sigin page
     if request.user.is_authenticated:
         profile = Profile.objects.get(user__username=request.user.username)
-        user_ = User.objects.get(username=request.user.username)
         order = Order.objects.filter(client__user__username=request.user.username)
         return render(request, 'home.html', {
             'isPhoneVerified': profile.phone_verification_status,
@@ -355,7 +451,6 @@ def home(request):
             'lastname': request.user.last_name,
             'orders': order,
             'number_of_items': get_number_of_items_in_cart(request),
-
         })
     else:
         return redirect('login')
@@ -363,10 +458,21 @@ def home(request):
 
 # ------------------------------------------------------------------------------------------
 @login_required
+@user_passes_test(is_vendor, login_url='/' + urlsecret.SECRET_CODE + '/vendor/')
 def profile(request):
     profile = Profile.objects.get(user__username=request.user.username)
+    if profile.customer_id:
+        cards = stripe.Customer.list_sources(
+            profile.customer_id,
+            limit=3,
+            object='card'
+        )
+        cards = cards.data
+    else:
+        cards = []
     user = User.objects.get(username=request.user.username)
     return render(request, 'profile.html', {
+        'cards': len(cards),
         'isPhoneVerified': profile.phone_verification_status,
         'isEmailVerified': profile.email_verification_status,
         'firstname': user.first_name,
@@ -379,29 +485,53 @@ def profile(request):
         'state': profile.state,
         'zip': profile.zip_code,
         'number_of_items': get_number_of_items_in_cart(request),
+    })
 
+
+# ------------------------------------------------------------------------------------------
+@login_required
+@user_passes_test(is_vendor, login_url='/' + urlsecret.SECRET_CODE + '/vendor/')
+def settings(request):
+    profile = Profile.objects.get(user__username=request.user.username)
+    user = User.objects.get(username=request.user.username)
+    if profile.customer_id:
+        cards = stripe.Customer.list_sources(
+            profile.customer_id,
+            limit=3,
+            object='card'
+        )
+        cards = cards.data
+    else:
+        cards = []
+    return render(request, 'settings.html', {
+        'cards': len(cards),
+        'isPhoneVerified': profile.phone_verification_status,
+        'isEmailVerified': profile.email_verification_status,
+        'firstname': user.first_name,
+        'lastname': user.last_name,
+        'email': user.email,
+        'phone': profile.phone_number,
+        'street1': profile.street1,
+        'street2': profile.street2,
+        'city': profile.city,
+        'state': profile.state,
+        'zip': profile.zip_code,
     })
 
 
 @transaction.atomic
 # @user_passes_test(is_user_email_verified, login_url='/resendemailconfirmation/')
 @login_required
+@user_passes_test(is_vendor, login_url='/' + urlsecret.SECRET_CODE + '/vendor/')
 def update_profile(request):
     """
     :param request:
     :return:
     """
-    print(request.method)
     if request.method == 'POST':
-        print('update_profile check 7')
-        print(request.POST)
         user_form = UserForm(request.POST, instance=request.user)
         profile_form = ProfileForm(request.POST, instance=request.user.profile)
-        print('update_profile check 8')
-        print(user_form.is_valid())
-        print(profile_form.is_valid())
         if user_form.is_valid() and profile_form.is_valid():
-            print('update_profile check 9')
             user_form_data = user_form.cleaned_data
             profile_form_data = profile_form.cleaned_data
             profile_ = Profile.objects.get(user__username=request.user)
@@ -409,20 +539,14 @@ def update_profile(request):
             pre_form_change_email = user_.email
             pre_form_change_phone = profile_.phone_number
             user_form.save()
-            print('update_profile check 1')
             profile_form.save()
             profile_ = Profile.objects.get(user=request.user)
             profile_.profile_filled = True
-            print('update_profile check 3')
             if pre_form_change_email != user_form_data['email']:
-                print('update_profile check 2')
                 profile_.email_verification_status = 0
                 # Here we have to set a bit in User model that shows we have to confirm user's email
-            print('update_profile check 4')
             if pre_form_change_phone != profile_form_data['phone_number']:
-                print('update_profile check 5')
                 profile_.phone_verification_status = 0
-            print('update_profile check 6')
             profile_.profile_filled = True
             profile_.save()
             return redirect('profile')
@@ -437,6 +561,7 @@ def update_profile(request):
         'profile_form': profile_form,
         'isEmailVerified': profile_.email_verification_status,
         'number_of_items': get_number_of_items_in_cart(request),
+        'profile_filled': profile_.profile_filled,
     })
 
 
@@ -481,27 +606,11 @@ def signup_additional(request):
 #    template_name = '*.html'
 
 
-# deletes .pickle files older than one day
-def delete_files():
-    """
-
-    :return:
-    """
-    d = Path("mysite/..")
-    for i in d.listdir():
-        if i.endswith(".pickle"):
-            days = 30
-            time_in_secs = time.time() - (days * 24 * 60 * 60)
-            if i.isfile():
-                if i.mtime <= time_in_secs:
-                    i.remove()
-                    print('removing files')
-
-
 # ------------------------------------------------------------------------------------------
 # Only GET method. The submit button only refers to "CART" page.
 # the rest of this function takes care of finding vendor and associated profile
 @login_required
+@user_passes_test(is_vendor, login_url='/' + urlsecret.SECRET_CODE + '/vendor/')
 @user_passes_test(is_user_email_verified, login_url='/' + urlsecret.SECRET_CODE + '/sendemailconfirmation/')
 @user_passes_test(is_user_phone_verified, login_url='/' + urlsecret.SECRET_CODE + '/sms/')
 def order_page(request):
@@ -534,8 +643,8 @@ def order_page(request):
     items = {}
     # ----------------------------------------
     # create a range of digits 0:20 in string format
-    #range_ = []    TO BE DELETED
-    #for _ in range(0, 20):
+    # range_ = []    TO BE DELETED
+    # for _ in range(0, 20):
     #    range_.append(str(_))
     for _ in items_from_vendor:
         items.update({
@@ -557,7 +666,7 @@ def order_page(request):
     # ----------------------------------------
     return render(request, 'order.html', {
         'Items': items,
-        #'range': range_,    To BE DELETED
+        # 'range': range_,    To BE DELETED
         'number_of_items': get_number_of_items_in_cart(request),
     })
 
@@ -679,6 +788,7 @@ def profile_check_ajax(request):
 # ------------------------------------------------------------------------------------------
 # If number of items is zero, then remove the items
 @login_required
+@user_passes_test(is_vendor, login_url='/' + urlsecret.SECRET_CODE + '/vendor/')
 @user_passes_test(is_user_email_verified, login_url='/' + urlsecret.SECRET_CODE + '/sendemailconfirmation/')
 @user_passes_test(is_user_phone_verified, login_url='/' + urlsecret.SECRET_CODE + '/sms/')
 def cart_page(request):
@@ -694,9 +804,7 @@ def cart_page(request):
         with open(request.session.session_key + '.pickle', 'rb') as handle:
             temp_order = pickle.load(handle)
     except:
-        print('oho exception in 1')
         temp_order = {}
-    print(' in cart 1: temp_order:: ', temp_order)
     for _ in temp_order:
         try:
             if items_from_form.get(_):
@@ -709,7 +817,6 @@ def cart_page(request):
     # this has to be the vendor assigned to the client
     vendor = Vendor.objects.get(profile__user__username="msohani")
     items_from_vendor = vendor.item.all()
-    print(' in cart 2: items_from_vendor:: ', items_from_vendor)
     cart = {}
     total_items = 0
     total_price = 0
@@ -758,7 +865,7 @@ def checkout(request):
     """
     # Set your secret key: remember to change this to your live secret key in production
     # See your keys here: https://dashboard.stripe.com/account/apikeys
-    stripe.api_key = 'sk_test_38pWvScfn2ajZK6irXe95U8F00V1vvirR0'
+    stripe.api_key = STRIPE_API_KEY
     session = stripe.checkout.Session.create(
         payment_method_types=['card'],
         line_items=[{
@@ -770,9 +877,9 @@ def checkout(request):
             'quantity': 1,
         }],
         client_reference_id="123456",
-        customer_email='customer@example.com',
-        success_url='https://example.com/success',
-        cancel_url='https://example.com/cancel',
+        customer_email='matmat1@example.com',
+        success_url='https://idryclean.herokuapp.com/BNcNKV0mXuSTKNMKc10TFuMcXmQK5kGSuTXKdslzNEo63JjTfcmwR9Tv6zbdZz36/home/',
+        cancel_url='https://idryclean.herokuapp.com/BNcNKV0mXuSTKNMKc10TFuMcXmQK5kGSuTXKdslzNEo63JjTfcmwR9Tv6zbdZz36/home/',
     )
     try:
         with open(request.session.session_key + '.pickle', 'rb') as handle:
@@ -780,14 +887,16 @@ def checkout(request):
     except:
         temp_order = {}
     total_price = 0
-    tax = 1
     for i in temp_order.values():
         total_price += i['price'] * i['count']
+    tax = decimal.Decimal(total_price) * decimal.Decimal(
+        6.625 / 100)  # 6.25 is NJ TAX RATE, should be changed based on state
+    tax = decimal.Decimal(tax).quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_DOWN)
     return render(request, 'checkout.html', {
         'number_of_items': get_number_of_items_in_cart(request),
         'items': temp_order,
         'tax': tax,
-        'total': total_price + tax,
+        'total': decimal.Decimal(total_price + tax),
         'promocode': "",
         'CHECKOUT_SESSION_ID': session['id'],
     })
@@ -853,3 +962,151 @@ def support(request):
     return render(request, 'support.html', {
         'phone_number': vendor.profile.phone_number,
     })
+
+
+def charge(request):
+    if request.method == 'POST':
+        print(request.POST)
+    stripe.api_key = STRIPE_API_KEY
+
+    # Token is created using Checkout or Elements!
+    # Get the payment token ID submitted by the form:
+    token = request.POST['stripeToken']
+
+    charge = stripe.Charge.create(
+        amount=1999,
+        currency='usd',
+        description='Example charge',
+        source=token,
+        receipt_email='logixsohani@gmail.com',
+    )
+    return render(request, 'Vendor/charge.html')
+
+
+def delete_profile(request):
+    user_ = User.objects.get(username=request.user)
+    profile_ = Profile.objects.get(user__username=request.user)
+    user_.delete()
+    profile_.delete()
+    return redirect('/accounts/logout/')
+
+
+# ---------------------------------------------------------------------------
+# ---------------------- Customer STRIPE TRANSACTIONS -----------------------
+# ---------------------------------------------------------------------------
+"""
+def temp_payment():
+    
+This is temp. Has to be changed later
+:return:
+
+# This is for payment. Has to be moved to the vendor charging function
+stripe.api_key = STRIPE_API_KEY
+paymentresponse = stripe.PaymentIntent.create(
+    amount=50,
+    currency='usd',
+    payment_method_types=['card'],
+    customer=customer['id'],
+    payment_method=data['payment_method'],
+    off_session=True,
+    confirm=True,
+)
+
+"""
+
+
+def add_card(request):
+    """
+    This is credit card setting page. ADD/Remove credit card. If user has credit card on file, it will grab
+    client's secret and ID
+    :param request:
+    :return:
+    """
+    profile_ = Profile.objects.get(user__username=request.user)
+    if request.method == 'POST':
+        # check if customer already exists
+        # if exists then get the customer id and list credit cards
+        local_customer = profile_.customer_id
+        if local_customer:
+            customer = stripe.Customer.retrieve(local_customer)
+            card = stripe.Customer.create_source(
+                local_customer,
+                source=request.POST['stripeToken'],
+            )
+        else:
+            # if not create
+            customer = stripe.Customer.create(
+                source=request.POST['stripeToken'],
+                description="",
+                email=profile_.user.email,
+                name=profile_.user.first_name + " " + profile_.user.last_name,
+            )
+            profile_.customer_id = customer['id']
+            profile_.save()
+            print('in post')
+        cards = stripe.Customer.list_sources(
+            profile_.customer_id,
+            limit=3,
+            object='card'
+        )
+        return redirect(manage_card)
+    else:
+        # GET
+        if profile_.customer_id:
+            cards = stripe.Customer.list_sources(
+                profile_.customer_id,
+                limit=3,
+                object='card'
+            )
+        else:
+            cards = []
+        # setup_intent = stripe.SetupIntent.create()
+        return render(request, 'add_card.html', {
+            'cards': cards,
+            'customer_id': profile_.customer_id,
+            'stripe_publishable_key': STRIPE_PUBLISHABLE_KEY,
+            'name': profile_.user.first_name + " " + profile_.user.last_name,
+            'secret_code': urlsecret.SECRET_CODE,
+        })
+
+
+def manage_card(request):
+    """
+    This is credit card setting page. ADD/Remove credit card. If user has credit card on file, it will grab
+    client's secret and ID
+    :param request:
+    :return:
+    """
+    profile_ = Profile.objects.get(user__username=request.user)
+    if profile_.customer_id:
+        cards = stripe.Customer.list_sources(
+            profile_.customer_id,
+            limit=3,
+            object='card'
+        )
+    else:
+        cards = []
+    return render(request, 'manage_card.html', {
+        'number_of_cards': len(cards),
+        'cards': cards,
+        'customer_id': profile_.customer_id,
+        'stripe_publishable_key': STRIPE_PUBLISHABLE_KEY,
+        'name': profile_.user.first_name + " " + profile_.user.last_name,
+    })
+
+
+def delete_card_ajax(request):
+    data = request.GET['data']
+    profile_ = Profile.objects.get(user__username=request.user)
+    stripe.Customer.delete_source(
+        profile_.customer_id,
+        data
+    )
+    return JsonResponse({"data": 0})
+
+
+# ---------------------------------------------------------------------------
+# ---------------------- VENDOR ---------------------------------------------
+# ---------------------------------------------------------------------------
+def vendor(request):
+    return render(request, 'Vendor/vendor_home.html')
