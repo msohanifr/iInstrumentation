@@ -1,0 +1,411 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'mysite/src/css/custom/progress.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'mysite/src/css/FooTable/footable.bootstrap.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'mysite/src/css/FooTable/footable.paging.css' %}">
+
+<style>
+    .pagination>li>a {
+        position: relative;
+        float: left;
+        padding: 6px 12px;
+        margin-left: -1px;
+        line-height: 1.42857143;
+        color: #337ab7;
+        text-decoration: none;
+        background-color: #fff;
+        border: 1px solid #ddd;
+    }
+</style>
+
+{% endblock %}
+{% block content %}
+    <div class="card border-dark">
+        <div class="card-header">
+            <h2>Home</h2>
+        </div>
+
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <form method="post" novalidate id="id_search_form">
+                    <div class="row">
+                            {% csrf_token %}
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <label class="type-head form-label mt-1" for="simpleinput">Device Tag</label>
+                            <input type="text" name="devicetag" data-provide="typeahead" id="devicetag" class="form-control mb-2" autocomplete="off">
+                            <label class="form-label mt-1" for="simpleinput">P&ID</label>
+                            <input type="text" name="pid" id="pid" class="form-control mb-2" autocomplete="off">
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <label class="form-label mt-1" for="simpleinput">Site</label>
+                            <input type="text" name="site" id="site" class="form-control mb-2" autocomplete="off">
+                            <label class="form-label mt-1" for="simpleinput">Unit</label>
+                            <input type="text" name="unit" id="unit" class="form-control mb-2" autocomplete="off">
+                        </div>
+                        <div class="col-lg-4 col-md-12 col-sm-12 d-flex flex-column">
+                            <div class="row justify-content-center mt-auto mb-2">
+                                <button type="button" id="id_submit" class="btn btn-outline-primary mt-auto">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                    </form>
+                </li>
+                <li class="list-group-item border-bottom-0">
+                    {% if query %}
+                        <form method="post" novalidate id="id_form_loopcheck">
+                            {% csrf_token %}
+                            <table class="table footable table-striped footable-paging footable-paging-center breakpoint-lg">
+
+                                <thead class="thead-dark">
+                                <tr class="footable-header">
+                                    {% comment %}
+                                    <th class="footable footable-toggle">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="checkall">
+                                            <label class="custom-control-label" for="checkall">all</label>
+                                        </div>
+                                    </th>
+                                    <th class="footable" style="display: table-cell">Device Tag</th>
+                                    <th class="footable" style="display: none">Description</th>
+                                    <th class="footable" style="display: table-cell">Site</th>
+                                    <th class="footable" style="display: table-cell">Unit</th>
+                                    <th class="footable" style="display: table-cell">P&ID</th>
+                                    <th class="footable" style="display: table-cell">Action</th>
+                                    {% endcomment %}
+                                </tr>
+                                </thead>
+
+                                <tbody>
+
+
+                                <input type="text" style="visibility: hidden" name="choice" value="true">
+                                <div class="row justify-content-center mt-auto mb-2">
+                                    <button type="button" id="id_loops" class="btn btn-outline-primary mt-auto">Choose...</button>
+                                    {% comment %}
+
+                                {% endcomment %}
+                                    <button type="button" id="id_loops_reset" class="btn btn-outline-primary mt-auto ml-1">Reset Choices</button>
+                                </div>
+                                {% for i in query.values %}
+                                    {% comment %}
+                                     <form method="get" id="id_form_details_{{ i.DeviceKey }}" action="{% url 'instrument_detail'  i.DeviceKey %}">
+                                     {% endcomment %}
+                                    <tr>
+                                        <td style="display: table-cell">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" name="{{ i.DeviceKey }}" id="id_chk_{{ i.DeviceKey }}">
+                                                <label class="custom-control-label" for="id_chk_{{ i.DeviceKey }}"></label>
+                                            </div>
+                                        </td>
+                                        <td style="display: table-cell">{{ i.DeviceName }}</td>
+                                        <td style="display: table-cell">{{ i.DeviceDescription }}</td>
+                                        <td style="display: table-cell">{{ i.SiteName }}</td>
+                                        <td style="display: table-cell">{{ i.UnitName }}</td>
+                                        <td style="display: table-cell">{{ i.PIDSheetNumber }} </td>
+                                        <td  style="display: table-cell">
+                                            <button type="button" class="btn btn-sm btn-outline-primary mt-1" OnClick=" location.href='{% url 'instrument_detail'  i.DeviceKey %}' ">Details</button>
+                                            <button type="button" class="btn btn-sm btn-outline-primary mt-1" OnClick=" location.href='{% url 'prooftest' i.DeviceKey %}' ">Proof Test</button>
+                                        </td>
+                                    </tr>
+                                    {% comment %}
+                                     </form>
+                                     {% endcomment %}
+
+
+                                {% endfor %}
+                                </tbody>
+                                <tfoot>
+
+                                </tfoot>
+
+                            </table>
+                        </form>
+
+
+                    {% elif not query == None %}
+                        <p class="text text-danger">No result found</p>
+                    {% endif %}
+                </li>
+
+
+            </ul>
+        </div>
+        <footer class="my-3 text-muted text-center text-small">
+            <ul class="list-inline text-left ml-2">
+                <small class="ml-0">
+
+                </small>
+            </ul>
+        </footer>
+    </div>
+    <div>
+        <br>
+    </div>
+
+{% endblock %}
+
+
+{% block javascript %}
+
+    <script src="{% static 'mysite/src/js/Autocomplete/bootstrap3-typeahead.js' %}"></script>
+    <script src="{% static 'mysite/src/js/Autocomplete/bloodhound.js' %}"></script>
+
+
+    <script>
+        var devicetag = new Bloodhound({
+            //datumTokenizer: Bloodhound.tokenizers.whitespace,
+            datumTokenizer: function(d){
+                var tokens = [d];
+                return tokens;
+            },
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            remote: {
+                url: 'devicetag_ajax/?devicetag=',
+                filter: function (tags) {
+                    // Map the remote source JSON array to a JavaScript object array
+                    return tags.data
+                },
+                replace: function(url, query) {
+                    return url + query; // used to prevent the data from being cached. New requests aren't made without this (cache: false setting in ajax settings doesn't work)
+                }
+            },
+            cache: false,
+        });
+        devicetag.initialize();
+        $("#devicetag").typeahead({
+            items: 10,
+            minLength: 1,
+            autoSelect: false,
+            hint: true,
+            highlight: true,
+            source:devicetag.ttAdapter()
+        });
+
+       $('#devicetag').keyup(function (e) {
+           console.log(e)
+           devicetag.clear;
+                   //numbers.local = data.data;
+           devicetag.clearPrefetchCache();
+           devicetag.initialize(true);
+       });
+
+    </script>
+    <script>
+
+        var pid = new Bloodhound({
+            //datumTokenizer: Bloodhound.tokenizers.whitespace,
+            datumTokenizer: function(d){
+                var tokens = [d];
+                return tokens;
+            },
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            remote: {
+                url: 'pid_ajax/?pid=',
+                filter: function (tags) {
+                    // Map the remote source JSON array to a JavaScript object array
+                    return tags.data
+                },
+                replace: function(url, query) {
+                    return url + query; // used to prevent the data from being cached. New requests aren't made without this (cache: false setting in ajax settings doesn't work)
+                }
+            },
+            cache: false,
+        });
+        pid.initialize();
+        $("#pid").typeahead({
+            items: 10,
+            minLength: 1,
+            autoSelect: false,
+            hint: true,
+            highlight: true,
+            source:pid.ttAdapter()
+        });
+       $('#pid').keyup(function (e) {
+           pid.clear;
+           //numbers.local = data.data;
+           pid.clearPrefetchCache();
+           pid.initialize(true);
+       });
+    </script>
+    <script>
+
+        var site = new Bloodhound({
+            //datumTokenizer: Bloodhound.tokenizers.whitespace,
+            datumTokenizer: function(d){
+                var tokens = [d];
+                return tokens;
+            },
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            remote: {
+                url: 'site_ajax/?site=',
+                filter: function (tags) {
+                    // Map the remote source JSON array to a JavaScript object array
+                    return tags.data
+                },
+                replace: function(url, query) {
+                    return url + query; // used to prevent the data from being cached. New requests aren't made without this (cache: false setting in ajax settings doesn't work)
+                }
+            },
+            cache: false,
+        });
+        site.initialize();
+        $("#site").typeahead({
+            items: 10,
+            minLength: 1,
+            autoSelect: false,
+            hint: true,
+            highlight: true,
+            source:site.ttAdapter()
+        });
+        $('#site').keyup(function (e) {
+            site.clear;
+            //numbers.local = data.data;
+            site.clearPrefetchCache();
+            site.initialize(true);
+        });
+    </script>
+    <script>
+
+        var unit = new Bloodhound({
+            //datumTokenizer: Bloodhound.tokenizers.whitespace,
+            datumTokenizer: function(d){
+                var tokens = [toString(d)];
+                return tokens;
+            },
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            remote: {
+                url: 'unit_ajax/?unit=',
+                filter: function (tags) {
+                    // Map the remote source JSON array to a JavaScript object array
+                    return tags.data
+                },
+                replace: function(url, query) {
+                    return url + query; // used to prevent the data from being cached. New requests aren't made without this (cache: false setting in ajax settings doesn't work)
+                }
+            },
+            cache: false,
+        });
+        unit.initialize();
+
+        $("#unit").typeahead({
+            items: 10,
+            minLength: 1,
+            autoSelect: false,
+            hint: true,
+            highlight: true,
+            source:unit.ttAdapter()
+        });
+        $('#unit').keyup(function (e) {
+            unit.clear;
+            unit.clearPrefetchCache();
+            unit.initialize(true);
+        });
+
+    </script>
+    <script>
+
+       $(document).ready(function () {
+
+           $('#id_submit').click(function () {
+               //$("#id_username").val(($("#id_username").val()).toLowerCase())
+               $("#id_search_form").submit();
+           });
+
+       });
+   </script>
+    <script src="{% static 'mysite/src/js/FooTable/footable.js' %}"></script>
+    <script>
+        jQuery(function ($){
+            $('.table').footable(({
+                "paging": {
+                    "enabled": true,
+                    "limit": 10,
+                    "size":50,
+                },
+                "columns" : [
+
+                    {
+                        "name": "all",
+                        "title": "",
+                        "style": {
+                        }
+                    },
+                    {
+                        "name": "DeviceTag",
+                        "title": "Device Tag",
+                        "style": {
+                            "width": "150px",
+                        }
+                    },
+                    {
+                        "name": "Description",
+                        "title": "Description",
+                        "breakpoints": "xs",
+                    },
+                    {
+                        "name": "site",
+                        "title": "Site",
+                        "breakpoints": "xs sm",
+                    },
+                    {
+                        "name": "unit",
+                        "title": "Unit",
+                        "breakpoints": "xs sm",
+                        "style": {
+                            "maxWidth": 200,
+                            "textOverflow": "ellipsis",
+                            "wordBreak": "keep-all",
+                            "whiteSpace": "nowrap"
+                        }
+                    },
+                    {
+                        "name": "PID",
+                        "title": "P&ID",
+                        "breakpoints": "xs",
+
+                    },
+                    {
+                        "name": "Action",
+                        "title": "Action"
+                    }
+                ]
+
+
+            }));
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+
+            $('#id_submit').click(function () {
+                $("#id_search_form").submit();
+            });
+            $('#id_loops').click(function () {
+
+                $("#id_form_loopcheck").submit();
+            });
+            $('#id_loops_reset').click(function () {
+                {% for i in query.values %}
+                    $('#id_chk_{{ i.DeviceKey }}').prop('checked', false);
+                {% endfor %}
+                $("#id_form_loopcheck").submit();
+            });
+
+            $('#checkall').click(function () {
+                if ($('#checkall')[0].checked) {
+                    {% for i in query.values %}
+                        $('#id_chk_{{ i.DeviceKey }}').prop('checked', true);
+                    {% endfor %}
+                };
+                if (($('#checkall')[0].checked) == false) {
+                    {% for i in query.values %}
+                        $('#id_chk_{{ i.DeviceKey }}').prop('checked', false);
+                    {% endfor %}
+                };
+            });
+        });
+    </script>
+{% endblock %}

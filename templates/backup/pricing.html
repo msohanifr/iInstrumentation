@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+    <style>
+        .card-body {
+            padding: .5rem;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="card border-dark">
+        {% comment %}          ----------- The card header, it is rremoved because it is too big
+        <div class="card-header">
+            <h2>Profile</h2>
+        </div>
+        {% endcomment %}
+
+
+        <div class="card-body">
+            <ul class="list-group">
+                {% for item in Items.values %}
+
+                    {% cycle '<div class="wrapper wrapper-content animated fadeInRight"><div class="row">' '' '' '' %}
+
+
+                    <div class="col-6 m-0">
+                        <div class="ibox">
+                            <div class="ibox-content product-box active">
+                                {% comment "The following invisibile inputs created to send information about the product to cart" %}
+                        {% endcomment %}
+                                {% comment %} end of invisible section  {% endcomment %}
+                                <div id="item" name="item" class="product-imitation mt-0">
+                                    <div class="row align-items-top justify-content-center">
+                                        {% comment %}
+                                        -----------  MINUS BUTTON -------------------------
+                                        <button type="button" id="{{ item.title }}_minus"
+                                                style="position: absolute; left: 20px;" class="btn btn-outline-primary">
+                                            <i class="fa fa-minus fa-sm"></i>
+                                        </button>
+                                        {% endcomment %}
+                                        <img src="{% static 'pricing.html/' %}{{ item.image }}" alt="Dress" height="100px">
+                                        {% comment %}
+                                        ----------- PLUS BUTTON ---------------------------
+                                        <button type="button" id="{{ item.title }}_plus"
+                                                style="position: absolute; right: 20px;"
+                                                class="btn btn-outline-primary">
+                                            <i class="fa fa-plus fa-sm"></i>
+                                        </button>
+                                        {% endcomment %}
+                                    </div>
+                                </div>
+                                <div class="product-desc">
+                                        <span class="product-price" style="background-color: black">
+                                            ${{ item.price }}
+                                            <span class="badge badge-danger" id="{{ item.title }}_count"
+                                                  style={% if item.count == 0 or not item.count %}"visibility: hidden">
+                                                  {% else %}"visibility: inherit" >{% endif %}
+                                                  {{ item.count }}
+                                            </span>
+                                        </span>
+
+
+                                    <small class="text-muted">{{ item.category }}</small>
+                                    <a class="product-name" style="font-size: 10px"><input type="hidden"
+                                                                                           value="{{ item.title }}"> {{ item.description }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="mt-0 mb-2">
+                    </div>
+                    {% cycle '' '' '' '</div> </div>' %}
+                {% endfor %}
+            </ul>
+            <hr/>
+            <div class="row justify-content-center align-items-center">
+                <div class="btn-group mb-2">
+                    <a href="{% url 'order' %}" class="btn btn-outline-primary"><i
+                            class="fa fa-shopping-cart"></i> Order</a>
+                </div>
+            </div>
+        </div>
+        <footer class="my-3 pt-3 text-muted text-center text-small">
+
+        </footer>
+    </div>
+    <div>
+        <br>
+    </div>
+
+
+{% endblock %}
+
+{% block javascript %}
+
+    <script>
+        $(document).ready(function () {
+            {% for item in Items %}
+
+                $("#number_of_{{ item }}").change(function () {
+                    const val = $(this).val();
+                    const val_json = '{"count":' + val + "}";
+                    const value = '"{{ item }}":' + val_json;
+
+                    $.ajax({
+                        url: '/ajax/',
+                        data: {
+                            'data': value,
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            document.getElementById("top_cart").style.visibility = "inherit";
+                            document.getElementById("top_cart").innerText = data['number_of_items'];
+
+                        },
+                        error: function () {
+                        },
+                    });
+                });
+                $("#{{ item }}_minus").click(function () {
+                    const val_json = '{"count":' + '-1' + "}";
+                    const value = '"{{ item }}":' + val_json;
+                    $.ajax({
+                        url: '/ajax/',
+                        data: {
+                            'data': value,
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            document.getElementById("top_cart").style.visibility = "inherit";
+                            document.getElementById("top_cart").innerText = data['number_of_items'];
+                            document.getElementById("{{ item }}_count").style.visibility = "inherit";
+                            document.getElementById("{{ item }}_count").innerText = data['{{ item }}']['count'];
+                        },
+                        error: function () {
+                        },
+                    });
+                });
+
+
+                $("#{{ item }}_plus").click(function () {
+                    const val_json = '{"count":' + '1' + "}";
+                    const value = '"{{ item }}":' + val_json;
+                    $.ajax({
+                        url: '/ajax/',
+                        data: {
+                            'data': value,
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            document.getElementById("top_cart").style.visibility = "inherit";
+                            document.getElementById("top_cart").innerText = data['number_of_items'];
+                            document.getElementById("{{ item }}_count").style.visibility = "inherit";
+                            document.getElementById("{{ item }}_count").innerText = data['{{ item }}']['count'];
+                        },
+                        error: function () {
+                        },
+                    });
+                });
+
+            {% endfor %}
+        });
+
+    </script>
+{% endblock %}
+

@@ -1,0 +1,10 @@
+path.py
+django-crispy-forms
+pytz==2018.7
+mysqlclient
+psycopg2-binary
+dj-database-url
+gunicorn
+whitenoise
+pyodbc
+

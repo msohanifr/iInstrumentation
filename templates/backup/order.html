@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+
+{% endblock %}
+{% block content %}
+    <div class="card border-dark">
+        {% comment %}
+        <div class="card-header">
+            <h2>Home</h2>
+        </div>
+        {% endcomment %}
+
+
+        <div class="card-body">
+
+
+            <div class="card-body">
+                <div class="wrapper wrapper-content animated fadeInRight">
+                    <div class="py-2 mb-3 text-center">
+                        <h2>Checkout</h2>
+                    </div>
+                    <p>By placing the order, you agree to pay for dry cleaning services as per price list, in addition to
+                        1.99$ service fee.</p>
+
+                    <p>For orders more than 100$, you have to confirm the payment before shop can start the service.
+                        Shop will send you notification after pickup.
+                    </p>
+                    <div class="row justify-content-center align-items-center ">
+                        <a href="{% url 'place_order' %}" class="btn btn-outline-primary mt-1 mb-1 ml-1">
+                            <i class="fas fa-shopping-bag"></i> Place order</a>
+                    </div>
+
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block javascript %}
+
+    <script>
+        $(document).ready(function () {
+
+        });
+
+    </script>
+{% endblock %}
+

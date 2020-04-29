@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+    <style>
+
+        .page-wrapper {
+            height: 1px;
+            justify-content: center;
+        }
+    </style>
+
+{% endblock %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-sm-12">
+            <div class="card border-dark">
+                <div class="card-body">
+                    <h2>Sign Up</h2>{{ request.path }}
+                    <form method="post" id="id_form">
+                        {% csrf_token %}
+                        {{ user_form|crispy }}
+                        {{ profile_form|crispy }}
+                        {% if request.path ==  "/"|add:SECRET_CODE|add:'/account/update_profile/' and not profile_filled%}
+                        <button type="button" class="btn btn-outline-danger"
+                                onclick="window.location.href =  '/{{ SECRET_CODE }}/logout/';">
+                            Cancel
+                        </button>
+                        {% elif request.path ==  "/"|add:SECRET_CODE|add:'/account/update_profile/' and profile_filled%}
+                            <button type="button" class="btn btn-outline-danger "
+                                    onclick="window.location.href =  '/{{ SECRET_CODE }}/profile/';">
+                                Cancel
+                            </button>
+                        {% endif %}
+                        <button type="button" id="id_submit" class="btn btn-outline-primary">Save changes</button>
+
+                        {% comment %}
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        {% endcomment %}
+                    </form>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <p style="visibility: hidden">.</p>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+
+{% block javascript %}
+
+
+    <script>
+        $(document).ready(function () {
+            $('#id_username').prop('disabled', true);
+            $('#js-page-content').removeClass('mt-5');
+            $('#js-page-content').addClass(' justify-content-center');
+        })
+        $("#id_email").keyup(function () {
+            var data = {'email': $("#id_email").val()};
+            $.ajax({
+                url: '/profileajax/',
+                data: data,
+                dataType: 'json',
+                success: function (data) {
+                    $('#id_after_email').remove()
+                    $('#id_email').after('<small class="text-danger" id="id_after_email">' + data["data"] + '</small>');
+                },
+                error: function () {
+                },
+            });
+        })
+
+        {% comment %}
+            This jQuery checks all fields before submitting the form.
+                1) check if phone number if in the correct format (DONE)
+                2) Check if state is NJ
+                3) check if zipcode is in the list of acceptable zip codes
+                4) check if address as a whole is acceptable by google places API
+        {% endcomment %}
+
+        $("#id_submit").click(function () {
+            var phone_number = $('#id_phone_number').val();
+            var zip_code = $('#id_zip_code').val();
+            $.ajax({
+                url: '/profile_check_ajax/',
+                data: {
+                    'phone_number': phone_number,
+                    'zip_code': zip_code,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    $('#id_after_zip_code').remove()
+                    $('#id_after_phone_number').remove()
+
+                    if (data["phone_number"] === 'correct' && data["zip_code"] === 'correct') {
+                        $('#id_username').prop('disabled', false);
+                        $("#id_form").submit();
+                    } else if (data["phone_number"] === 'incorrect') {
+                        $('#id_phone_number').after('<small class="text-danger" id="id_after_phone_number">' + "The phone number format is not correct" + '</small>');
+                    } else if (data["zip_code"] === 'incorrect') {
+                        $('#id_zip_code').after('<small class="text-danger" id="id_after_zip_code">' + "The zip format is not correct" + '</small>');
+                    }
+                },
+                error: function () {
+                },
+            });
+        })
+
+        {% comment %}
+       //  This is Ajax function can be used with submit button, to check the address with moham.sohani@gmail.com
+       // google location API. This is disbaled for now until further to see if it is requried or not.
+       // For now, we leave upto the user to enter the correct address.
+
+        $("#id_submit").click(function(){
+            var address_1= $("#id_street1").val()+", ";
+            var address_2= $("#id_street2").val()+ ", ";
+            var city_=$("#id_city").val()+ ", ";
+            var state_=$("#id_state").val()+ ", ";
+            var zip_=$("#id_zip_code").val();
+            var address_ = address_1 + address_2 + city_ + state_ + zip_;
+            console.log(address_);
+            $.ajax({
+                url: '/addressajax/',
+                data: {
+                    'data':address_
+                },
+                dataType: 'text',
+                success: function (data) {
+                    console.log(data);
+                },
+                error: function () {
+                },
+            });
+        })
+        {% endcomment %}
+    </script>
+
+{% endblock %}

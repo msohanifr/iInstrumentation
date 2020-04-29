@@ -1,0 +1,41 @@
+<html>
+<head>
+    <script src="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.css"/>
+
+    <script type="text/javascript">
+        window.onload = function() {
+            L.mapquest.key = 'lYrP4vF3Uk5zgTiGGuEzQGwGIVDGuy24';
+
+            var map = L.mapquest.map('map', {
+                center: [37.7749, -122.4194],
+                layers: L.mapquest.tileLayer('map'),
+                zoom: 10,
+                doubleClickZoom: false,
+                dragging: false,
+                attributionControl: false,
+            });
+
+            map.addControl(L.mapquest.control());
+        }
+    </script>
+</head>
+
+<body style="border: 0; margin: 0;">
+<div id="map" style="width: 10%; height: 130px;"></div>
+
+<img src="directions-icon.png" onclick="mapsSelector('22 dixon dr, florhampark')" />
+<script>
+    function mapsSelector(addr) {
+        if /* if we're on iOS, open in Apple Maps */
+        ((navigator.platform.indexOf("iPhone") != -1) ||
+            (navigator.platform.indexOf("iPad") != -1) ||
+            (navigator.platform.indexOf("iPod") != -1))
+            window.open("maps://maps.google.com/maps?daddr="+addr);
+        else /* else use Google */
+            window.open("https://maps.google.com/maps?daddr="+addr);
+    }
+</script>
+
+</body>
+</html>

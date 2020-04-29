@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="Microsoft SQL Server - LANXESS_UAT@192.168.1.111" uuid="7fb9f1e9-a317-4f10-bd4d-1a5cb33cfc56">
+      <driver-ref>sqlserver.ms</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
+      <jdbc-url>jdbc:sqlserver://192.168.1.111\ELDOINTLK:1433;database=LANXESS_UAT</jdbc-url>
+    </data-source>
+  </component>
+</project>
