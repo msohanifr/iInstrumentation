@@ -1,0 +1,865 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html lang="en" class="bg-gray-300">
+<head>
+    <meta charset="utf-8">
+    <title>
+        iInstrumentation
+    </title>
+    <meta name="description" content="Page Title">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
+    <!-- Call App Mode on ios devices -->
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+
+    <!-- Place favicon.ico in the root directory -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'mysite/src/img/favicon/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'mysite/src/img/favicon/favicon-32x32.png' %}">
+    <link rel="mask-icon" href="{% static 'mysite/src/img/favicon/safari-pinned-tab.svg' %}" color="#5bbad5">
+
+    <link href="{% static 'mysite/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'mysite/fontawesome/all.min.css' %}" rel="stylesheet">
+    <link href="{% static 'mysite/bootstrap/css/sticky-footer-navbar.css' %}" rel="stylesheet">
+    <!-- base css -->
+    <link rel="stylesheet" media="screen, print" href="{% static 'mysite/src/css/vendors.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'mysite/src/css/app.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print"
+          href="{% static 'mysite/src/css/notifications/sweetalert2/sweetalert2.bundle.css' %}">
+
+</head>
+<body style="background-color: white">
+<script>
+    /** sss
+     *    This script should be placed right after the body tag for fast execution
+     *    Note: the script is written in pure javascript and does not depend on thirdparty library
+     **/
+    'use strict';
+
+    var themeSettings = {"themeOptions": "mod-bg-1 nav-mobile-push"}
+    localStorage.setItem('themeSettings', JSON.stringify(themeSettings));
+
+    var classHolder = document.getElementsByTagName("BODY")[0],
+        /**
+         * Load from localstorage
+         **/
+        themeSettings = (localStorage.getItem('themeSettings')) ? JSON.parse(localStorage.getItem('themeSettings')) :
+            {},
+        themeURL = themeSettings.themeURL || '',
+        themeOptions = themeSettings.themeOptions || '';
+    /**
+     * Load theme options
+     **/
+    if (themeSettings.themeOptions) {
+        classHolder.className = themeSettings.themeOptions;
+    } else {
+    }
+    if (themeSettings.themeURL && !document.getElementById('mytheme')) {
+        var cssfile = document.createElement('link');
+        cssfile.id = 'mytheme';
+        cssfile.rel = 'stylesheet';
+        cssfile.href = themeURL;
+        document.getElementsByTagName('head')[0].appendChild(cssfile);
+    }
+    /**
+     * Save to localstorage
+     **/
+    var saveSettings = function () {
+        themeSettings.themeOptions = String(classHolder.className).split(/[^\w-]+/).filter(function (item) {
+            return /^(nav|header|mod|display)-/i.test(item);
+        }).join(' ');
+        if (document.getElementById('mytheme')) {
+            themeSettings.themeURL = document.getElementById('mytheme').getAttribute("href");
+        }
+        ;
+        localStorage.setItem('themeSettings', JSON.stringify(themeSettings));
+    }
+    /**
+     * Reset settings
+     **/
+    var resetSettings = function () {
+        localStorage.setItem("themeSettings", "");
+    }
+
+</script>
+<style>
+    {% comment %} brings Delete swal-alert popup to the front {% endcomment %}
+    .swal2-container {
+        z-index: 2000000;
+    }
+
+    {% comment %} This disbales the long touch, which can ultimately reveal the server link {% endcomment %}
+    body {
+        -webkit-touch-callout: none;
+    {% comment %} -webkit-user-select: none; {% endcomment %}
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-backface-visibility: hidden !important;
+    }
+
+    .ui-page {
+        -webkit-backface-visibility: hidden !important;
+    }
+
+
+    .nav-link-text {
+        color: lightgrey;
+        font-size: larger;
+    }
+
+    .footer {
+        font-size: larger;
+    }
+
+    {% comment %}
+     .header-btn[data-class='mobile-nav-on'] {
+        border-color: #1f79b3;
+        background-color: #1f79b3;
+        background-image: -webkit-gradient(linear, left bottom, left top, from(#1f79b3), to(#1f79b3));
+        background-image: linear-gradient(to top, #1f79b3, #1f79b3);
+    }
+    .page-sidebar {
+        background-color: #1f79b3;
+    }
+
+    .page-sidebar .page-logo {
+        background-color: #1f79b3;
+    }
+
+    .page-sidebar .nav-footer {
+        background-color: #1f79b3;
+    }
+    {% endcomment %}
+
+    .badge {
+        position: relative;
+        top: -1rem;
+        right: 0rem;
+    }
+
+    /* E-commerce */
+    .product-box {
+        padding: 0;
+        border: 1px solid #e7eaec;
+    }
+
+    .product-box:hover,
+    .product-box.active {
+        border: 1px solid transparent;
+        -webkit-box-shadow: 0 3px 7px 0 #a8a8a8;
+        -moz-box-shadow: 0 3px 7px 0 #a8a8a8;
+        box-shadow: 0 3px 7px 0 #a8a8a8;
+    }
+
+    .product-imitation {
+        text-align: center;
+        background-color: white;
+        color: #bebec3;
+        font-weight: 300;
+    }
+
+    .cart-product-imitation {
+        text-align: center;
+        height: 80px;
+        width: 80px;
+        background-color: white;
+        color: white;
+    }
+
+    .product-imitation.xl {
+    }
+
+    .product-desc {
+        padding: 20px;
+        position: relative;
+    }
+
+    .ecommerce .tag-list {
+        padding: 0;
+    }
+
+    .ecommerce .fa-star {
+        color: #d1dade;
+    }
+
+    .ecommerce .fa-star.active {
+        color: #f8ac59;
+    }
+
+    .ecommerce .note-editor {
+        border: 1px solid #e7eaec;
+    }
+
+    table.shoping-cart-table {
+        margin-bottom: 0;
+        border-right: 1px solid black;
+        border-left: 1px solid black;
+    }
+
+    table.shoping-cart-table tr td {
+        border: none;
+        text-align: right;
+    }
+
+    table.shoping-cart-table tr td.desc,
+    table.shoping-cart-table tr td:first-child {
+        text-align: left;
+    }
+
+    table.shoping-cart-table tr td:last-child {
+        width: 100%;
+    }
+
+    .product-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #676a6c;
+        display: block;
+        margin: 2px 0 5px 0;
+    }
+
+    .product-name:hover,
+    .product-name:focus {
+        color: #1f79b3;
+    }
+
+    .product-price {
+        font-size: 13px;
+        font-weight: 600;
+        color: #ffffff;
+        background-color: #1f79b3;
+        padding: 4px 4px;
+        position: absolute;
+        top: -2px;
+        right: 0;
+    }
+
+    .product-detail .ibox-content {
+        padding: 30px 30px 50px 30px;
+    }
+
+    .image-imitation {
+        background-color: #f8f8f9;
+        text-align: center;
+        height: 180px;
+    }
+
+    .product-main-price small {
+        font-size: 15px;
+    }
+
+    .product-images {
+        margin: 0 20px;
+    }
+
+    .product-box.active {
+        height: 180px;
+    }
+
+    {% comment %} sets the minimum height of card to 80% of the page
+    .card {
+        min-height: 75vh;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+    {% endcomment %}
+
+    .header-btn[data-class='mobile-nav-on'] {
+        border-color: darkred;
+        background-color: darkred;
+        background-image: -webkit-gradient(linear, left bottom, left top, from(#000000), to(#000000));
+        background-image: linear-gradient(to top, #000000, darkred);
+        color: black;
+        width: 3.875rem;
+    }
+
+    .typeahead { z-index: 1051; }
+</style>
+{% block header %}
+
+{% endblock %}
+<!-- BEGIN Page Wrapper -->
+<div class="page-wrapper bg-gray-300">
+    <div class="page-inner bg-gray-300">
+        {% if not request.path|truncatechars:13 == '/accounts/...' and not request.path ==  '/accounts/password_reset/' and not request.path ==  '/accounts/login/' and not request.path == '/accounts/reset/done/' %}
+
+            <!-- BEGIN Left Aside -->
+            <aside class="page-sidebar bg-danger-900">
+                <div class="page-logo bg-danger-900">
+                    <a href="#" class="page-logo-link press-scale-down d-flex align-items-center position-relative"
+                       data-toggle="modal" data-target="#modal-shortcut">
+                        {% comment %}
+                    <img src="{% static 'new_base/img/logo.png' %}" alt="SmartAdmin WebApp" aria-roledescription="logo">
+                    {% endcomment %}
+                        <span class="page-logo-text text-dark text-capitalize mr-1"><b>LanXess - El Droado</b></span>
+                        <span class="position-absolute text-dark opacity-50 small pos-top pos-right mr-2 mt-n2"><p
+                                class="fal fa-mobile"></p></span>
+                        {% comment %}
+                    <i class="fal fa-angle-down d-inline-block ml-1 fs-lg color-primary-300"></i>
+                    {% endcomment %}
+                    </a>
+                </div>
+
+                <!-- BEGIN PRIMARY NAVIGATION -->
+                <nav id="js-primary-nav" class="primary-nav" role="navigation">
+
+                    <div class="info-card bg-dark">
+                        {% comment %}
+                        <img src="{% static 'mysite/img/logo.gif' %}" class="profile-image rounded-circle"
+                             alt="iInstrumentation">
+                             {% endcomment %}
+                        <div class="info-card-text bg-dark">
+                            <a href="#" class="d-flex align-items-center text-white">
+                                    <span class="text-truncate text-truncate-sm d-inline-block">
+                                        iInstrumentation
+                                    </span>
+                            </a>
+                        </div>
+                        {% comment %}
+                    <img src="{% static '...' %}" class="cover" alt="cover">
+
+                    <a href="#" onclick="return false;" class="pull-trigger-btn" data-action="toggle" data-class="list-filter-active" data-target=".page-sidebar" data-focus="nav_filter_input">
+                        <i class="fal fa-angle-down"></i>
+                    </a>
+                    {% endcomment %}
+                    </div>
+                    <ul id="js-nav-menu" class="nav-menu">
+                            {% comment %}
+                        <li>
+                            <a href="{% url 'home' %}" title="Home" data-filter-tags="application intel">
+                                <span class="nav-link-text" data-i18n="nav.application_intel_introduction"><i class="fal fa-home mr-2"></i>Home</span>
+                            </a>
+                        </li>
+                        {% endcomment %}
+                            <li class="mt-5">
+                                <a href="{% url 'home' %}" title="home" data-filter-tags="application intel">
+                                <span class="nav-link-text" data-i18n="nav.application_intel_introduction"><i
+                                        class="fal fa-home mr-2"></i>
+                                     Home</span>
+                                </a>
+                            </li>
+                            {% comment %}
+                            <li class="mb-5">
+                                <a href="" title="Loop Check" data-filter-tags="application intel">
+                                    <span class="nav-link-text" data-i18n="nav.application_intel_introduction"><i
+                                            class="fal fa-check mr-2"></i>
+                                         Proof Test</span>
+                                </a>
+                            </li>
+
+                            <li class="mt mb-5">
+                                <a href="{% url 'loopcheck' %}" title="Loop Check" data-filter-tags="application intel">
+                                <span class="nav-link-text" data-i18n="nav.application_intel_introduction"><i
+                                        class="fa fa-stream mr-2"></i>
+                                     Loop Check</span>
+                                </a>
+                            </li>
+                            {% endcomment %}
+                            <li class="mt-5">
+                                <a href="{% url 'logout' %}" title="Profile" data-filter-tags="application intel">
+                                            <span class="nav-link-text" data-i18n="nav.application_intel_introduction"><i
+                                                    class="fal fa-sign-out mr-2"></i>
+                                                 Logout</span>
+                                </a>
+                            </li>
+
+
+                            <footer class="footer bg-dark">
+
+
+                            </footer>
+
+                    </ul>
+                    <div class="filter-message js-filter-message bg-success-600"></div>
+                </nav>
+                <!-- END PRIMARY NAVIGATION -->
+
+                {% comment %}
+            <!-- NAV FOOTER -->
+            <div class="nav-footer shadow-top">
+                <a href="#" onclick="return false;" data-action="toggle" data-class="nav-function-minify" class="hidden-md-down">
+                    <i class="ni ni-chevron-right"></i>
+                    <i class="ni ni-chevron-right"></i>
+                </a>
+
+                <ul class="list-table m-auto nav-footer-buttons">
+                    <li>
+                        <a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Chat logs">
+                            <i class="fal fa-comments"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Support Chat">
+                            <i class="fal fa-life-ring"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Make a call">
+                            <i class="fal fa-phone"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div> <!-- END NAV FOOTER -->
+{% endcomment %}
+            </aside>
+            <!-- END Left Aside -->
+        {% endif %}
+        <div class="page-content-wrapper bg-gray-300">
+            {% if not request.path|truncatechars:13 == '/accounts/...' and not request.path ==  '/accounts/password_reset/done/' and not request.path ==  '/accounts/password_reset/' and not request.path ==  '/accounts/login/' and not request.path == '/account/update_profile/' and not request.path == '/accounts/reset/done/' %}
+                <!-- BEGIN Page Header -->
+                <header class="page-header bg-dark fixed-top position-fixed" role="banner">
+                    <!-- we need this logo when user switches to nav-function-top -->
+                    <div class="page-logo">
+                        <a href="#" class="page-logo-link press-scale-down d-flex align-items-center position-relative"
+                           data-toggle="modal" data-target="#modal-shortcut">
+                            {% comment %}
+                            <img src="img/logo.png" alt="SmartAdmin WebApp" aria-roledescription="logo">
+
+                            <span class="page-logo-text mr-1">SmartAdmin WebApp</span>
+                            <span class="position-absolute text-white opacity-50 small pos-top pos-right mr-2 mt-n2">SeedProject</span>
+                            <i class="fal fa-angle-down d-inline-block ml-1 fs-lg color-primary-300"></i>{% endcomment %}
+                        </a>
+                    </div>
+
+
+                    <!-- DOC: mobile button appears during mobile width -->
+                    <div class="hidden-lg-up">
+                        <a href="#" class="header-btn btn js-waves-off" data-action="toggle"
+                           data-class="mobile-nav-on">
+                            <i class="ni ni-menu"></i>
+                        </a>
+                    </div>
+                    <div class="ml-auto align-content-start">
+                        <!-- app settings -->
+                        <div class="nav-link-text">
+                          Username: {{ request.user.get_full_name }}
+                        </div>
+                    </div>
+                    <div class="ml-auto d-flex">
+                        <!-- app settings -->
+                        <div class="">
+                            <a href="#" class="header-icon" data-toggle="modal" data-target=".js-modal-settings">
+                                <i class="fal fa-cog"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                </header>
+            {% elif  request.path ==  '/accounts/login/' or request.path == '/account/update_profile/'  %}
+
+
+            {% endif %}
+
+            <!-- this overlay is activated only when mobile menu is triggered -->
+            <div class="page-content-overlay" data-action="toggle" data-class="mobile-nav-on"></div>
+            <!-- END Page Content -->
+
+            <!-- END Page Header -->
+            <!-- BEGIN Page Content -->
+            <!-- the #js-page-content id is needed for some plugins to initialize -->
+            <main id="js-page-content" role="main" class="page-content bg-gray-300">
+
+                {% block content %}
+
+                {% endblock %}
+            </main>
+
+
+            <!-- BEGIN Color profile -->
+            <!-- this area is hidden and will not be seen on screens or screen readers -->
+            <!-- we use this only for CSS color refernce for JS stuff -->
+            <!-- BEGIN Page Settings -->
+            <div class="modal fade js-modal-settings modal-backdrop-transparent" tabindex="-1" role="dialog"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-right modal-md">
+                    <div class="modal-content">
+                        <div class="dropdown-header bg-danger-900 d-flex justify-content-center align-items-center w-100">
+                            <h4 class="m-0 text-center color-white">
+                                Settings
+                            </h4>
+                            <button type="button"
+                                    class="close text-white position-absolute pos-top pos-right p-2 m-1 mr-2"
+                                    data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                            </button>
+                        </div>
+                        <div class="modal-body p-0">
+                            <div class="settings-panel">
+
+
+                                <div class="mt-4 d-table w-100 px-5">
+                                    <div class="d-table-cell align-middle">
+                                        <h5 class="p-0">
+                                            <i class="fal fa-star"></i> Device Templates
+                                        </h5>
+                                    </div>
+                                </div>
+                                <a href="{% url 'devicetypehtml' %}"
+                                   class="btn btn-outline-primary btn-pills float-right mr-3">Go..</a>
+                                <div class="list" id="fh">
+                                        <span class="onoffswitch-title">Choose device templates</span>
+                                        <span class="onoffswitch-title-desc">You can choose which Proof Test
+                                            template should be used for each device</span>
+                                </div>
+
+
+
+                                {% comment %}
+                                <a href="{% url 'delete_profile' %}" class="btn btn-outline-danger btn-pills float-right mr-3">Delete</a>
+
+                                        <div class="list" id="fh">
+                                            <span class="onoffswitch-title">You will loose all great features and we will miss you!</span>
+                                            <span class="onoffswitch-title-desc" style="color: darkred">This is irreversible!</span>
+                                        </div>
+
+                                {% endcomment %}
+
+
+
+                                <div class="list" id="nff">
+                                    <a href="#" onclick="return false;" class="btn btn-switch" data-action="toggle" data-class="nav-function-fixed"></a>
+                                    <span class="onoffswitch-title">Fixed Navigation</span>
+                                    <span class="onoffswitch-title-desc">left panel is fixed</span>
+                                </div>
+                                <div class="list" id="nfm">
+                                    <a href="#" onclick="return false;" class="btn btn-switch" data-action="toggle" data-class="nav-function-minify"></a>
+                                    <span class="onoffswitch-title">Minify Navigation</span>
+                                    <span class="onoffswitch-title-desc">Skew nav to maximize space</span>
+                                </div>
+                                <div class="list" id="nfh">
+                                    <a href="#" onclick="return false;" class="btn btn-switch" data-action="toggle" data-class="nav-function-hidden"></a>
+                                    <span class="onoffswitch-title">Hide Navigation</span>
+                                    <span class="onoffswitch-title-desc">roll mouse on edge to reveal</span>
+                                </div>
+                                <div class="list" id="nft">
+                                    <a href="#" onclick="return false;" class="btn btn-switch" data-action="toggle" data-class="nav-function-top"></a>
+                                    <span class="onoffswitch-title">Top Navigation</span>
+                                    <span class="onoffswitch-title-desc">Relocate left pane to top</span>
+                                </div>
+                                <div class="list" id="mmb">
+                                    <a href="#" onclick="return false;" class="btn btn-switch" data-action="toggle" data-class="mod-main-boxed"></a>
+                                    <span class="onoffswitch-title">Boxed Layout</span>
+                                    <span class="onoffswitch-title-desc">Encapsulates to a container</span>
+                                </div>
+                                <div class="expanded">
+                                    <ul class="">
+                                        <li>
+                                            <div class="bg-fusion-50" data-action="toggle" data-class="mod-bg-1"></div>
+                                        </li>
+                                        <li>
+                                            <div class="bg-warning-200" data-action="toggle" data-class="mod-bg-2"></div>
+                                        </li>
+                                        <li>
+                                            <div class="bg-primary-200" data-action="toggle" data-class="mod-bg-3"></div>
+                                        </li>
+                                        <li>
+                                            <div class="bg-success-300" data-action="toggle" data-class="mod-bg-4"></div>
+                                        </li>
+                                    </ul>
+                                    <div class="list" id="mbgf">
+                                        <a href="#" onclick="return false;" class="btn btn-switch" data-action="toggle" data-class="mod-fixed-bg"></a>
+                                        <span class="onoffswitch-title">Fixed Background</span>
+                                    </div>
+                                </div>
+                                <div class="mt-4 d-table w-100 px-5">
+                                    <div class="d-table-cell align-middle">
+                                        <h5 class="p-0">
+                                            Mobile Menu
+                                        </h5>
+                                    </div>
+                                </div>
+                                <div class="list" id="nmp">
+                                    <a href="#" onclick="return false;" class="btn btn-switch" data-action="toggle" data-class="nav-mobile-push"></a>
+                                    <span class="onoffswitch-title">Push Content</span>
+                                    <span class="onoffswitch-title-desc">Content pushed on menu reveal</span>
+                                </div>
+                                <div class="list" id="nmno">
+                                    <a href="#" onclick="return false;" class="btn btn-switch" data-action="toggle" data-class="nav-mobile-no-overlay"></a>
+                                    <span class="onoffswitch-title">No Overlay</span>
+                                    <span class="onoffswitch-title-desc">Removes mesh on menu reveal</span>
+                                </div>
+                                <div class="list" id="sldo">
+                                    <a href="#" onclick="return false;" class="btn btn-switch" data-action="toggle" data-class="nav-mobile-slide-out"></a>
+                                    <span class="onoffswitch-title">Off-Canvas <sup>(beta)</sup></span>
+                                    <span class="onoffswitch-title-desc">Content overlaps menu</span>
+                                </div>
+                                <div class="mt-4 d-table w-100 px-5">
+                                    <div class="d-table-cell align-middle">
+                                        <h5 class="p-0">
+                                            Accessibility
+                                        </h5>
+                                    </div>
+                                </div>
+                                <div class="list" id="mbf">
+                                    <a href="#" onclick="return false;" class="btn btn-switch" data-action="toggle" data-class="mod-bigger-font"></a>
+                                    <span class="onoffswitch-title">Bigger Content Font</span>
+                                    <span class="onoffswitch-title-desc">content fonts are bigger for readability</span>
+                                </div>
+                                <div class="list" id="mhc">
+                                    <a href="#" onclick="return false;" class="btn btn-switch" data-action="toggle" data-class="mod-high-contrast"></a>
+                                    <span class="onoffswitch-title">High Contrast Text (WCAG 2 AA)</span>
+                                    <span class="onoffswitch-title-desc">4.5:1 text contrast ratio</span>
+                                </div>
+                                <div class="list" id="mcb">
+                                    <a href="#" onclick="return false;" class="btn btn-switch" data-action="toggle" data-class="mod-color-blind"></a>
+                                    <span class="onoffswitch-title">Daltonism <sup>(beta)</sup> </span>
+                                    <span class="onoffswitch-title-desc">color vision deficiency</span>
+                                </div>
+                                <div class="list" id="mpc">
+                                    <a href="#" onclick="return false;" class="btn btn-switch" data-action="toggle" data-class="mod-pace-custom"></a>
+                                    <span class="onoffswitch-title">Preloader Inside</span>
+                                    <span class="onoffswitch-title-desc">preloader will be inside content</span>
+                                </div>
+                                <div class="mt-4 d-table w-100 px-5">
+                                    <div class="d-table-cell align-middle">
+                                        <h5 class="p-0">
+                                            Global Modifications
+                                        </h5>
+                                    </div>
+                                </div>
+                                <div class="list" id="mcbg">
+                                    <a href="#" onclick="return false;" class="btn btn-switch" data-action="toggle" data-class="mod-clean-page-bg"></a>
+                                    <span class="onoffswitch-title">Clean Page Background</span>
+                                    <span class="onoffswitch-title-desc">adds more whitespace</span>
+                                </div>
+                                <div class="list" id="mhni">
+                                    <a href="#" onclick="return false;" class="btn btn-switch" data-action="toggle" data-class="mod-hide-nav-icons"></a>
+                                    <span class="onoffswitch-title">Hide Navigation Icons</span>
+                                    <span class="onoffswitch-title-desc">invisible navigation icons</span>
+                                </div>
+                                <div class="list" id="dan">
+                                    <a href="#" onclick="return false;" class="btn btn-switch" data-action="toggle" data-class="mod-disable-animation"></a>
+                                    <span class="onoffswitch-title">Disable CSS Animation</span>
+                                    <span class="onoffswitch-title-desc">Disables CSS based animations</span>
+                                </div>
+                                <div class="list" id="mhic">
+                                    <a href="#" onclick="return false;" class="btn btn-switch" data-action="toggle" data-class="mod-hide-info-card"></a>
+                                    <span class="onoffswitch-title">Hide Info Card</span>
+                                    <span class="onoffswitch-title-desc">Hides info card from left panel</span>
+                                </div>
+                                <div class="list" id="mlph">
+                                    <a href="#" onclick="return false;" class="btn btn-switch" data-action="toggle" data-class="mod-lean-subheader"></a>
+                                    <span class="onoffswitch-title">Lean Subheader</span>
+                                    <span class="onoffswitch-title-desc">distinguished page header</span>
+                                </div>
+                                <div class="list" id="mnl">
+                                    <a href="#" onclick="return false;" class="btn btn-switch" data-action="toggle" data-class="mod-nav-link"></a>
+                                    <span class="onoffswitch-title">Hierarchical Navigation</span>
+                                    <span class="onoffswitch-title-desc">Clear breakdown of nav links</span>
+                                </div>
+                                <div class="list mt-1">
+                                    <span class="onoffswitch-title">Global Font Size <small>(RESETS ON REFRESH)</small> </span>
+                                    <div class="btn-group btn-group-sm btn-group-toggle my-2" data-toggle="buttons">
+                                        <label class="btn btn-default btn-sm" data-action="toggle-swap" data-class="root-text-sm" data-target="html">
+                                            <input type="radio" name="changeFrontSize"> SM
+                                        </label>
+                                        <label class="btn btn-default btn-sm" data-action="toggle-swap" data-class="root-text" data-target="html">
+                                            <input type="radio" name="changeFrontSize" checked=""> MD
+                                        </label>
+                                        <label class="btn btn-default btn-sm" data-action="toggle-swap" data-class="root-text-lg" data-target="html">
+                                            <input type="radio" name="changeFrontSize"> LG
+                                        </label>
+                                        <label class="btn btn-default btn-sm" data-action="toggle-swap" data-class="root-text-xl" data-target="html">
+                                            <input type="radio" name="changeFrontSize"> XL
+                                        </label>
+                                    </div>
+                                    <span class="onoffswitch-title-desc d-block mb-0">Change <strong>root</strong> font size to effect rem
+                                    values</span>
+                                </div>
+                                <hr class="mb-0 mt-4">
+                                <div class="mt-2 d-table w-100 pl-5 pr-3">
+                                    <div class="fs-xs text-muted p-2 alert alert-warning mt-3 mb-2">
+                                        <i class="fal fa-exclamation-triangle text-warning mr-2"></i>The settings below uses localStorage to load
+                                        the external CSS file as an overlap to the base css. Due to network latency and CPU utilization, you may
+                                        experience a brief flickering effect on page load which may show the intial applied theme for a split
+                                        second. Setting the prefered style/theme in the header will prevent this from happening.
+                                    </div>
+                                </div>
+                                <div class="mt-2 d-table w-100 pl-5 pr-3">
+                                    <div class="d-table-cell align-middle">
+                                        <h5 class="p-0">
+                                            Theme colors
+                                        </h5>
+                                    </div>
+                                </div>
+                                <div class="expanded theme-colors pl-5 pr-3">
+                                    <ul class="m-0">
+                                        <li>
+                                            <a href="#" id="myapp-0" data-action="theme-update" data-themesave data-theme="" data-toggle="tooltip" data-placement="top" title="Wisteria (base css)" data-original-title="Wisteria (base css)"></a>
+                                        </li>
+                                        <li>
+                                            <a href="#" id="myapp-1" data-action="theme-update" data-themesave data-theme="css/themes/cust-theme-1.css" data-toggle="tooltip" data-placement="top" title="Tapestry" data-original-title="Tapestry"></a>
+                                        </li>
+                                        <li>
+                                            <a href="#" id="myapp-2" data-action="theme-update" data-themesave data-theme="css/themes/cust-theme-2.css" data-toggle="tooltip" data-placement="top" title="Atlantis" data-original-title="Atlantis"></a>
+                                        </li>
+                                        <li>
+                                            <a href="#" id="myapp-3" data-action="theme-update" data-themesave data-theme="css/themes/cust-theme-3.css" data-toggle="tooltip" data-placement="top" title="Indigo" data-original-title="Indigo"></a>
+                                        </li>
+                                        <li>
+                                            <a href="#" id="myapp-4" data-action="theme-update" data-themesave data-theme="css/themes/cust-theme-4.css" data-toggle="tooltip" data-placement="top" title="Dodger Blue" data-original-title="Dodger Blue"></a>
+                                        </li>
+                                        <li>
+                                            <a href="#" id="myapp-5" data-action="theme-update" data-themesave data-theme="css/themes/cust-theme-5.css" data-toggle="tooltip" data-placement="top" title="Tradewind" data-original-title="Tradewind"></a>
+                                        </li>
+                                        <li>
+                                            <a href="#" id="myapp-6" data-action="theme-update" data-themesave data-theme="css/themes/cust-theme-6.css" data-toggle="tooltip" data-placement="top" title="Cranberry" data-original-title="Cranberry"></a>
+                                        </li>
+                                        <li>
+                                            <a href="#" id="myapp-7" data-action="theme-update" data-themesave data-theme="css/themes/cust-theme-7.css" data-toggle="tooltip" data-placement="top" title="Oslo Gray" data-original-title="Oslo Gray"></a>
+                                        </li>
+                                        <li>
+                                            <a href="#" id="myapp-8" data-action="theme-update" data-themesave data-theme="css/themes/cust-theme-8.css" data-toggle="tooltip" data-placement="top" title="Chetwode Blue" data-original-title="Chetwode Blue"></a>
+                                        </li>
+                                        <li>
+                                            <a href="#" id="myapp-9" data-action="theme-update" data-themesave data-theme="css/themes/cust-theme-9.css" data-toggle="tooltip" data-placement="top" title="Apricot" data-original-title="Apricot"></a>
+                                        </li>
+                                        <li>
+                                            <a href="#" id="myapp-10" data-action="theme-update" data-themesave data-theme="css/themes/cust-theme-10.css" data-toggle="tooltip" data-placement="top" title="Blue Smoke" data-original-title="Blue Smoke"></a>
+                                        </li>
+                                        <li>
+                                            <a href="#" id="myapp-11" data-action="theme-update" data-themesave data-theme="css/themes/cust-theme-11.css" data-toggle="tooltip" data-placement="top" title="Green Smoke" data-original-title="Green Smoke"></a>
+                                        </li>
+                                        <li>
+                                            <a href="#" id="myapp-12" data-action="theme-update" data-themesave data-theme="css/themes/cust-theme-12.css" data-toggle="tooltip" data-placement="top" title="Wild Blue Yonder" data-original-title="Wild Blue Yonder"></a>
+                                        </li>
+                                        <li>
+                                            <a href="#" id="myapp-13" data-action="theme-update" data-themesave data-theme="css/themes/cust-theme-13.css" data-toggle="tooltip" data-placement="top" title="Emerald" data-original-title="Emerald"></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <hr class="mb-0 mt-4">
+                                <div class="pl-5 pr-3 py-3 bg-faded">
+                                    <div class="row no-gutters">
+                                        <div class="col-6 pr-1">
+                                            <a href="#" class="btn btn-outline-danger fw-500 btn-block" data-action="app-reset">Reset Settings</a>
+                                        </div>
+                                        <div class="col-6 pl-1">
+                                            <a href="#" class="btn btn-danger fw-500 btn-block" data-action="factory-reset">Factory Reset</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <footer class="footer">
+                                    {% comment %}
+                                    <div class="mt-2 d-table w-100 px-5">
+                                        <div class="d-table-cell align-middle">
+                                            <h5 class="p-0">
+                                                <i class="fal fa-times-square mt-2"></i> Delete Acccount
+                                                <a href="javascript:void(0);"
+                                                   class="btn btn-outline-danger btn-pills float-right"
+                                                   id="js-sweetalert2-example-7">Delete</a>
+                                            </h5>
+
+                                        </div>
+                                    </div>
+                                    {% endcomment %}
+                                </footer>
+                            </div>
+                            <span id="saving"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END Page Settings -->
+
+        </div>
+    </div>
+</div>
+<!-- END Page Wrapper -->
+
+
+
+
+{% if not request.path|truncatechars:13 == '/accounts/...' and not request.path == '/accounts/password_reset/' and not request.path == '/accounts/password_reset/done/' and not request.path == '/accounts/login/' and not request.path == '/account/update_profile/' and not request.path == '/accounts/reset/done/' %}
+    <footer class="footer bg-dark" style="height: 0px;">
+        <div class="container">
+            <nav class="navbar fixed-bottom navbar-dark bg-dark py-0">
+                <a href="{% url 'home' %}" class="mr-2" style="color:
+                        {% if request.path == "/"|add:SECRET_CODE|add:'/home/' %}cornflowerblue
+                        {% else %} grey {% endif %}"><i class="fas fa-home"></i> Home</a>
+                <a href="#" class="mr-2" style="color:
+                        {% if request.path == "/"|add:SECRET_CODE|add:'/pricing/' %}cornflowerblue
+                        {% else %}grey{% endif %}"><i class="fas fa-industry"></i> Instrument List</a>
+                <span class="align-self-left">
+                        <a href="#" class="mr-0" style="color:
+                                {% if request.path == "/"|add:SECRET_CODE|add:'/order/' %}cornflowerblue
+                                {% else %}grey {% endif %}"><i class="fas fa-star"></i> Test</a>
+                            {% comment %} If there is no product in the cart, the cart badge should be hidden
+                            <span class="badge badge-danger" id="top_cart"
+                                  style={% if number_of_items == 0 or not number_of_items %}"visibility: hidden">
+                                  {% else %}"visibility: inherit" >{% endif %}
+                                  {{ number_of_items }}
+                            </span>
+                            {% endcomment %}
+                </span>
+            </nav>
+        </div>
+    </footer>
+{% elif request.path == '/account/update_profile/' and isEmailVerified == 3 %}
+    <footer class="footer">
+        <div class="container">
+            <nav class="navbar fixed-bottom navbar-dark bg-dark py-0">
+                <a href="{% url 'home' %}" class="mr-2" style="color:
+                        {% if request.path == "/"|add:SECRET_CODE|add:'/home/' %}cornflowerblue
+                        {% else %} grey {% endif %}"><i class="fas fa-home fa-lg"></i></a>
+                <a href="#" class="mr-2" style="color:
+                        {% if request.path == "/"|add:SECRET_CODE|add:'/order/' %}cornflowerblue
+                        {% else %}grey{% endif %}"><i class="fas fa-tshirt fa-lg"></i></a>
+                <span class="align-self-left">
+                        <a href="#" class="mr-0" style="color:
+                                {% if request.path == "/"|add:SECRET_CODE|add:'/order/' %}cornflowerblue
+                                {% else %}grey {% endif %}"><i class="fas fa-shopping-cart fa-lg"></i></a>
+                            {% comment %} If there is no product in the cart, the cart badge should be hidden
+                            <span class="badge badge-danger" id="top_cart"
+                                  style={% if number_of_items == 0 or not number_of_items %}"visibility: hidden">
+                                  {% else %}"visibility: inherit" >{% endif %}
+                                  {{ number_of_items }}
+                            </span>
+                            {% endcomment %}
+                </span></nav>
+        </div>
+    </footer>
+{% elif request.path == '/accounts/login/' or request.path == '/account/update_profile/' %}
+
+
+{% else %}
+
+{% endif %}
+
+
+<script src="{% static 'mysite/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'mysite/src/js/vendors.bundle.js' %}"></script>
+<script src="{% static 'mysite/src/js/app.bundle.js' %}"></script>
+<script src="{% static 'mysite/fontawesome/all.min.js' %}"></script>
+
+
+{% block javascript %}
+
+{% endblock %}
+
+<script src="{% static 'mysite/src/js/notifications/sweetalert2/sweetalert2.bundle.js' %} "></script>
+<script>
+    $(document).ready(function () {
+        $("#js-sweetalert2-example-7").on("click", function () {
+            console.log('hi');
+            Swal.fire(
+                {
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, delete it!"
+                }).then(function (result) {
+                if (result.value) {
+                    Swal.fire("Deleted!", "Your file has been deleted.", "success");
+                    window.location.assign('');
+                }
+            });
+        }); // ... and by passing a parameter, you can execute something else for "Cancel".
+    });
+</script>
+</body>
+</html>

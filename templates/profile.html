@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block header %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'mysite/src/css/notifications/sweetalert2/sweetalert2.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'mysite/src/css/animate.css' %}">
+
+{% endblock %}
+{% block content %}
+    <div class="card border-dark">
+        {% comment %}          ----------- The card header, it is rremoved because it is too big
+        <div class="card-header">
+            <h2>Profile</h2>
+        </div>
+        {% endcomment %}
+        <div class="card-body">
+
+            <h5 class="card-title">{{ firstname }}&nbsp{{ lastname }}</h5>
+
+
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item" id="id-email-verification">
+                    <p><a class="fas fa-envelope"></a> Email: {{ email }}</p>
+                    {% if isEmailVerified %}
+
+                    {% else %}
+                        <p style="color: #dc3545">Your email is not verified</p>
+                        <div class="row justify-content-center align-items-center ">
+                            {%  comment %} HAVE ADDED AJAX FUNTION, SO THERE IS NO NEED FOR THIS
+                            <div class="btn-group mb-1 mt-1 ml-2">
+                                <a href="{% url 'profile' %}" class="btn btn-outline-primary mt-1 mb-1">I have verified my
+                                    email</a>
+                            </div>
+                            {% endcomment %}
+                            <div class="btn-group mb-1 mt-1 ml-2">
+                                <a href="{% url 'send_email_confirmation' %}" class="btn btn-outline-primary">
+                                    <i class="fa fa-paper-plane"></i> Send email
+                                    verification</a>
+                            </div>
+                        </div>
+
+                    {% endif %}
+                    {% if isEmailVerified == 1 %}
+                        <p style="color: #dc3545"> Please confirm your email address to complete the registration. </p>
+                        <div class="row justify-content-center align-items-center ">
+
+                            <div class="btn-group mb-1 mt-1">
+                                <a href="{% url 'profile' %}" class="btn btn-outline-primary mt-1 mb-1">I have verified my
+                                    email</a>
+                            </div>
+                            <div class="btn-group mb-1 mt-1 ml-2">
+                                <a href="{% url 'send_email_confirmation' %}" class="btn btn-outline-primary mt-1 mb-1">Send
+                                    email
+                                    verification</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </li>
+                <li class="list-group-item" id="id-phone-verification">
+                    <p><a class="fas fa-mobile-alt"></a> Phone: {{ phone }}</p>
+                    {% if isPhoneVerified == 2 %}
+
+                    {% elif isPhoneVerified == 1 %}
+                        <P>Your phone verification code is sent to your number, please confirm you phone number by
+                            clicking on the link sent to you.</P>
+                        <p>If you have not received a verification code, you can request one by clicking on the button
+                            below. Please note that you CAN NOT
+                            request more than 3 verification codes.</p>
+                        <a href="#" class="btn btn-outline-primary mt-1 mb-1"> send phone
+                            verification</a>
+                    {% else %}
+                        <P style="color: #dc3545">Your phone is not verified</P>
+                        <div class="row justify-content-center align-items-center ">
+                            {% comment %}<div class="btn-group mb-1 mt-1">
+
+                        <a href="{% url 'smssent' %}" class="btn btn-outline-primary">enter code and verify
+                            phone</a>
+                        </div>
+                            {% endcomment %}
+                            <div class="btn-group mb-1 mt-1 ml-2">
+                                <a href="#" class="btn btn-outline-primary">
+                                    <i class="fa fa-paper-plane"></i> Verify phone</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </li>
+                <li class="list-group-item">
+                    <p><a class="fas fa-map"></a>
+                        Address:
+                        {% if not street1 == "" %}{{ street1 }} {% endif %}
+                        {% if not street2 == "" %}, {{ street2 }} {% endif %}
+                        {% if not city == "" %}, {{ city }} {% endif %}
+                        {% if not state == "" %}, {{ state }}{% endif %}
+                        {% if not zip == "" %}, {{ zip }}{% endif %}</p>
+                </li>
+            </ul>
+            <div class="row justify-content-center align-items-center ">
+
+                <div class="btn-group mt-5 mb-5">
+                    <a href="{% url 'profile_edit' %}" class="btn btn-outline-primary"><i
+                            class="fa fa-edit"></i> Edit profile</a>
+                </div>
+            </div>
+            {% comment %}
+                <div class="btn-group mb-1 mt-2 ml-2">
+                    <a href="{% url 'delete_profile' %}" class="btn btn-outline-danger"><i
+                            class="fa fa-trash"></i> Delete profile</a>
+                </div>
+                {% endcomment %}
+
+        </div>
+    </div>
+
+    <div>
+        <br>
+    </div>
+
+
+{% endblock %}
+{% block javascript %}
+
+    <script src="{% static 'mysite/src/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+
+    <script>
+        $("#id-delete").click(function(){
+            Swal.fire(
+                {
+                    customClass: {
+                        popup: 'animated pulse'
+                    },
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#7DCEA0',
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, delete it!",
+                    timer: 4000,
+                    animation: false,
+                }).then(function(result)
+            {
+                if (result.value)
+                {
+
+                    Swal.fire({
+                        confirmButtonColor: '#d33',
+                        title: "Deleted!",
+                        text: "Your profile has been deleted.",
+                        type: "success"
+                    }).then(function(result){
+                        window.location.replace("{% url 'delete_profile' %}")
+                    });
+
+                }
+            });
+        });
+        (function worker() {
+            $.ajax({
+                dataType: 'json',
+                url: '/check_email_verification_ajax/',
+                success: function(data) {
+                    console.log(data.data)
+                    if (data.data===true){
+                        $('#id-email-not-verified').remove();
+                    } else {
+                        setTimeout(worker, 5000);
+                    }
+                },
+                error: function() {
+                    // Schedule the next request when the current one's complete
+                    setTimeout(worker, 5000);
+                }
+            });
+        })();
+
+        (function worker() {
+            $.ajax({
+                dataType: 'json',
+                url: '/check_phone_verification_ajax/',
+                success: function(data) {
+                    console.log(data.data)
+                    if (data.data===true){
+                        $('#id-phone-not-verified').remove();
+                    } else {
+                        setTimeout(worker, 5000);
+                    }
+                },
+                error: function() {
+                    // Schedule the next request when the current one's complete
+                    setTimeout(worker, 5000);
+                }
+            });
+        })();
+    </script>
+{% endblock %}

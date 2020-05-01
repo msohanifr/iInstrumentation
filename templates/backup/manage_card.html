@@ -1,0 +1,293 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header %}
+    <style>
+        /**
+     * The CSS shown here will not be introduced in the Quickstart guide, but shows
+     * how you can use CSS to style your Element's container.
+     */
+        .StripeElement {
+            box-sizing: border-box;
+
+            height: 40px;
+
+            padding: 10px 12px;
+
+            border: 1px solid transparent;
+            border-radius: 4px;
+            background-color: white;
+
+            box-shadow: 0 1px 3px 0 #e6ebf1;
+            -webkit-transition: box-shadow 150ms ease;
+            transition: box-shadow 150ms ease;
+        }
+
+        .StripeElement--focus {
+            box-shadow: 0 1px 3px 0 #cfd7df;
+        }
+
+        .StripeElement--invalid {
+            border-color: #fa755a;
+        }
+
+        .StripeElement--webkit-autofill {
+            background-color: #fefde5 !important;
+        }
+        .creditcard.card-element {
+            background-color: #f6f9fc;
+        }
+        .creditcard.card-element * {
+            font-family: Inter UI, Open Sans, Segoe UI, sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .creditcard.card-element form {
+            max-width: 496px !important;
+            padding: 0 15px;
+        }
+        .creditcard.card-element form > * + * {
+            margin-top: 20px;
+        }
+        .creditcard.card-element .container {
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+            border-radius: 4px;
+            padding: 3px;
+        }
+        .creditcard.card-element fieldset {
+            border-style: none;
+            padding: 5px;
+            margin-left: -5px;
+            margin-right: -5px;
+            background: rgba(18, 91, 152, 0.05);
+            border-radius: 8px;
+        }
+        .creditcard.card-element fieldset legend {
+            float: left;
+            width: 100%;
+            text-align: center;
+            font-size: 13px;
+            color: #8898aa;
+            padding: 3px 10px 7px;
+        }
+        .creditcard.card-element .card-only {
+            display: block;
+        }
+        .creditcard.card-element .payment-request-available {
+            display: none;
+        }
+
+        .creditcard.card-element fieldset legend + * {
+            clear: both;
+        }
+
+        .creditcard.card-element input, .creditcard.card-element button {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            outline: none;
+            border-style: none;
+            color: #fff;
+        }
+
+        .creditcard.card-element input:-webkit-autofill {
+            transition: background-color 100000000s;
+            -webkit-animation: 1ms void-animation-out;
+        }
+
+        .creditcard.card-element #card-element-card {
+            padding: 10px;
+            margin-bottom: 2px;
+        }
+
+        .creditcard.card-element input {
+            -webkit-animation: 10ms void-animation-out;
+        }
+
+        .creditcard.card-element input::-webkit-input-placeholder {
+            color: #9bacc8;
+        }
+
+        .creditcard.card-element input::-moz-placeholder {
+            color: #9bacc8;
+        }
+
+        .creditcard.card-element input:-ms-input-placeholder {
+            color: #9bacc8;
+        }
+
+        .creditcard.card-element button {
+            display: block;
+            width: 100%;
+            height: 37px;
+            background-color: #d782d9;
+            border-radius: 2px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .creditcard.card-element button:active {
+            background-color: #b76ac4;
+        }
+
+        .creditcard.card-element .error svg .base {
+            fill: #e25950;
+        }
+
+        .creditcard.card-element .error svg .glyph {
+            fill: #f6f9fc;
+        }
+
+        .creditcard.card-element .error .message {
+            color: #e25950;
+        }
+
+        .creditcard.card-element .success .icon .border {
+            stroke: #ffc7ee;
+        }
+
+        .creditcard.card-element .success .icon .checkmark {
+            stroke: #d782d9;
+        }
+
+        .creditcard.card-element .success .title {
+            color: #32325d;
+        }
+
+        .creditcard.card-element .success .message {
+            color: #8898aa;
+        }
+
+        .creditcard.card-element .success .reset path {
+            fill: #d782d9;
+        }
+        .StripeElement {
+            box-sizing: border-box;
+
+            height: 40px;
+
+            padding: 10px 12px;
+
+            border: 1px solid transparent;
+            border-radius: 4px;
+            background-color: white;
+
+            box-shadow: 0 1px 3px 0 #e6ebf1;
+            -webkit-transition: box-shadow 150ms ease;
+            transition: box-shadow 150ms ease;
+        }
+
+        .StripeElement--focus {
+            box-shadow: 0 1px 3px 0 #cfd7df;
+        }
+
+        .StripeElement--invalid {
+            border-color: #fa755a;
+        }
+
+        .StripeElement--webkit-autofill {
+            background-color: #fefde5 !important;
+        }
+    </style>
+
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="card border-dark mb-2">
+        <div class="card-body">
+        {% if number_of_cards > 0 %}
+            <h5 class="card-title">You already have the following card(s)</h5>
+            <!--Example 4-->
+            <ul class="list-group list-group-flush">
+
+                {% for i in cards.data %}
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-4">
+
+
+                                    {% if i.brand == 'Visa' %}<i class="fab fa-cc-visa fa-5x"></i>
+                                    {% elif i.brand == 'MasterCard' %}
+                                        <i class="fab fa-cc-mastercard fa-5x"></i>
+                                    {% endif %}
+
+                            </div>
+                            <div class="col-8">
+
+                                <p> Card number ending in: {{ i.last4 }}</p>
+                                <p>Expiry: {{ i.exp_month }}/{{ i.exp_year }}</p>
+
+                            </div>
+                        </div>
+                        <div class="row justify-content-center align-items-center">
+                            <div class="btn-group mb-2">
+                                <button id="delete-card-button-{{ i.id }}" class='btn btn-outline-danger mt-2'>Delete Card</button>
+                            </div>
+                        </div>
+
+                    </li>
+                {% endfor %}
+                    <li class="list-group-item">
+                        <p>Add another card?</p>
+                        <div class="row justify-content-center align-items-center ">
+                            <div class="btn-group mb-1 mt-1">
+                                <a href="{% url 'add_card' %}" class="btn btn-outline-primary"><i
+                                        class="fa fa-credit-card"></i> Add credit card
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+            </ul>
+            {% else %}
+            <h5 class="card-title">You don't have any cards</h5>
+            <!--Example 4-->
+            <ul class="list-group list-group-flush">
+
+                <li class="list-group-item">
+                    <p>Add a card?</p>
+                    <div class="row justify-content-center align-items-center ">
+                        <div class="btn-group mb-1 mt-1">
+                            <a href="{% url 'add_card' %}" class="btn btn-outline-primary"><i
+                                    class="fa fa-credit-card"></i> Add credit card
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        {%  endif %}
+
+        </div>
+    </div>
+
+
+{% endblock %}
+{% block javascript %}
+
+    {% comment %}  ---------- DELETE CREDIT CARD ------------- {% endcomment %}
+
+
+    {% comment %} Add credit card and customer {% endcomment %}
+    <script>
+        {% for i in cards.data %}
+        $('#delete-card-button-{{ i.id }}').click(function () {
+            $.ajax({
+                url: '/delete_card_ajax/',
+                data: {
+                    'data': '{{ i.id }}',
+                },
+                dataType: 'json',
+                success: function (data) {
+                    window.location.reload();
+                },
+                error: function () {
+                },
+            });
+        });
+        {% endfor %}
+
+
+    </script>
+{% endblock %}

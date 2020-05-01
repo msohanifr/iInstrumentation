@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header %}
+    <style>
+        .card-body {
+            padding: .5rem;
+        }
+    </style>
+
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="card border-dark mb-2">
+
+        <div class="card-body">
+            <div class="wrapper wrapper-content animated fadeInRight">
+
+                <div class="row">
+                    <div class="col-12">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="ibox">
+                                <div class="ibox-title">
+                                    <span class="float-right"><h5>(<strong>{{ Items.total_items }}</strong>) items</h5></span>
+                                    <h6>Items in your cart</h6>
+                                </div>
+                                <div class="ibox-content">
+                                    <div class="table-responsive table-striped table-bordered">
+                                        <table class="table shoping-cart-table">
+
+                                            <tbody>
+                                            {% for item in Items.values %}
+                                                {% if item.title %}
+
+                                                    <tr class="border-top border-dark d-flex"
+                                                        id="id_section_{{ item.title }}">
+                                                        <td class="description col-3">
+                                                            <h3>
+                                                                <a class="text-navy small">
+                                                                    <p style="font-size: 12px; font-weight: bold">{{ item.title }}</p>
+                                                                </a>
+                                                            </h3>
+
+                                                        </td>
+                                                        <td class="col-3">
+                                                            <p style="font-size: 10px">${{ item.price }}</p>
+                                                        </td>
+                                                        <td class="col-3">
+                                                            <input type="number" min="0" name="{{ item.title }}"
+                                                                   class="form-control input-s-sm col-sm-5"
+                                                                   id="{{ item.title }}_number"
+                                                                   value="{{ item.count }}">
+                                                        </td>
+                                                        <td class="border-left col-3">
+                                                            <p style="font-size: 10px">${{ item.total_price }}</p>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr class="border-bottom border-dark d-flex"
+                                                        id="id_section_{{ item.title }}_bottom">
+                                                        <td class="col-8">
+                                                            <dl class="small m-b-none">
+                                                                <dt>Description:</dt>
+                                                                <dd style="font-size: 10px">{{ item.description }}</dd>
+                                                            </dl>
+                                                        </td>
+
+                                                        <td class="col-3">
+                                                            <button type="button" id="remove_{{ item.title }}"
+                                                                    class="btn btn-outline-primary float-right"><i
+                                                                    class=""></i> Remove
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                    </tr>
+
+                                                {% endif %}
+
+                                            {% endfor %}
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+
+                                </div>
+
+                                <div class="ibox-content mt-3 mb-3">
+
+                                    <button type="submit" class="btn btn-outline-primary float-right"><i
+                                            class="fa fa-sync"></i> Update
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary"
+                                            onclick="window.location.href = '/{{ SECRET_CODE }}/order/';">
+                                        <i class="fa fa-arrow-left"></i> Continue shopping
+                                    </button>
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-3"></div>
+                    <div class="col-md-3">
+                        <hr>
+                        <div class="ibox">
+                            <div class="ibox-title">
+                                <h5>Cart Summary</h5>
+                            </div>
+                            <div class="ibox-content">
+                            <span>
+                                Total
+                            </span>
+                                <h2 class="font-bold">
+                                    ${{ Items.total_price }}
+                                </h2>
+                                <div class="m-t-sm">
+                                    <div class="btn-group mb-5">
+                                        <a href="{% url 'checkout' %}" class="btn btn-outline-primary"><i
+                                                class="fa fa-shopping-cart"></i> Checkout</a>
+                                    </div>
+                                </div>
+
+                                <hr/>
+                                <span class="text-muted small">
+                                * Excluding applicable sales tax <br>
+                                ** This is estimated amount. If your items are different from listed items above, depending on
+                            outstanding amount, we will either add it to your account, or contact you to discuss it
+                            with you.
+                        </span>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+        <footer class="my-3 pt-3 text-muted text-center text-small">
+            <p class="mb-1">&copy; 2019 iDryClean</p>
+
+        </footer>
+
+    </div>
+    <div>
+        <br>
+    </div>
+
+{% endblock %}
+
+
+{% block javascript %}
+
+    <script>
+        {% for item in Items %}
+            $("#remove_{{ item }}").click(function () {
+                const val = -$("#{{ item }}_number").val();
+                const val_json = '{"count":' + val + "}";
+                const value = '"{{ item }}":' + val_json;
+                $.ajax({
+                    url: '/ajax/',
+                    data: {
+                        'data': value,
+                    },
+                    type: "POST",
+                    dataType: 'json',
+                    success: function (data) {
+                        window.location.reload();
+                    },
+                    error: function () {
+                    },
+                });
+            });
+
+        {% endfor %}
+    </script>
+{% endblock %}

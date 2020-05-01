@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    {% if not above_threshold %}
+        <div class="card border-dark mb-2">
+
+            <div class="card-body">
+                <h6 class="card-title"><p>A text message with verification code has been sent to your phone, please
+                    enter
+                    the code</p>
+                </h6>
+                <ul class="list-group list-group-flush">
+                    <br/>
+                    <div class="row justify-content-center align-items-center ">
+                        <Label>Enter code: </Label>
+                    </div>
+
+                    <div class="row justify-content-center align-items-center ">
+                        <input type="number" class="border-primary" id="code" min="0" max="999999" style="width: 200px">
+
+                        {% comment %} HAVE ADDED EVENT LISTENER, SO IT IS AUTHOMATICALLY BEING DONE
+                        <a id="btn_code" class="btn btn-outline-primary ml-2">
+                            <font color="#1e90ff"> <i class="fa fa-key"></i> Verify </font></a>
+                            {% endcomment %}
+                    </div>
+                    {% comment %}
+                    <div class="row justify-content-center align-items-center ">
+                        <div class="btn-group mb-2 mt-2">
+                            <button id="id_cancel" class="btn btn-outline-danger mt-1 mb-1">Have not received code</button>
+                        </div>
+                    </div>
+                    {% endcomment %}
+                    <p id="notice" class="text-danger"></p>
+
+
+                    {% comment %}
+                <div class="col-sm-12"><p id="pincode-callback"></p>
+                    <a href="{% url 'sendsms' %}" class="btn btn-primary  mt-1 mb-1">Generate another code</a>
+                </div>
+                {% endcomment %}
+
+                </ul>
+            </div>
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="card-header">
+                <h2>Phone number verification</h2>
+            </div>
+            <div class="card-body">
+                <h6 class="card-title"><p>You can request upto 5 phone verification codes. Please contact our support to
+                    verify your phone number.</p>
+                </h6>
+            </div>
+        </div>
+        <hr class="mt-0 mb-2">
+
+    {% endif %}
+{% endblock %}
+{% block javascript %}
+    <script>
+
+        $('#code').on('input', function (e) {
+            if ($('#code').val() > 999999) {
+                $('#notice').text("Code should have up to 6 digits");
+            } else if ($('#code').val() < 99999) {
+                $('#notice').text("");
+            } else {
+                $('#notice').text("");
+                $.ajax({
+                    url: '/smsajax/',
+                    data: {
+                        'data': $('#code').val(),
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.data == "error") {
+                            $('#notice').text("Code is not correct, try again")
+                        } else {
+                            window.location.replace("{% url 'home' %}")
+                        }
+                    },
+                    error: function () {
+
+                    },
+                });
+            }
+        });
+
+        $('#id_cancel').click(function () {
+            window.location.href = '{% url 'home' %}';
+        });
+        $('#btn_code').click(function () {
+            console.log("in btn_code")
+            if ($('#code').val() > 999999) {
+                $('#notice').text("Code should have up to 6 digits");
+            } else {
+                $('#notice').text("")
+                $.ajax({
+                    url: '/smsajax/',
+                    data: {
+                        'data': $('#code').val(),
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.data == "error") {
+                            $('#notice').text("Code is not correct, try again")
+                        } else {
+                            window.location.replace("{% url 'home' %}")
+                        }
+                    },
+                    error: function () {
+
+                    },
+                });
+            }
+
+        });
+
+
+    </script>
+
+{% endblock %}

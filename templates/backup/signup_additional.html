@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block header %}
+    <style>
+
+        .page-wrapper {
+            height: 1px;
+            justify-content: center;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-sm-12">
+      <div class="card">
+        <div class="card-body">
+          <h2>Reset your password</h2>{{ request.path }}
+          <form method="post" novalidate>
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary">Send confirmation link</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+    $(document).ready(function () {
+        $('#js-page-content').removeClass('mt-5');
+        $('#js-page-content').addClass(' justify-content-center');
+    });
+</script>
+{% endblock %}

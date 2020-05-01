@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'mysite/src/css/custom/progress.css' %}">
+    <link href="{% static 'mysite/src/css/plugins/steps/jquery.steps.css' %}" rel="stylesheet">
+    <link href="{% static 'mysite/src/css/plugins/datapicker/datepicker3.css' %}" rel="stylesheet">
+
+
+    <style>
+    .done .a {
+        background-color: #0a568c;
+        color: #0aafbd;
+        background: #00ff80;
+    }
+    section .container {
+        padding: 5px;
+    }
+    .toprow {
+        margin-top: 15px;
+    }
+    .input-group-text {
+        margin-left: 5px;
+        margin-top: 5px;
+    }
+
+</style>
+{% endblock %}
+{% block content %}
+    <div class="card border-dark" id="print" style="margin-top: 10px;">
+        <div class="card-header bg-dark text-light">
+            <h2>Proof Test: {{ onerow.DeviceName }}</h2>
+        </div>
+
+        <div class="card-body">
+            <div class="card border-dark" style="margin-top: 10px;">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="toprow"><b>Device type: </b><span id="id_DeviceType" >{{ onerow.DeviceTypeDescription }}</span></div>
+                            <div class="toprow"><b>Device description: </b><span id="id_DeviceDescription">{{ onerow.DeviceDescription }}</span></div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="toprow"><b>Site: </b><span id="id_Site">{{ onerow.SiteName }}</span></div>
+                            <div class="toprow"><b>Unit: </b><span id="id_Unit">{{ onerow.UnitName }}</span></div>
+                            <div class="toprow"><b>P&ID: </b><span id="id_PID">{{ onerow.PIDSheetNumber }}</span></div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="toprow"><b>Device Last Updates: </b><span id="id_DeviceLastUpdate">{{ onerow.DeviceLastUpdatedDateTime }}</span></div>
+                            <div class="toprow"><b>Device Last Review: </b><span id="id_DeviceLastReview">{{ onerow.DeviceLastReviewDate }}</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card border-dark" style="margin-top: 10px;">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <p><b>Person performing test: </b><span id="id_person_performing_test">{{ user.get_full_name }}</span></p>
+                            <p><label for="datepicker-1"><b>Reporting date: </b></label>
+                                <input type="text" class="form-control" name="datepicker-1" id="datepicker-1" placeholder="Select date">
+                            </p>
+                            <p id="test"><b>Job number: </b>
+                                <input type="text" class="form-control" id="id_JobNumber" placeholder="Enter Job Number">
+                            </p>
+                            <p>
+                                <label for="datepicker-1"><b>Scheduled start: </b></label>
+                                <input type="text" class="form-control" name="datepicker-2" id="datepicker-2" placeholder="Select date">
+                            </p>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <div class="toprow"><b>Latest test: </b> {{ onerow.SiteName }}</div>
+                            <div class="toprow"><b>Test interval: </b>
+                                <select class="form-control" id="id_test_interval">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                </select>
+                            </div>
+                            <div class="toprow"><b>Reason for test: </b>
+                                <select class="form-control" id="id_reason_test">
+                                    <option>New Instrument</option>
+                                    <option>Routine test</option>
+                                    <option>Instrument Failure</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                </select>
+                            </div>
+                            <div class="row mt-4 ml-auto">
+                                <div class="col-12 col-md-12 col-sm-12 col-lg-4">
+                                    <label for="datepicker-1"><b>Scheduled start: </b></label>
+                                </div>
+                                <div class="col-12 col-md-12 col-sm-12 col-lg-4 mt-2">
+                                    <div class="custom-control custom-switch ml-2">
+                                        <input type="checkbox" class="custom-control-input" id="id_testOK">
+                                        <label class="custom-control-label" for="id_testOK"><b>Test was OK? </b></label>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-12 col-sm-12 col-lg-4 mt-2">
+                                    <div class="custom-control custom-switch ml-2">
+                                        <input type="checkbox" class="custom-control-input" id="id_testOK_fix">
+                                        <label class="custom-control-label" for="id_testOK_fix"><b>Test was ok after fix? </b></label>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="custom-control custom-switch">
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-dark" style="margin-top: 10px;">
+                <div class="card-body">
+                    {% comment %}
+                    <div class="row">
+                        <div class="col-3">
+                            Manufacturer:
+                        </div>
+                        <div class="col-3">
+                            Models:
+                        </div>
+                        <div class="col-3">
+                            Serial Number:
+                        </div>
+                        <div class="col-3">
+                            Trip set point:
+                        </div>
+                    </div>
+                    {% endcomment %}
+
+                    <div class="row">
+                        <div class="col-12">
+                            {% block funtional_test %}
+
+                            {% endblock %}
+                        </div>
+
+                    </div>
+                    <div class="row mt-5">
+
+                            <div class="col-8">
+
+                            </div>
+                            <div class="col-4">
+                                <div class="row justify-content-center mt-5 mb-2">
+                                    <button type="button" id="id_submit" class="btn btn-lg btn-outline-primary mt-auto">Submit</button>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    {% comment %}
+    <footer class="text-muted text-center text-small">
+        <ul class="list-inline text-left ml-2">
+            <small class="ml-0">
+
+
+            </small>
+        </ul>
+    </footer>
+    {% endcomment %}
+
+    <div>
+        <br>
+    </div>
+
+{% endblock %}
+
+
+{% block javascript %}
+
+
+    {% comment %}
+    <script src="{% static 'mysite/src/js/plugins/steps/jquery.steps.min.js' %}"></script>
+    {% endcomment %}
+
+    <script src="{% static 'mysite/src/js/plugins/datapicker/bootstrap-datepicker.js' %}"></script>
+    {% block javascript_in_prooftest %}
+
+    {% endblock %}
+
+    <script>
+        {% comment %}
+        // print the contents of Proof test
+        function print_page(){
+            var printContents = document.getElementById("print").innerHTML;
+            var originalContents = document.body.innerHTML;
+            document.body.innerHTML = printContents;
+            window.print();
+            document.body.innerHTML = originalContents;
+        }
+        {% endcomment %}
+
+        $(document).ready(function () {
+
+
+            {% comment %}
+            $("#example-basic").steps({
+                headerTag: "h3",
+                bodyTag: "section",
+                transitionEffect: "slideLeft",
+                autoFocus: true,
+                onFinishing: function (event, currentIndex){
+                    // print page at the end of ProofTest
+                    print_page();
+                },
+                onFinished: function (event, currentIndex)
+                {
+
+                }
+            });
+            {% endcomment %}
+
+            $('#id_submit').click(function () {
+                console.log($('#id_DeviceType'));
+
+                // Create test data, to be submitted to the server
+                var data = {
+                    // Device information
+                    DeviceKey: {{ onerow.DeviceKey }},
+
+                    // Job/ProofTest Information
+                    JobNumber: $('#id_JobNumber').val(),
+                    Reportingdate: $('#datepicker-1').val(),
+                    ReasonTest: $('#id_reason_test').val(),
+                    testOK: $('#id_testOK').is(':checked'),
+                }
+                console.log(data)
+            });
+
+            // Date Picker, "Reporting date"
+            $('#datepicker-1').datepicker({
+                autoclose: true,
+            });
+            $("#datepicker-1").datepicker('setDate', new Date());
+
+            // Date Picker, "Scheduled start"
+            $('#datepicker-2').datepicker({
+                autoclose: true,
+            });
+
+        });
+    </script>
+{% endblock %}

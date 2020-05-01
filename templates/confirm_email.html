@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block content %}
+    <p> Please confirm your email address to complete the registration. </p>
+    <a href="{% url 'login' %}" class="btn btn-primary">Log in</a>
+    <meta http-equiv="refresh" content="3;url={% url 'login' %}"/>
+{% endblock %}

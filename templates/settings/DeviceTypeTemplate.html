@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% comment %} This page gives user option to connect existing templates
+                to each devicetype.
+{% endcomment %}
+
+{% block header %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'mysite/src/css/custom/progress.css' %}">
+    <link href="{% static 'mysite/src/css/plugins/steps/jquery.steps.css' %}" rel="stylesheet">
+
+    <style>
+        .done .a {
+            background-color: #0a568c;
+            color: #0aafbd;
+            background: #00ff80;
+        }
+        section .container {
+            padding: 10px;
+        }
+
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="card border-dark" style="margin-top: 50px;">
+        <form method="post" novalidate id="id_template_form">
+        {% csrf_token %}
+        <div class="card-header bg-dark text-light">
+            <h2>HTML templates</h2>
+            <div class="justify-content-end">
+                <button type="button" id="id_submit_top" class="btn btn-outline-primary">Save Changes</button>
+            </div>
+
+        </div>
+
+        <div class="card-body">
+
+                <table class="table table-bordered m-0">
+                <thead>
+                <tr>
+                    <th> item # </th>
+                    <th> Device Type Key </th>
+                    <th> Device Type Description </th>
+                    <th> Username </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in DeviceType %}
+                <tr>
+                    <th scope="row">{{ i.DeviceTypeKey }}</th>
+                    <td>{{i.DeviceTypeCode}}</td>
+                    <td>{{ i.DeviceTypeDescription }}</td>
+                    <td>
+                        <div class="form-group">
+                            <select class="form-control" name="{{ i.DeviceTypeKey }}" id="example-select">
+                            <option>
+                                N/A
+                            </option>
+                                {% for k in DeviceHTML %}
+                                    <option
+                                    {% for l in DevicePage %}
+                                        {% if l.DeviceTypeKey == i.DeviceTypeKey and l.HtmlKey == k.HtmlKey %}
+                                            SELECTED
+
+                                        {% endif %}
+
+                                    {% endfor %}
+                                            value="{{ k.HtmlKey }}">{{ k.HtmlPage }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+                <div class="row justify-content-end m-5">
+                    <button type="button" id="id_submit_bottom" class="btn btn-outline-primary mt-auto">Save Changes</button>
+                </div>
+
+        </div>
+        </form>
+    </div>
+
+    <footer class="my-3 text-muted text-center text-small">
+        <ul class="list-inline text-left ml-2">
+            <small class="ml-0">
+
+
+            </small>
+        </ul>
+    </footer>
+
+    <div>
+        <br>
+    </div>
+
+{% endblock %}
+
+
+{% block javascript %}
+
+
+    <script src="{% static 'mysite/src/js/plugins/steps/jquery.steps.min.js' %}"></script>
+
+
+    <script>
+
+        $(document).ready(function () {
+            $('#id_submit_top').click(function () {
+                //$("#id_username").val(($("#id_username").val()).toLowerCase())
+                $("#id_template_form").submit();
+            });
+            $('#id_submit_bottom').click(function () {
+                //$("#id_username").val(($("#id_username").val()).toLowerCase())
+                $("#id_template_form").submit();
+            });
+        });
+    </script>
+{% endblock %}

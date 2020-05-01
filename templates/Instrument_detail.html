@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header %}
+    <style>
+        .card {
+            min-height: 0vh;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        fieldset.scheduler-border {
+            border: 1px solid grey !important;
+            border-radius: 10px;
+            padding: 0 1.4em 1.4em 1.4em !important;
+            margin: 0 0 1.5em 0 !important;
+            -webkit-box-shadow:  0px 0px 0px 0px #000;
+            box-shadow:  0px 0px 0px 0px #000;
+        }
+
+        legend.scheduler-border {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: left;
+            text-indent: 5px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="card border-dark" style="margin-top: 50px;">
+        <div class="card-header bg-danger-900">
+                    Device Tag: {{ onerow.DeviceName }}
+        </div>
+        <div class="card-body">
+
+
+                    <div class="card">
+
+                        <div class="card-header font-weight-bold bg-gray-700 text-light">
+                                    Instrument general information from Interlock Database
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-0">
+                                <div class="col-4">
+                                    <p><b>Device type:</b> {{ onerow.DeviceTypeDescription }}</p>
+                                    <p><b>Device description:</b> {{ onerow.DeviceDescription }}</p>
+                                </div>
+                                <div class="col-4">
+                                    <p><b>Site:</b> {{ onerow.SiteName }}</p>
+                                    <p><b>Unit:</b> {{ onerow.UnitName }}</p>
+                                    <p><b>P&ID:</b> {{ onerow.PIDSheetNumber }}</p>
+                                </div>
+                                <div class="col-4">
+                                    <p><b>Device Last Updates:</b> {{ onerow.DeviceLastUpdatedDateTime }}</p>
+                                    <p><b>Device Last Review:</b> {{ onerow.DeviceLastReviewDate }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            {% comment %}
+                    <div class="card">
+                        <div class="card-header font-weight-bold bg-gray-700 text-light">
+                            <div class="row">
+                                <div class="col-8">
+                                    Instrument detail information
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" id="id_submit" class="btn btn-outline-primary">Add/Edit Details</button>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-0">
+                                <div class="col-4">
+                                    <fieldset class="scheduler-border">
+                                        <legend class="scheduler-border">Instrument type/model info</legend>
+                                        <div class="control-group">
+                                            <label class="form-label mt-1" for="simpleinput">Model Number</label>
+                                            <input type="text" name="site" id="site" class="form-control mb-2" autocomplete="off">
+                                            <label class="form-label mt-1" for="simpleinput">Vendor</label>
+                                            <input type="text" name="site" id="site" class="form-control mb-2" autocomplete="off">
+                                            <label class="form-label mt-1" for="simpleinput">Installation location</label>
+                                            <input type="text" name="site" id="site" class="form-control mb-2" autocomplete="off">
+                                            <label class="form-label mt-1" for="simpleinput">Piping class</label>
+                                            <input type="text" name="site" id="site" class="form-control mb-2" autocomplete="off">
+                                            <label class="form-label mt-1" for="simpleinput">Medium substance</label>
+                                            <input type="text" name="site" id="site" class="form-control mb-2" autocomplete="off">
+                                        </div>
+                                    </fieldset>
+
+                                </div>
+                                <div class="col-4">
+                                    <fieldset class="scheduler-border">
+                                        <legend class="scheduler-border">Instrument type/model info</legend>
+                                        <div class="control-group">
+                                            <label class="form-label mt-1" for="simpleinput">Model Number</label>
+                                            <input type="text" name="site" id="site" class="form-control mb-2" autocomplete="off">
+                                            <label class="form-label mt-1" for="simpleinput">Vendor</label>
+                                            <input type="text" name="site" id="site" class="form-control mb-2" autocomplete="off">
+                                            <label class="form-label mt-1" for="simpleinput">Installation location</label>
+                                            <input type="text" name="site" id="site" class="form-control mb-2" autocomplete="off">
+                                            <label class="form-label mt-1" for="simpleinput">Piping class</label>
+                                            <input type="text" name="site" id="site" class="form-control mb-2" autocomplete="off">
+                                            <label class="form-label mt-1" for="simpleinput">Medium substance</label>
+                                            <input type="text" name="site" id="site" class="form-control mb-2" autocomplete="off">
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="col-4">
+                                    <fieldset class="scheduler-border">
+                                        <legend class="scheduler-border">Instrument type/model info</legend>
+                                        <div class="control-group">
+                                            <label class="form-label mt-1" for="simpleinput">Model Number</label>
+                                            <input type="text" name="site" id="site" class="form-control mb-2" autocomplete="off">
+                                            <label class="form-label mt-1" for="simpleinput">Vendor</label>
+                                            <input type="text" name="site" id="site" class="form-control mb-2" autocomplete="off">
+                                            <label class="form-label mt-1" for="simpleinput">Installation location</label>
+                                            <input type="text" name="site" id="site" class="form-control mb-2" autocomplete="off">
+                                            <label class="form-label mt-1" for="simpleinput">Piping class</label>
+                                            <input type="text" name="site" id="site" class="form-control mb-2" autocomplete="off">
+                                            <label class="form-label mt-1" for="simpleinput">Medium substance</label>
+                                            <input type="text" name="site" id="site" class="form-control mb-2" autocomplete="off">
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            {% endcomment %}
+
+            {% block instrument_template %}
+
+
+            {% endblock %}
+                    <div class="card">
+                                <div class="card-header font-weight-bold bg-gray-700 text-light">
+                                    Interlocks
+                                </div>
+                                <div class="card-body">
+                                    {% if response %}
+                                        <table class="table">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                <th>Interlock Description</th>
+                                                <th>Interlock Condition Reason</th>
+                                                <th>Interlock Category</th>
+                                                <th>Actuator/Output</th>
+                                                <th>Voting</th>
+
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for i in response.values %}
+                                                <form method="get" action="">
+                                                    <tr id="id_interlocks_{{ i.InterlockConditionKey }}">
+                                                        <td>{{ i.InterlockConditionDescription }}</td>
+                                                        <td>{{ i.InterlockConditionReason }}</td>
+                                                        <td>{{ i.InterlockCategoryName }}</td>
+                                                        <td><a href="{% url 'instrument_detail' i.DeviceKey %}">{{ i.DeviceName }}</a></td>
+                                                        <td>.</td>
+                                                    </tr>
+                                                </form>
+
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    {% elif not query == None %}
+                                        <p class="text text-danger">No Interlock</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+
+
+                {% comment %}
+                    {% for i in response.values %}
+                        {{ i.InterlockConditionDescription }}
+                    {% endfor %}
+                    {% endcomment %}
+
+        </div>
+        <footer class="my-3 text-muted text-center text-small">
+            <ul class="list-inline text-left ml-2">
+                <small class="ml-0">
+
+                </small>
+            </ul>
+        </footer>
+    </div>
+    <div>
+        <br>
+    </div>
+
+{% endblock %}
+
+
+{% block javascript %}
+
+
+    <script>
+
+       $(document).ready(function () {
+           function colorize(selector) {
+                   var regex = /\[.*?\]/g;
+                   var style = "color:#ff0000";
+                   var element = selector;
+                   var curComtent = $(selector).after().html();
+                   if (curComtent.match(regex)) {
+                       var newContent = curComtent.replace(regex, '<a href="$&"><span style="' + style + '">$&</span></a>');
+                       console.log(newContent)
+                       console.log(newContent.indexOf('href="['))
+                       $(selector).after().html(newContent)
+                   }
+           };
+
+           {% for i in response.values %}
+                        colorize('#id_interlocks_{{ i.InterlockConditionKey }}');
+           {% endfor %}
+
+       });
+   </script>
+{% endblock %}

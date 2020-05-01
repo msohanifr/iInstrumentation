@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header %}
+    <style>
+        .list-group-item {
+            padding: 0;
+        }
+        .alignleft {
+            float: left;
+        }
+        .alignright {
+            float: right;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="card border-dark">
+        {% comment %}          ----------- The card header, it is rremoved because it is too big
+        <div class="card-header">
+            <h2>Home</h2>
+        </div>
+        {% endcomment %}
+
+        <div class="card-body">
+            <h5 class="card-title">Stores Available In Your Area</h5>
+            <ul class="list-group list-group-flush">
+
+                <li class="list-group-item" style="padding: 0">
+                    {% if vendors %}
+                        {% for i in vendors %}
+                            <div class="col-12">
+                                <div class="card border-dark" style="min-height: 0">
+                                    <div class="card-header bg-transparent border-primary">
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <h4><i class="fa fa-store-alt"></i>
+                                                    {{ i.profile.user.first_name }}
+                                                </h4>
+                                                {% if i == user_vendor %}
+                                                    <i class="fa fa-check text-success"></i>
+                                                    <h class="text-success">Default Store </h>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-8">
+                                                <img src="{% static 'choose_vendor.html/' %}{{ i.photo }}" alt="Dress" height="100px">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="card-body text-dark">
+                                        <ul class="list-group list-group-flush">
+                                            {% comment %}<h5 class="card-title"></h5>{% endcomment %}
+                                            <li class="list-group-item">
+                                                <div class="row mt-2 mb-2">
+                                                    <div class="col-4">
+                                                        <b>Rating</b>
+                                                    </div>
+                                                    <div class="col-8">
+                                                            {% for j in "abcde" %}
+                                                                {% if forloop.counter <= i.rating %}
+                                                                    <p class="fa fa-star"></p>
+                                                                {% else %}
+                                                                    <p class="far fa-star"
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <div class="row mt-2 mb-2">
+                                                    <div class="col-4">
+                                                        <b>Price:</b>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        {% for j in "abcde" %}
+                                                            {% if forloop.counter <= i.pricing %}
+                                                                <p class="fas fa-dollar-sign"></p>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <div class="row mt-2 mb-2">
+                                                    <div class="col-4">
+                                                        <b>Delivery:</b>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        {{ i.delivery_notes|safe }}
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <div class="row mt-2 mb-2">
+                                                    <div class="col-4">
+                                                        <b>Address:</b>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <a href="https://www.google.com/maps/place/{{ i.profile.street1 }},
+                                                            {{ i.profile.street2 }}, {{ i.profile.city }}">
+                                                            {{ i.profile.street1 }},
+                                                            {{ i.profile.street2 }}, {{ i.profile.city }}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <div class="row mt-2 mb-2">
+                                                    <div class="col-4">
+                                                        <b>Phone:</b>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <a href="tel:{{ i.profile.phone_number }}">{{ i.profile.phone_number }}</a>
+
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <div class="row mt-2 mb-2">
+                                                    <div class="col-4">
+                                                        <b>Hours:</b>
+                                                    </div>
+                                                    <div class="col-8">
+                                                       {{ i.hours|safe }}
+                                                    </div>
+                                                </div>
+                                            </li>
+
+                                        {% comment %}  ////////////  SHOW PRICE ///////////////
+                                            <li class="list-group-item">
+                                                <div class="row mt-2 mb-2">
+                                                    <div class="col-4">
+                                                        <b>Price:</b>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <div class="frame-wrap mb-0 w-100">
+                                                            <p class="demo">
+                                                                <a class="btn btn-primary" data-toggle="collapse"
+                                                                   href="#multiCollapse{{ i.pk }}" role="button"
+                                                                   aria-expanded="false"
+                                                                   aria-controls="multiCollapseExample1">Show pricelist</a>
+                                                            </p>
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <div class="collapse multi-collapse" id="multiCollapse{{ i.pk }}">
+                                                            <table id="dt-basic-example" class="table table-sm table-bordered table-hover table-striped w-100">
+                                                                <thead class="thead-dark">
+                                                                <tr>
+                                                                    <th>Item</th>
+                                                                    <th>Price</th>
+
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                {% for key, items in items.items %}
+                                                                    {% if key == i %}
+                                                                        {% for j in items %}
+                                                                            <tr>
+                                                                                <td><img src="{% static '/' %}{{ j.photo }}" alt="Dress" height="50px"></td>
+                                                                                <td>{{ j.price }}</td>
+                                                                            </tr>
+                                                                        {% endfor %}
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                                </tbody>
+                                                            </table>
+
+                                                            /////////////////// SHOULD BE COMMENTED
+                                                            <div class="card card-body mt-0" style="min-height: 0">
+
+                                                                {% for key, items in items.items %}
+                                                                    {% if key == i %}
+                                                                        {% for i in items %}
+                                                                            <div class="row">
+                                                                                <div class="col-8">
+                                                                                    {{ i.title }}
+                                                                                </div>
+                                                                                <div class="col-4">
+                                                                                    {{ i.price }}
+                                                                                </div>
+                                                                            </div>
+
+                                                                        {% endfor %}
+                                                                    {% endif %}
+
+                                                                {% endfor %}
+
+
+                                                            </div>
+                                                            //////////////////  END OF COMMENTED
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                                </li>
+                                            {% endcomment %}
+
+                                                <div class="row justify-content-center align-items-center ">
+                                                    <div class="btn-group mt-2 mb-2">
+                                                        <button type="button" id="id_{{ i.pk }}"
+                                                                class="btn btn-outline-primary">Choose
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+
+                                        </ul>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>You don't have any order</p>
+                    {% endif %}
+                </li>
+            </ul>
+
+
+        </div>
+        <footer class="my-3 text-muted text-center text-small">
+            <ul class="list-inline text-left ml-2">
+                <small class="ml-0"> </small>
+
+            </ul>
+
+        </footer>
+    </div>
+    <div>
+        <br>
+    </div>
+
+{% endblock %}
+
+
+{% block javascript %}
+    <script src="{% static 'mysite/src/js/custom/map_address.js' %}"></script>
+
+    <script>
+        $(document).ready(function(){
+            console.log('{{ vendors }}');
+            {% if vendors %}
+                {% for i in vendors %}
+                    $('#id_{{ i.pk }}').click(function(){
+                        console.log('{{ i.pk }}');
+                        window.location.assign('{% url 'add_vendor' %}'+ {{ i.pk }} );
+                    });
+                {% endfor %}
+            {% endif %}
+
+        });
+    </script>
+{% endblock %}
