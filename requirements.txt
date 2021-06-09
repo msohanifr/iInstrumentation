@@ -2,7 +2,7 @@ twilio
 social-auth-app-django
 path.py
 stripe
-Django==2.2.18
+Django==2.2.22
 django-crispy-forms==1.7.2
 pytz==2018.7
 mysqlclient
